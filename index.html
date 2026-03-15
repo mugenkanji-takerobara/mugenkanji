@@ -154,8 +154,7 @@ function draw(){
   ctx.fillStyle = "white";
   ctx.font = "20px sans-serif";
   ctx.fillText("スコア: "+score, 10, 30);
-
-  if(gameOver){
+    if(gameOver){
     ctx.fillStyle = "rgba(0,0,0,0.6)";
     ctx.fillRect(20,260,320,120);
     ctx.fillStyle = "white";
@@ -220,9 +219,8 @@ function resetGame(){
   selectedCell = null;
   cur = new P();
   tick = 0;
-}
-
-function startGame(){
+}  
+  function startGame(){
   document.getElementById("startBtn").style.display="none";
   document.getElementById("info").textContent = "左右スワイプで動かそう。3つそろえると消えるよ。";
   resetGame();
@@ -476,8 +474,8 @@ function playBonusBGM(){
 function stopAllBGM(){
   bgmNormal.pause();
   bgmBonus.pause();
-}
-if('serviceWorker' in navigator){
+}  
+ if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./service-worker.js').catch(e=>{
       console.log('SW registration failed',e);
@@ -487,4 +485,5 @@ if('serviceWorker' in navigator){
 
 </script>
 </body>
-</html>        
+</html>       
+<script>
