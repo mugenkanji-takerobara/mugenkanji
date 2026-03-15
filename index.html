@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>むげんかんじ</title>
+
+<!-- PWA 用 -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#87CEEB">
+
+<style>
+body{
+  margin:0;
+  background:#87CEEB;
+  font-family:sans-serif;
+  overflow:hidden;
+  text-align:center;
+}
+#wrap{
+  display:inline-block;
+  margin-top:10px;
+}
+canvas{
+  display:block;
+  margin:0 auto;
+  border:8px solid #fff;
+  border-radius:20px;
+  background:#fff;
+  touch-action:none;
+}
+button{
+  display:block;
+  margin:12px auto;
+  padding:15px 40px;
+  font-size:26px;
+  background:#FF69B4;
+  color:white;
+  border:none;
+  border-radius:12px;
+}
+</style>
+</head>
+<body>
+
+<div id="wrap">
+  <canvas id="c" width="360" height="640"></canvas>
+  <button id="startBtn" onclick="start()">ゲームスタート！</button>
+</div>
+
+<script>
+// --- ゲーム本体 ---
+const c=document.getElementById("c"),ctx=c.getContext("2d");
+let board=Array(12).fill().map(()=>Array(6).fill(null)),cur=null,score=0;
+const ks=["零","一","二","三","四","五","六","七","八","九","十","百"];
+
+class P{
+  constructor(){
+    this.x=3;
+    this.y=0;
+    this.t=ks[Math.floor(Math.random()*ks.length)];
+  }
+}
+
+function draw(){
+  ctx.clearRect(0,0,360,640);
+  ctx.fillStyle="#87CEEB";
+  ctx.fillRect(0,0,360,220);
+
+  for(let r=0;r<12;r++)
+    for(let j=0;j<6;j++)
+      if(board[r][j]){
+        ctx.font="bold 38px sans-serif";
+        ctx.fillStyle="black";
+        ctx.fillText(board[r][j],j*55+25,r*55+75);
+      }
+
+  if(cur){
+    ctx.font="bold 48px sans-serif";
+    ctx.fillStyle="black";
+    ctx.fillText(cur.t,cur.x*55+25,cur.y*55+75);
+  }
+
+  ctx.fillStyle="white";
+  ctx.font="26px sans-serif";
+  ctx.fillText("スコア: "+score,20,40);
+}
+
+function resetGame(){
+  board=Array(12).fill().map(()=>Array(6).fill(null));
+  score=0;
+  cur=new P();
+}
+
+function start(){
+  document.getElementById("startBtn").style.display="none";
+  resetGame();
+
+  function loop(){
+    if(cur){
+      cur.y++;
+      if(cur.y>=12 || board[cur.y][cur.x]){
+        cur.y--;
+        board[cur.y][cur.x]=cur.t;
+        // ここで本当は消去判定やスコア加算なども入れられる
+        cur=new P();
+        if(cur.y>=12){
+          cur=null;
+          document.getElementById("startBtn").textContent="もう一度あそぶ";
+          document.getElementById("startBtn").style.display="block";
+        }
+      }
+    }
+    draw();
+    requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+// ---- スマホタッチ操作（左右スワイプで移動）----
+let startX=0;
+
+c.addEventListener("touchstart",e=>{
+  startX=e.touches[0].clientX;
+});
+
+c.addEventListener("touchend",e=>{
+  const endX=e.changedTouches[0].clientX;
+  if(cur){
+    if(endX-startX>30) cur.x=Math.min(cur.x+1,5);   // 右
+    if(startX-endX>30) cur.x=Math.max(cur.x-1,0);   // 左
+    draw();
+  }
+});
+
+// ---- 画面サイズに合わせて拡大 ----
+function resizeCanvas(){
+  const scale=Math.min(window.innerWidth/360, window.innerHeight/680);
+  const wrap=document.getElementById("wrap");
+  wrap.style.transform=`scale(${scale})`;
+  wrap.style.transformOrigin="top center";
+}
+window.addEventListener("resize",resizeCanvas);
+resizeCanvas();
+
+draw();
+
+// --- PWA: Service Worker 登録 ---
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./service-worker.js').catch(e=>{
+      console.log('SW registration failed',e);
+    });
+  });
+}
+</script>
+</body>
+</html>
