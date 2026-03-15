@@ -1,45 +1,45 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>むげんかんじ</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>むげんかんじ</title>
 
-<!-- PWA 用 -->
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#87CEEB">
+  <!-- PWA 用 -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#87CEEB">
 
-<style>
-body{
-  margin:0;
-  background:#87CEEB;
-  font-family:sans-serif;
-  overflow:hidden;
-  text-align:center;
-}
-#wrap{
-  display:inline-block;
-  margin-top:10px;
-}
-canvas{
-  display:block;
-  margin:0 auto;
-  border:8px solid #fff;
-  border-radius:20px;
-  background:#fff;
-  touch-action:none;
-}
-button{
-  display:block;
-  margin:12px auto;
-  padding:15px 40px;
-  font-size:26px;
-  background:#FF69B4;
-  color:white;
-  border:none;
-  border-radius:12px;
-}
-</style>
+  <style>
+    body{
+      margin:0;
+      background:#87CEEB;
+      font-family:sans-serif;
+      overflow:hidden;
+      text-align:center;
+    }
+    #wrap{
+      display:inline-block;
+      margin-top:10px;
+    }
+    canvas{
+      display:block;
+      margin:0 auto;
+      border:8px solid #fff;
+      border-radius:20px;
+      background:#fff;
+      touch-action:none;
+    }
+    button{
+      display:block;
+      margin:12px auto;
+      padding:15px 40px;
+      font-size:26px;
+      background:#FF69B4;
+      color:white;
+      border:none;
+      border-radius:12px;
+    }
+  </style>
 </head>
 <body>
 
@@ -87,34 +87,33 @@ function draw(){
 }
 
 function resetGame(){
-  board=Array(12).fill().map(()=>Array(6).fill(null));
-  score=0;
-  cur=new P();
+  board = Array(12).fill().map(()=>Array(6).fill(null));
+  score = 0;
+  cur = new P();
 }
 
 function start(){
   document.getElementById("startBtn").style.display="none";
   resetGame();
-
-  function loop(){
-    if(cur){
-      cur.y++;
-      if(cur.y>=12 || board[cur.y][cur.x]){
-        cur.y--;
-        board[cur.y][cur.x]=cur.t;
-        // ここで本当は消去判定やスコア加算なども入れられる
-        cur=new P();
-        if(cur.y>=12){
-          cur=null;
-          document.getElementById("startBtn").textContent="もう一度あそぶ";
-          document.getElementById("startBtn").style.display="block";
-        }
-      }
-    }
-    draw();
-    requestAnimationFrame(loop);
-  }
   loop();
+}
+
+function loop(){
+  if(cur){
+    cur.y++;
+    if(cur.y>=12 || board[cur.y][cur.x]){
+      cur.y--;
+      board[cur.y][cur.x]=cur.t;
+      cur=new P();
+    }
+    if(cur.y>=12){
+      cur=null;
+      document.getElementById("startBtn").textContent="もう一度あそぶ";
+      document.getElementById("startBtn").style.display="block";
+    }
+  }
+  draw();
+  requestAnimationFrame(loop);
 }
 
 // ---- スマホタッチ操作（左右スワイプで移動）----
@@ -154,5 +153,6 @@ if('serviceWorker' in navigator){
   });
 }
 </script>
+
 </body>
 </html>
