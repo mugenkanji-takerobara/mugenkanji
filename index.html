@@ -56,65 +56,6 @@
 
 <audio id="bgmNormal" src="retropark.mp3" loop></audio>
 <audio id="bgmBonus" src="retroparty.mp3" loop></audio>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>むげんかんじ</title>
-
-  <!-- PWA 用 -->
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#87CEEB">
-
-  <style>
-    body{
-      margin:0;
-      background:#87CEEB;
-      font-family:sans-serif;
-      overflow:hidden;
-      text-align:center;
-    }
-    #wrap{
-      display:inline-block;
-      margin-top:10px;
-    }
-    canvas{
-      display:block;
-      margin:0 auto;
-      border:8px solid #fff;
-      border-radius:20px;
-      background:#fff;
-      touch-action:none;
-    }
-    button{
-      display:block;
-      margin:12px auto;
-      padding:15px 40px;
-      font-size:24px;
-      background:#FF69B4;
-      color:white;
-      border:none;
-      border-radius:12px;
-    }
-    #info{
-      font-size:14px;
-      color:#fff;
-      margin-top:4px;
-    }
-  </style>
-</head>
-<body>
-
-<div id="wrap">
-  <canvas id="c" width="360" height="640"></canvas>
-  <button id="startBtn" onclick="startGame()">ゲームスタート！</button>
-  <div id="info">同じ漢字を縦に3つそろえて消そう！</div>
-</div>
-
-<audio id="bgmNormal" src="retropark.mp3" loop></audio>
-<audio id="bgmBonus" src="retroparty.mp3" loop></audio>
-
 const c = document.getElementById("c");
 const ctx = c.getContext("2d");
 const ROWS = 12;
@@ -221,9 +162,322 @@ function draw(){
     ctx.font = "22px sans-serif";
     ctx.fillText("ゲームオーバー", 100,300);
     ctx.font = "16px sans-serif";
-    ctx.fillText
-<script>
-  if('serviceWorker' in navigator){
+    ctx.fillText("富山の景色はまた今度。", 80,330);
+    ctx.fillText("ボタンでやりなおせるよ。", 80,355);
+  }
+
+  if(bonusMode){
+    ctx.fillStyle = "rgba(0,0,0,0.6)";
+    ctx.fillRect(20,260,320,140);
+    ctx.fillStyle = "white";
+    ctx.font = "20px sans-serif";
+    ctx.fillText("ボーナス発動！ ["+bonusMode+"]", 60,295);
+    ctx.font = "16px sans-serif";
+    if(bonusMode==="塩"){
+      ctx.fillText("消したいマスをタップしてね。", 60,325);
+      ctx.fillText("のこり "+bonusRemaining+" マス", 110,350);
+    }else if(bonusMode==="代"){
+      ctx.fillText("入れ替えたいマスをタップしてね。", 50,325);
+      ctx.fillText("のこり "+bonusRemaining+" 回", 110,350);
+    }else if(bonusMode==="岳"){
+      ctx.fillText("盤面をシャッフルしたよ！", 80,325);
+      ctx.fillText("連鎖のチャンス！", 110,350);
+    }
+  }
+}
+
+function drawKanjiCell(x,y,t,isCurrent){
+  const px = x*55+25;
+  const py = y*55+75;
+
+  ctx.beginPath();
+  ctx.fillStyle = isCurrent ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.8)";
+  ctx.arc(px+10,py-20,24,0,Math.PI*2);
+  ctx.fill();
+
+  if(bonusKs.includes(t)){
+    ctx.strokeStyle = "#FFD700";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(px+10,py-20,26,0,Math.PI*2);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = "#000000";
+  ctx.font = "bold 30px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(t, px+10, py-20);
+}
+
+function resetGame(){
+  board = Array(ROWS).fill().map(()=>Array(COLS).fill(null));
+  score = 0;
+  chainCount = 0;
+  gameOver = false;
+  bonusMode = null;
+  bonusRemaining = 0;
+  selectedCell = null;
+  cur = new P();
+  tick = 0;
+}
+
+function startGame(){
+  document.getElementById("startBtn").style.display="none";
+  document.getElementById("info").textContent = "左右スワイプで動かそう。3つそろえると消えるよ。";
+  resetGame();
+  playNormalBGM();
+}
+
+function stepFall(){
+  if(gameOver || bonusMode) return;
+  if(!cur){
+    cur = new P();
+    if(board[0][cur.x]){
+      gameOver = true;
+      stopAllBGM();
+      return;
+    }
+  }
+  cur.y++;
+  if(cur.y>=ROWS || board[cur.y][cur.x]){
+    cur.y--;
+    board[cur.y][cur.x] = cur.t;
+    handleLanding(cur.t);
+    cur = null;
+  }
+}
+
+function handleLanding(lastType){
+  let cleared = clearMatches();
+  if(cleared>0){
+    chainCount++;
+    score += cleared * 10 * chainCount;
+  }else{
+    chainCount = 0;
+  }
+
+  if(bonusKs.includes(lastType)){
+    if(checkBonusTriple(lastType)){
+      triggerBonus(lastType);
+    }
+  }
+
+  for(let j=0;j<COLS;j++){
+    if(board[0][j]){
+      gameOver = true;
+      stopAllBGM();
+      break;
+    }
+  }
+}
+
+function clearMatches(){
+  let toClear = Array(ROWS).fill().map(()=>Array(COLS).fill(false));
+  let count = 0;
+
+  for(let j=0;j<COLS;j++){
+    let runChar = null;
+    let runStart = 0;
+    let runLen = 0;
+    for(let r=0;r<=ROWS;r++){
+      const t = (r<ROWS)? board[r][j] : null;
+      if(t && t===runChar){
+        runLen++;
+      }else{
+        if(runChar && runLen>=3){
+          for(let rr=runStart; rr<runStart+runLen; rr++){
+            toClear[rr][j] = true;
+          }
+        }
+        runChar = t;
+        runStart = r;
+        runLen = t?1:0;
+      }
+    }
+  }
+
+  for(let r=0;r<ROWS;r++){
+    for(let j=0;j<COLS;j++){
+      if(toClear[r][j]){
+        board[r][j] = null;
+        count++;
+      }
+    }
+  }
+
+  if(count>0){
+    for(let j=0;j<COLS;j++){
+      let stack = [];
+      for(let r=ROWS-1;r>=0;r--){
+        if(board[r][j]) stack.push(board[r][j]);
+      }
+      for(let r=ROWS-1;r>=0;r--){
+        board[r][j] = stack.shift() || null;
+      }
+    }
+  }
+
+  return count;
+}
+
+function checkBonusTriple(ch){
+  let cnt = 0;
+  for(let r=0;r<ROWS;r++){
+    for(let j=0;j<COLS;j++){
+      if(board[r][j]===ch) cnt++;
+    }
+  }
+  return cnt>=3;
+}
+
+function triggerBonus(ch){
+  bonusMode = ch;
+  playBonusBGM();
+  if(ch==="塩"){
+    bonusRemaining = 3;
+  }else if(ch==="代"){
+    bonusRemaining = 3;
+  }else if(ch==="岳"){
+    shuffleBoard();
+    bonusRemaining = 0;
+    bonusMode = null;
+    playNormalBGM();
+  }
+}
+
+function shuffleBoard(){
+  let cells = [];
+  for(let r=0;r<ROWS;r++){
+    for(let j=0;j<COLS;j++){
+      if(board[r][j]) cells.push(board[r][j]);
+      board[r][j] = null;
+    }
+  }
+  for(let r=ROWS-1;r>=0;r--){
+    for(let j=0;j<COLS;j++){
+      if(cells.length===0) return;
+      const idx = Math.floor(Math.random()*cells.length);
+      board[r][j] = cells[idx];
+      cells.splice(idx,1);
+    }
+  }
+}
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+c.addEventListener("touchstart",e=>{
+  const t = e.touches[0];
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
+});
+
+c.addEventListener("touchend",e=>{
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touchStartX;
+  const dy = t.clientY - touchStartY;
+
+  const dist = Math.hypot(dx,dy);
+  if(bonusMode && dist<20){
+    handleBonusTap(t);
+    return;
+  }
+
+  if(!cur || gameOver || bonusMode) return;
+
+  if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30){
+    if(dx>0){
+      if(cur.x < COLS-1 && !board[cur.y][cur.x+1]) cur.x++;
+    }else{
+      if(cur.x > 0 && !board[cur.y][cur.x-1]) cur.x--;
+    }
+  }
+
+  draw();
+});
+
+function handleBonusTap(t){
+  const rect = c.getBoundingClientRect();
+  const x = t.clientX - rect.left;
+  const y = t.clientY - rect.top;
+
+  const col = Math.floor((x-25)/55);
+  const row = Math.floor((y-55)/55);
+
+  if(col<0 || col>=COLS || row<0 || row>=ROWS) return;
+
+  if(bonusMode==="塩"){
+    if(board[row][col]){
+      board[row][col] = null;
+      bonusRemaining--;
+      if(bonusRemaining<=0){
+        bonusMode = null;
+        playNormalBGM();
+        handleLanding(null);
+      }
+    }
+  }else if(bonusMode==="代"){
+    if(!selectedCell){
+      if(board[row][col]){
+        selectedCell = {r:row,c:col};
+      }
+    }else{
+      const r1 = selectedCell.r, c1 = selectedCell.c;
+      const tmp = board[r1][c1];
+      board[r1][c1] = board[row][col];
+      board[row][col] = tmp;
+      selectedCell = null;
+      bonusRemaining--;
+      if(bonusRemaining<=0){
+        bonusMode = null;
+        playNormalBGM();
+        handleLanding(null);
+      }
+    }
+  }
+
+  draw();
+}
+
+function loop(){
+  if(!gameOver){
+    tick++;
+    if(tick>=fallInterval){
+      tick = 0;
+      stepFall();
+    }
+  }
+  draw();
+  requestAnimationFrame(loop);
+}
+loop();
+
+function resizeCanvas(){
+  const scale = Math.min(window.innerWidth/360, window.innerHeight/680);
+  const wrap = document.getElementById("wrap");
+  wrap.style.transform = `scale(${scale})`;
+  wrap.style.transformOrigin = "top center";
+}
+window.addEventListener("resize",resizeCanvas);
+resizeCanvas();
+
+function playNormalBGM(){
+  bgmBonus.pause();
+  bgmBonus.currentTime = 0;
+  bgmNormal.volume = 0.7;
+  bgmNormal.play().catch(()=>{});
+}
+function playBonusBGM(){
+  bgmNormal.pause();
+  bgmBonus.volume = 0.8;
+  bgmBonus.play().catch(()=>{});
+}
+function stopAllBGM(){
+  bgmNormal.pause();
+  bgmBonus.pause();
+}
+if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./service-worker.js').catch(e=>{
       console.log('SW registration failed',e);
@@ -233,5 +487,5 @@ function draw(){
 
 </script>
 </body>
-</html>
-  
+</html>        
+<script>
