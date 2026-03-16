@@ -1,489 +1,181 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>むげんかんじ</title>
-
-  <!-- PWA 用 -->
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#87CEEB">
-
-  <style>
-    body{
-      margin:0;
-      background:#87CEEB;
-      font-family:sans-serif;
-      overflow:hidden;
-      text-align:center;
-    }
-    #wrap{
-      display:inline-block;
-      margin-top:10px;
-    }
-    canvas{
-      display:block;
-      margin:0 auto;
-      border:8px solid #fff;
-      border-radius:20px;
-      background:#fff;
-      touch-action:none;
-    }
-    button{
-      display:block;
-      margin:12px auto;
-      padding:15px 40px;
-      font-size:24px;
-      background:#FF69B4;
-      color:white;
-      border:none;
-      border-radius:12px;
-    }
-    #info{
-      font-size:14px;
-      color:#fff;
-      margin-top:4px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>むげんかんじ</title>
+<style>
+body{margin:0;background:#87CEEB;font-family:sans-serif;overflow:hidden;text-align:center}
+#wrap{display:inline-block;margin-top:10px}
+canvas{display:block;margin:0 auto;border:8px solid #fff;border-radius:20px;background:#fff;touch-action:none}
+button{display:block;margin:12px auto;padding:15px 40px;font-size:24px;background:#FF69B4;color:white;border:none;border-radius:12px}
+#info{font-size:14px;color:#fff;margin-top:4px}
+</style>
 </head>
 <body>
-
 <div id="wrap">
-  <canvas id="c" width="360" height="640"></canvas>
-  <button id="startBtn" onclick="startGame()">ゲームスタート！</button>
-  <div id="info">同じ漢字を縦に3つそろえて消そう！</div>
+<canvas id="c" width="360" height="640"></canvas>
+<button id="startBtn" onclick="startGame()">ゲームスタート！</button>
+<div id="info">左右スワイプで移動、下スワイプで加速！</div>
 </div>
 
-<audio id="bgmNormal" src="retropark.mp3" loop></audio>
-<audio id="bgmBonus" src="retroparty.mp3" loop></audio>
-const c = document.getElementById("c");
-const ctx = c.getContext("2d");
-const ROWS = 12;
-const COLS = 6;
-let board = Array(ROWS).fill().map(()=>Array(COLS).fill(null));
+<script>
+// ====================== むげんかんじ 最終版 ======================
+const c = document.getElementById('c');
+const ctx = c.getContext('2d');
+const ROWS = 12, COLS = 6, SIZE = 55;
+let board = Array.from({length:ROWS},()=>Array(COLS).fill(null));
 let cur = null;
 let score = 0;
 let gameOver = false;
-let fallInterval = 40;
+let fallSpeed = 700;
 let tick = 0;
-let chainCount = 0;
+let chain = 0;
 
-const normalKs = ["一","二","三","四","五","十"];
-const bonusKs = ["岳","塩","代"];
-const allKs = normalKs.concat(bonusKs);
+const kanjiList = ['三','五','七','九','十','百','千','万','億','兆','京'];
+const bonusList = ['岳','塩','代'];
 
-let bonusMode = null;
-let bonusRemaining = 0;
-let selectedCell = null;
-
-const bgmNormal = document.getElementById("bgmNormal");
-const bgmBonus = document.getElementById("bgmBonus");
-
-class P{
-  constructor(){
-    this.x = 2;
-    this.y = 0;
-    const r = Math.random();
-    if(r < 0.1){
-      this.t = bonusKs[Math.floor(Math.random()*bonusKs.length)];
-    }else{
-      this.t = normalKs[Math.floor(Math.random()*normalKs.length)];
-    }
-  }
+class Piece {
+constructor(){
+this.x = 2;
+this.y = 0;
+this.type = Math.random() < 0.12 ? bonusList[Math.floor(Math.random()*3)] : kanjiList[Math.floor(Math.random()*kanjiList.length)];
+}
 }
 
 function drawBackground(){
-  const gradSky = ctx.createLinearGradient(0,0,0,200);
-  gradSky.addColorStop(0,"#87CEEB");
-  gradSky.addColorStop(1,"#B0E0E6");
-  ctx.fillStyle = gradSky;
-  ctx.fillRect(0,0,360,200);
+// 立山雪山＋富山湾＋チューリップオキナワン風
+const sky = ctx.createLinearGradient(0,0,0,200);
+sky.addColorStop(0,'#87CEEB'); sky.addColorStop(1,'#E0FFFF');
+ctx.fillStyle = sky; ctx.fillRect(0,0,360,200);
 
-  ctx.fillStyle = "#FFFFFF";
-  ctx.beginPath();
-  ctx.moveTo(0,160);
-  ctx.lineTo(40,120);
-  ctx.lineTo(80,150);
-  ctx.lineTo(130,110);
-  ctx.lineTo(180,150);
-  ctx.lineTo(230,120);
-  ctx.lineTo(280,150);
-  ctx.lineTo(320,130);
-  ctx.lineTo(360,160);
-  ctx.lineTo(360,200);
-  ctx.lineTo(0,200);
-  ctx.closePath();
-  ctx.fill();
+// 雪山シルエット
+ctx.fillStyle = '#F8F8FF';
+ctx.beginPath(); ctx.moveTo(0,160); ctx.lineTo(60,100); ctx.lineTo(120,140); ctx.lineTo(190,80); ctx.lineTo(260,130); ctx.lineTo(360,160); ctx.fill();
 
-  const colors = ["#FF69B4","#FFA500","#FFD700","#FF1493"];
-  const bandTop = 200;
-  const bandHeight = 40;
-  const stripeWidth = 40;
-  for(let i=0;i<10;i++){
-    ctx.fillStyle = colors[i % colors.length];
-    ctx.fillRect(i*stripeWidth, bandTop, stripeWidth, bandHeight);
-  }
+// チューリップ帯（春夏秋冬のカラフルさ）
+const colors = ['#FF1493','#FF4500','#FFD700','#00FF7F'];
+for(let i=0;i<8;i++){
+ctx.fillStyle = colors[i%4];
+ctx.fillRect(i*45,200,45,50);
+}
 
-  const gradSea = ctx.createLinearGradient(0,240,0,360);
-  gradSea.addColorStop(0,"#00BFFF");
-  gradSea.addColorStop(1,"#1E90FF");
-  ctx.fillStyle = gradSea;
-  ctx.fillRect(0,240,360,360);
-
-  ctx.fillStyle = "#F5DEB3";
-  ctx.fillRect(0,360,360,40);
+// 富山湾の海
+const sea = ctx.createLinearGradient(0,250,0,640);
+sea.addColorStop(0,'#00BFFF'); sea.addColorStop(1,'#1E90FF');
+ctx.fillStyle = sea; ctx.fillRect(0,250,360,390);
 }
 
 function draw(){
-  ctx.clearRect(0,0,360,640);
-  drawBackground();
+ctx.clearRect(0,0,360,640);
+drawBackground();
 
-  for(let r=0;r<ROWS;r++){
-    for(let j=0;j<COLS;j++){
-      const t = board[r][j];
-      if(t){
-        drawKanjiCell(j,r,t,false);
-      }
-    }
-  }
+for(let r=0;r<ROWS;r++){
+for(let j=0;j<COLS;j++){
+if(board[r][j]){
+drawKanji(j,r,board[r][j],false);
+}
+}
+}
+if(cur) drawKanji(cur.x,cur.y,cur.type,true);
 
-  if(cur && !bonusMode){
-    drawKanjiCell(cur.x,cur.y,cur.t,true);
-  }
+ctx.fillStyle = 'white';
+ctx.font = 'bold 24px sans-serif';
+ctx.fillText('スコア: ' + score, 20, 45);
 
-  ctx.fillStyle = "white";
-  ctx.font = "20px sans-serif";
-  ctx.fillText("スコア: "+score, 10, 30);
-    if(gameOver){
-    ctx.fillStyle = "rgba(0,0,0,0.6)";
-    ctx.fillRect(20,260,320,120);
-    ctx.fillStyle = "white";
-    ctx.font = "22px sans-serif";
-    ctx.fillText("ゲームオーバー", 100,300);
-    ctx.font = "16px sans-serif";
-    ctx.fillText("富山の景色はまた今度。", 80,330);
-    ctx.fillText("ボタンでやりなおせるよ。", 80,355);
-  }
-
-  if(bonusMode){
-    ctx.fillStyle = "rgba(0,0,0,0.6)";
-    ctx.fillRect(20,260,320,140);
-    ctx.fillStyle = "white";
-    ctx.font = "20px sans-serif";
-    ctx.fillText("ボーナス発動！ ["+bonusMode+"]", 60,295);
-    ctx.font = "16px sans-serif";
-    if(bonusMode==="塩"){
-      ctx.fillText("消したいマスをタップしてね。", 60,325);
-      ctx.fillText("のこり "+bonusRemaining+" マス", 110,350);
-    }else if(bonusMode==="代"){
-      ctx.fillText("入れ替えたいマスをタップしてね。", 50,325);
-      ctx.fillText("のこり "+bonusRemaining+" 回", 110,350);
-    }else if(bonusMode==="岳"){
-      ctx.fillText("盤面をシャッフルしたよ！", 80,325);
-      ctx.fillText("連鎖のチャンス！", 110,350);
-    }
-  }
+if(gameOver){
+ctx.fillStyle = 'rgba(0,0,0,0.7)';
+ctx.fillRect(30,250,300,140);
+ctx.fillStyle = 'white';
+ctx.font = '22px sans-serif';
+ctx.fillText('ゲームオーバー', 80, 300);
+ctx.font = '16px sans-serif';
+ctx.fillText('また富山の景色で遊ぼう！', 55, 340);
+}
 }
 
-function drawKanjiCell(x,y,t,isCurrent){
-  const px = x*55+25;
-  const py = y*55+75;
-
-  ctx.beginPath();
-  ctx.fillStyle = isCurrent ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.8)";
-  ctx.arc(px+10,py-20,24,0,Math.PI*2);
-  ctx.fill();
-
-  if(bonusKs.includes(t)){
-    ctx.strokeStyle = "#FFD700";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(px+10,py-20,26,0,Math.PI*2);
-    ctx.stroke();
-  }
-
-  ctx.fillStyle = "#000000";
-  ctx.font = "bold 30px sans-serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(t, px+10, py-20);
+function drawKanji(x,y,t,isCur){
+const px = x*SIZE + 28;
+const py = y*SIZE + 80;
+ctx.font = isCur ? 'bold 48px sans-serif' : 'bold 38px sans-serif';
+ctx.fillStyle = isCur ? '#FF1493' : (bonusList.includes(t) ? '#FF4500' : '#2F4F4F');
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.fillText(t, px, py);
 }
 
-function resetGame(){
-  board = Array(ROWS).fill().map(()=>Array(COLS).fill(null));
-  score = 0;
-  chainCount = 0;
-  gameOver = false;
-  bonusMode = null;
-  bonusRemaining = 0;
-  selectedCell = null;
-  cur = new P();
-  tick = 0;
-}  
-  function startGame(){
-  document.getElementById("startBtn").style.display="none";
-  document.getElementById("info").textContent = "左右スワイプで動かそう。3つそろえると消えるよ。";
-  resetGame();
-  playNormalBGM();
+function startGame(){
+document.getElementById('startBtn').style.display = 'none';
+board = Array.from({length:ROWS},()=>Array(COLS).fill(null));
+score = 0;
+gameOver = false;
+cur = new Piece();
+setInterval(()=>{ if(!gameOver){ tick++; if(tick>fallSpeed/16){ tick=0; stepFall(); } draw(); } },16);
 }
 
 function stepFall(){
-  if(gameOver || bonusMode) return;
-  if(!cur){
-    cur = new P();
-    if(board[0][cur.x]){
-      gameOver = true;
-      stopAllBGM();
-      return;
-    }
-  }
-  cur.y++;
-  if(cur.y>=ROWS || board[cur.y][cur.x]){
-    cur.y--;
-    board[cur.y][cur.x] = cur.t;
-    handleLanding(cur.t);
-    cur = null;
-  }
+if(!cur) { cur = new Piece(); return; }
+cur.y++;
+if(cur.y >= ROWS || board[cur.y][cur.x]){
+cur.y--;
+board[cur.y][cur.x] = cur.t;
+clearMatches();
+cur = new Piece();
+if(board[0][cur.x]) gameOver = true;
 }
-
-function handleLanding(lastType){
-  let cleared = clearMatches();
-  if(cleared>0){
-    chainCount++;
-    score += cleared * 10 * chainCount;
-  }else{
-    chainCount = 0;
-  }
-
-  if(bonusKs.includes(lastType)){
-    if(checkBonusTriple(lastType)){
-      triggerBonus(lastType);
-    }
-  }
-
-  for(let j=0;j<COLS;j++){
-    if(board[0][j]){
-      gameOver = true;
-      stopAllBGM();
-      break;
-    }
-  }
 }
 
 function clearMatches(){
-  let toClear = Array(ROWS).fill().map(()=>Array(COLS).fill(false));
-  let count = 0;
-
-  for(let j=0;j<COLS;j++){
-    let runChar = null;
-    let runStart = 0;
-    let runLen = 0;
-    for(let r=0;r<=ROWS;r++){
-      const t = (r<ROWS)? board[r][j] : null;
-      if(t && t===runChar){
-        runLen++;
-      }else{
-        if(runChar && runLen>=3){
-          for(let rr=runStart; rr<runStart+runLen; rr++){
-            toClear[rr][j] = true;
-          }
-        }
-        runChar = t;
-        runStart = r;
-        runLen = t?1:0;
-      }
-    }
-  }
-
-  for(let r=0;r<ROWS;r++){
-    for(let j=0;j<COLS;j++){
-      if(toClear[r][j]){
-        board[r][j] = null;
-        count++;
-      }
-    }
-  }
-
-  if(count>0){
-    for(let j=0;j<COLS;j++){
-      let stack = [];
-      for(let r=ROWS-1;r>=0;r--){
-        if(board[r][j]) stack.push(board[r][j]);
-      }
-      for(let r=ROWS-1;r>=0;r--){
-        board[r][j] = stack.shift() || null;
-      }
-    }
-  }
-
-  return count;
+let cleared = false;
+// 縦マッチング
+for(let j=0;j<COLS;j++){
+let count = 1;
+for(let r=1;r<ROWS;r++){
+if(board[r][j] && board[r][j] === board[r-1][j]) count++;
+else {
+if(count >= 3){
+for(let k=r-count;k<r;k++) board[k][j] = null;
+cleared = true;
+}
+count = 1;
+}
+}
+if(count >= 3){
+for(let k=ROWS-count;k<ROWS;k++) board[k][j] = null;
+cleared = true;
+}
+}
+// 横マッチング
+for(let r=0;r<ROWS;r++){
+let count = 1;
+for(let j=1;j<COLS;j++){
+if(board[r][j] && board[r][j] === board[r][j-1]) count++;
+else {
+if(count >= 3){
+for(let k=j-count;k<j;k++) board[r][k] = null;
+cleared = true;
+}
+count = 1;
+}
+}
+if(count >= 3){
+for(let k=COLS-count;k<COLS;k++) board[r][k] = null;
+cleared = true;
+}
+}
+if(cleared){
+chain++;
+score += 120 * chain;
+// 落ちて詰める処理
+for(let j=0;j<COLS;j++){
+let stack = [];
+for(let r=ROWS-1;r>=0;r--) if(board[r][j]) stack.push(board[r][j]);
+for(let r=ROWS-1;r>=0;r--) board[r][j] = stack.length ? stack.shift() : null;
+}
+} else chain = 0;
 }
 
-function checkBonusTriple(ch){
-  let cnt = 0;
-  for(let r=0;r<ROWS;r++){
-    for(let j=0;j<COLS;j++){
-      if(board[r][j]===ch) cnt++;
-    }
-  }
-  return cnt>=3;
-}
-
-function triggerBonus(ch){
-  bonusMode = ch;
-  playBonusBGM();
-  if(ch==="塩"){
-    bonusRemaining = 3;
-  }else if(ch==="代"){
-    bonusRemaining = 3;
-  }else if(ch==="岳"){
-    shuffleBoard();
-    bonusRemaining = 0;
-    bonusMode = null;
-    playNormalBGM();
-  }
-}
-
-function shuffleBoard(){
-  let cells = [];
-  for(let r=0;r<ROWS;r++){
-    for(let j=0;j<COLS;j++){
-      if(board[r][j]) cells.push(board[r][j]);
-      board[r][j] = null;
-    }
-  }
-  for(let r=ROWS-1;r>=0;r--){
-    for(let j=0;j<COLS;j++){
-      if(cells.length===0) return;
-      const idx = Math.floor(Math.random()*cells.length);
-      board[r][j] = cells[idx];
-      cells.splice(idx,1);
-    }
-  }
-}
-
-let touchStartX = 0;
-let touchStartY = 0;
-
-c.addEventListener("touchstart",e=>{
-  const t = e.touches[0];
-  touchStartX = t.clientX;
-  touchStartY = t.clientY;
-});
-
-c.addEventListener("touchend",e=>{
-  const t = e.changedTouches[0];
-  const dx = t.clientX - touchStartX;
-  const dy = t.clientY - touchStartY;
-
-  const dist = Math.hypot(dx,dy);
-  if(bonusMode && dist<20){
-    handleBonusTap(t);
-    return;
-  }
-
-  if(!cur || gameOver || bonusMode) return;
-
-  if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30){
-    if(dx>0){
-      if(cur.x < COLS-1 && !board[cur.y][cur.x+1]) cur.x++;
-    }else{
-      if(cur.x > 0 && !board[cur.y][cur.x-1]) cur.x--;
-    }
-  }
-
-  draw();
-});
-
-function handleBonusTap(t){
-  const rect = c.getBoundingClientRect();
-  const x = t.clientX - rect.left;
-  const y = t.clientY - rect.top;
-
-  const col = Math.floor((x-25)/55);
-  const row = Math.floor((y-55)/55);
-
-  if(col<0 || col>=COLS || row<0 || row>=ROWS) return;
-
-  if(bonusMode==="塩"){
-    if(board[row][col]){
-      board[row][col] = null;
-      bonusRemaining--;
-      if(bonusRemaining<=0){
-        bonusMode = null;
-        playNormalBGM();
-        handleLanding(null);
-      }
-    }
-  }else if(bonusMode==="代"){
-    if(!selectedCell){
-      if(board[row][col]){
-        selectedCell = {r:row,c:col};
-      }
-    }else{
-      const r1 = selectedCell.r, c1 = selectedCell.c;
-      const tmp = board[r1][c1];
-      board[r1][c1] = board[row][col];
-      board[row][col] = tmp;
-      selectedCell = null;
-      bonusRemaining--;
-      if(bonusRemaining<=0){
-        bonusMode = null;
-        playNormalBGM();
-        handleLanding(null);
-      }
-    }
-  }
-
-  draw();
-}
-
-function loop(){
-  if(!gameOver){
-    tick++;
-    if(tick>=fallInterval){
-      tick = 0;
-      stepFall();
-    }
-  }
-  draw();
-  requestAnimationFrame(loop);
-}
-loop();
-
-function resizeCanvas(){
-  const scale = Math.min(window.innerWidth/360, window.innerHeight/680);
-  const wrap = document.getElementById("wrap");
-  wrap.style.transform = `scale(${scale})`;
-  wrap.style.transformOrigin = "top center";
-}
-window.addEventListener("resize",resizeCanvas);
-resizeCanvas();
-
-function playNormalBGM(){
-  bgmBonus.pause();
-  bgmBonus.currentTime = 0;
-  bgmNormal.volume = 0.7;
-  bgmNormal.play().catch(()=>{});
-}
-function playBonusBGM(){
-  bgmNormal.pause();
-  bgmBonus.volume = 0.8;
-  bgmBonus.play().catch(()=>{});
-}
-function stopAllBGM(){
-  bgmNormal.pause();
-  bgmBonus.pause();
-}  
- if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('./service-worker.js').catch(e=>{
-      console.log('SW registration failed',e);
-    });
-  });
-}
-
+draw();
 </script>
 </body>
-</html>       
-<script>
+</html>
