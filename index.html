@@ -1,181 +1,575 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>むげんかんじ</title>
-<style>
-body{margin:0;background:#87CEEB;font-family:sans-serif;overflow:hidden;text-align:center}
-#wrap{display:inline-block;margin-top:10px}
-canvas{display:block;margin:0 auto;border:8px solid #fff;border-radius:20px;background:#fff;touch-action:none}
-button{display:block;margin:12px auto;padding:15px 40px;font-size:24px;background:#FF69B4;color:white;border:none;border-radius:12px}
-#info{font-size:14px;color:#fff;margin-top:4px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>きぼうかんじ（とやまの無限漢字 ～立山から富山湾まで、希望の数え唄～）</title>
+  <style>
+    body{
+      margin:0;
+      background:#87CEEB;
+      font-family:sans-serif;
+      overflow:hidden;
+      text-align:center;
+    }
+    #wrap{
+      display:inline-block;
+      margin-top:10px;
+    }
+    canvas{
+      display:block;
+      margin:0 auto;
+      border:8px solid #fff;
+      border-radius:20px;
+      background:#fff;
+      touch-action:none;
+    }
+    button{
+      display:block;
+      margin:12px auto;
+      padding:15px 40px;
+      font-size:24px;
+      background:#FF69B4;
+      color:white;
+      border:none;
+      border-radius:12px;
+    }
+    #info{
+      font-size:14px;
+      color:#fff;
+      margin-top:4px;
+    }
+  </style>
 </head>
 <body>
+
 <div id="wrap">
-<canvas id="c" width="360" height="640"></canvas>
-<button id="startBtn" onclick="startGame()">ゲームスタート！</button>
-<div id="info">左右スワイプで移動、下スワイプで加速！</div>
+  <canvas id="c" width="360" height="640"></canvas>
+  <button id="startBtn" onclick="startGame()">ゲームスタート！</button>
+  <div id="info">左右スワイプで移動、下スワイプで加速！ 縦・横に3つそろえて消そう。</div>
 </div>
 
 <script>
-// ====================== むげんかんじ 最終版 ======================
-const c = document.getElementById('c');
-const ctx = c.getContext('2d');
-const ROWS = 12, COLS = 6, SIZE = 55;
+// ====================== きぼうかんじ 完全版 ======================
+
+const c = document.getElementById("c");
+const ctx = c.getContext("2d");
+
+const ROWS = 12;
+const COLS = 6;
+const SIZE = 50;
+
 let board = Array.from({length:ROWS},()=>Array(COLS).fill(null));
 let cur = null;
 let score = 0;
 let gameOver = false;
-let fallSpeed = 700;
-let tick = 0;
-let chain = 0;
+let started = false;
+
+let fallInterval = 700; // ms
+let lastFallTime = 0;
+let fastDrop = false;
+
+let chainCount = 0;
 
 const kanjiList = ['三','五','七','九','十','百','千','万','億','兆','京'];
-const bonusList = ['岳','塩','代'];
+const bonusList = ['岳','塩','代']; // ボーナス漢字（効果付き）
 
-class Piece {
-constructor(){
-this.x = 2;
-this.y = 0;
-this.type = Math.random() < 0.12 ? bonusList[Math.floor(Math.random()*3)] : kanjiList[Math.floor(Math.random()*kanjiList.length)];
-}
+let bonusMode = null;
+let bonusRemaining = 0;
+let selectedCell = null;
+
+// タイトル用
+const titleChars = ['き','ぼ','う','か','ん','じ'];
+const titleSubtitle = 'とやまの無限漢字 ～立山から富山湾まで、希望の数え唄～';
+
+class Piece{
+  constructor(){
+    this.x = 2;
+    this.y = 0;
+    const isBonus = Math.random() < 0.12;
+    this.type = isBonus
+      ? bonusList[Math.floor(Math.random()*bonusList.length)]
+      : kanjiList[Math.floor(Math.random()*kanjiList.length)];
+  }
 }
 
 function drawBackground(){
-// 立山雪山＋富山湾＋チューリップオキナワン風
-const sky = ctx.createLinearGradient(0,0,0,200);
-sky.addColorStop(0,'#87CEEB'); sky.addColorStop(1,'#E0FFFF');
-ctx.fillStyle = sky; ctx.fillRect(0,0,360,200);
+  // 夏の山林の緑＋富山湾（オキナワン風の明るさ）
+  // 空
+  const sky = ctx.createLinearGradient(0,0,0,200);
+  sky.addColorStop(0,'#87CEEB');
+  sky.addColorStop(1,'#E0FFFF');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0,0,360,200);
 
-// 雪山シルエット
-ctx.fillStyle = '#F8F8FF';
-ctx.beginPath(); ctx.moveTo(0,160); ctx.lineTo(60,100); ctx.lineTo(120,140); ctx.lineTo(190,80); ctx.lineTo(260,130); ctx.lineTo(360,160); ctx.fill();
+  // 遠くの山並み（立山連峰）
+  ctx.fillStyle = '#2E8B57';
+  ctx.beginPath();
+  ctx.moveTo(0,170);
+  ctx.lineTo(40,130);
+  ctx.lineTo(90,160);
+  ctx.lineTo(150,120);
+  ctx.lineTo(210,155);
+  ctx.lineTo(270,125);
+  ctx.lineTo(330,160);
+  ctx.lineTo(360,140);
+  ctx.lineTo(360,200);
+  ctx.lineTo(0,200);
+  ctx.closePath();
+  ctx.fill();
 
-// チューリップ帯（春夏秋冬のカラフルさ）
-const colors = ['#FF1493','#FF4500','#FFD700','#00FF7F'];
-for(let i=0;i<8;i++){
-ctx.fillStyle = colors[i%4];
-ctx.fillRect(i*45,200,45,50);
+  // 手前の森（夏の山林の緑）
+  ctx.fillStyle = '#228B22';
+  ctx.fillRect(0,200,360,40);
+
+  // カラフルな花帯（春夏秋冬＋オキナワンの明るさ）
+  const colors = ['#FF1493','#FF8C00','#FFD700','#00FA9A'];
+  const bandTop = 240;
+  const bandHeight = 40;
+  const stripeWidth = 40;
+  for(let i=0;i<10;i++){
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fillRect(i*stripeWidth, bandTop, stripeWidth, bandHeight);
+  }
+
+  // 富山湾（明るい海）
+  const sea = ctx.createLinearGradient(0,280,0,640);
+  sea.addColorStop(0,'#00BFFF');
+  sea.addColorStop(1,'#1E90FF');
+  ctx.fillStyle = sea;
+  ctx.fillRect(0,280,360,360);
 }
 
-// 富山湾の海
-const sea = ctx.createLinearGradient(0,250,0,640);
-sea.addColorStop(0,'#00BFFF'); sea.addColorStop(1,'#1E90FF');
-ctx.fillStyle = sea; ctx.fillRect(0,250,360,390);
+function drawTitleOverlay(){
+  // 左上に縦書き「きぼうかんじ」（濁点はハート）
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const baseX = 40;
+  const baseY = 40;
+  const lineHeight = 32;
+
+  for(let i=0;i<titleChars.length;i++){
+    const ch = titleChars[i];
+    const y = baseY + i*lineHeight;
+    ctx.font = 'bold 26px sans-serif';
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(ch, baseX, y);
+
+    // 濁点がつく文字にハートマークを添える（ぼ・じ）
+    if(ch === 'ぼ' || ch === 'じ'){
+      ctx.font = '18px sans-serif';
+      ctx.fillStyle = '#FF69B4';
+      ctx.fillText('♥', baseX+16, y-10);
+    }
+  }
+
+  // サブタイトル（少し小さく）
+  ctx.font = '12px sans-serif';
+  ctx.fillStyle = '#FFFFFF';
+  const lines = [
+    'とやまの無限漢字',
+    '～立山から富山湾まで、',
+    '希望の数え唄～'
+  ];
+  let sy = baseY + titleChars.length*lineHeight + 10;
+  for(const line of lines){
+    ctx.fillText(line, 180, sy);
+    sy += 16;
+  }
+
+  ctx.restore();
 }
 
 function draw(){
-ctx.clearRect(0,0,360,640);
-drawBackground();
+  ctx.clearRect(0,0,360,640);
+  drawBackground();
 
-for(let r=0;r<ROWS;r++){
-for(let j=0;j<COLS;j++){
-if(board[r][j]){
-drawKanji(j,r,board[r][j],false);
-}
-}
-}
-if(cur) drawKanji(cur.x,cur.y,cur.type,true);
+  // 盤面
+  for(let r=0;r<ROWS;r++){
+    for(let j=0;j<COLS;j++){
+      const t = board[r][j];
+      if(t){
+        drawKanjiCell(j,r,t,false);
+      }
+    }
+  }
 
-ctx.fillStyle = 'white';
-ctx.font = 'bold 24px sans-serif';
-ctx.fillText('スコア: ' + score, 20, 45);
+  // 現在のピース
+  if(cur && !bonusMode && !gameOver){
+    drawKanjiCell(cur.x,cur.y,cur.type,true);
+  }
 
-if(gameOver){
-ctx.fillStyle = 'rgba(0,0,0,0.7)';
-ctx.fillRect(30,250,300,140);
-ctx.fillStyle = 'white';
-ctx.font = '22px sans-serif';
-ctx.fillText('ゲームオーバー', 80, 300);
-ctx.font = '16px sans-serif';
-ctx.fillText('また富山の景色で遊ぼう！', 55, 340);
-}
+  // スコア
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold 20px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.fillText('スコア: '+score, 10, 10);
+
+  // タイトルオーバーレイ（未開始時）
+  if(!started){
+    drawTitleOverlay();
+  }
+
+  // ゲームオーバー
+  if(gameOver){
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(30,260,300,140);
+    ctx.fillStyle = 'white';
+    ctx.font = '22px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('ゲームオーバー', 180, 290);
+    ctx.font = '16px sans-serif';
+    ctx.fillText('また富山の景色で遊ぼう！', 180, 325);
+    ctx.fillText('ボタンでやりなおせるよ。', 180, 350);
+  }
+
+  // ボーナスモード表示
+  if(bonusMode){
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(20,260,320,140);
+    ctx.fillStyle = 'white';
+    ctx.font = '20px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText('ボーナス発動！ ['+bonusMode+']', 40, 295);
+    ctx.font = '16px sans-serif';
+    if(bonusMode==="塩"){
+      ctx.fillText('消したいマスをタップしてね。', 40, 325);
+      ctx.fillText('のこり '+bonusRemaining+' マス', 80, 350);
+    }else if(bonusMode==="代"){
+      ctx.fillText('入れ替えたいマスをタップしてね。', 40, 325);
+      ctx.fillText('のこり '+bonusRemaining+' 回', 80, 350);
+    }else if(bonusMode==="岳"){
+      ctx.fillText('盤面をシャッフルしたよ！', 60, 325);
+      ctx.fillText('連鎖のチャンス！', 100, 350);
+    }
+  }
 }
 
-function drawKanji(x,y,t,isCur){
-const px = x*SIZE + 28;
-const py = y*SIZE + 80;
-ctx.font = isCur ? 'bold 48px sans-serif' : 'bold 38px sans-serif';
-ctx.fillStyle = isCur ? '#FF1493' : (bonusList.includes(t) ? '#FF4500' : '#2F4F4F');
-ctx.textAlign = 'center';
-ctx.textBaseline = 'middle';
-ctx.fillText(t, px, py);
+function drawKanjiCell(x,y,t,isCurrent){
+  const px = x*SIZE + SIZE/2 + 20;
+  const py = y*SIZE + SIZE/2 + 120;
+
+  // 背景丸
+  ctx.beginPath();
+  ctx.fillStyle = isCurrent ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.85)';
+  ctx.arc(px,py,22,0,Math.PI*2);
+  ctx.fill();
+
+  // ボーナスなら縁取り
+  if(bonusList.includes(t)){
+    ctx.strokeStyle = '#FFD700';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(px,py,24,0,Math.PI*2);
+    ctx.stroke();
+  }
+
+  // 漢字
+  ctx.fillStyle = '#000000';
+  ctx.font = isCurrent ? 'bold 30px sans-serif' : 'bold 26px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(t, px, py);
+}
+
+function resetGame(){
+  board = Array.from({length:ROWS},()=>Array(COLS).fill(null));
+  score = 0;
+  chainCount = 0;
+  gameOver = false;
+  bonusMode = null;
+  bonusRemaining = 0;
+  selectedCell = null;
+  cur = new Piece();
+  lastFallTime = performance.now();
 }
 
 function startGame(){
-document.getElementById('startBtn').style.display = 'none';
-board = Array.from({length:ROWS},()=>Array(COLS).fill(null));
-score = 0;
-gameOver = false;
-cur = new Piece();
-setInterval(()=>{ if(!gameOver){ tick++; if(tick>fallSpeed/16){ tick=0; stepFall(); } draw(); } },16);
+  started = true;
+  document.getElementById("startBtn").style.display = "none";
+  document.getElementById("info").textContent =
+    "左右スワイプで移動、下スワイプで加速！ 縦・横に3つそろえると消えるよ。";
+  resetGame();
 }
 
 function stepFall(){
-if(!cur) { cur = new Piece(); return; }
-cur.y++;
-if(cur.y >= ROWS || board[cur.y][cur.x]){
-cur.y--;
-board[cur.y][cur.x] = cur.t;
-clearMatches();
-cur = new Piece();
-if(board[0][cur.x]) gameOver = true;
+  if(gameOver || bonusMode) return;
+
+  if(!cur){
+    cur = new Piece();
+    if(board[0][cur.x]){
+      gameOver = true;
+      return;
+    }
+  }
+
+  cur.y++;
+  if(cur.y>=ROWS || board[cur.y][cur.x]){
+    cur.y--;
+    board[cur.y][cur.x] = cur.type;
+    handleLanding(cur.type);
+    cur = null;
+  }
 }
+
+function handleLanding(lastType){
+  let cleared = clearMatches();
+  if(cleared>0){
+    chainCount++;
+    score += cleared * 10 * chainCount;
+  }else{
+    chainCount = 0;
+  }
+
+  if(bonusList.includes(lastType)){
+    if(checkBonusTriple(lastType)){
+      triggerBonus(lastType);
+    }
+  }
+
+  for(let j=0;j<COLS;j++){
+    if(board[0][j]){
+      gameOver = true;
+      break;
+    }
+  }
 }
 
 function clearMatches(){
-let cleared = false;
-// 縦マッチング
-for(let j=0;j<COLS;j++){
-let count = 1;
-for(let r=1;r<ROWS;r++){
-if(board[r][j] && board[r][j] === board[r-1][j]) count++;
-else {
-if(count >= 3){
-for(let k=r-count;k<r;k++) board[k][j] = null;
-cleared = true;
-}
-count = 1;
-}
-}
-if(count >= 3){
-for(let k=ROWS-count;k<ROWS;k++) board[k][j] = null;
-cleared = true;
-}
-}
-// 横マッチング
-for(let r=0;r<ROWS;r++){
-let count = 1;
-for(let j=1;j<COLS;j++){
-if(board[r][j] && board[r][j] === board[r][j-1]) count++;
-else {
-if(count >= 3){
-for(let k=j-count;k<j;k++) board[r][k] = null;
-cleared = true;
-}
-count = 1;
-}
-}
-if(count >= 3){
-for(let k=COLS-count;k<COLS;k++) board[r][k] = null;
-cleared = true;
-}
-}
-if(cleared){
-chain++;
-score += 120 * chain;
-// 落ちて詰める処理
-for(let j=0;j<COLS;j++){
-let stack = [];
-for(let r=ROWS-1;r>=0;r--) if(board[r][j]) stack.push(board[r][j]);
-for(let r=ROWS-1;r>=0;r--) board[r][j] = stack.length ? stack.shift() : null;
-}
-} else chain = 0;
+  let toClear = Array.from({length:ROWS},()=>Array(COLS).fill(false));
+  let count = 0;
+
+  // 縦方向
+  for(let j=0;j<COLS;j++){
+    let runChar = null;
+    let runStart = 0;
+    let runLen = 0;
+    for(let r=0;r<=ROWS;r++){
+      const t = (r<ROWS)? board[r][j] : null;
+      if(t && t===runChar){
+        runLen++;
+      }else{
+        if(runChar && runLen>=3){
+          for(let rr=runStart; rr<runStart+runLen; rr++){
+            toClear[rr][j] = true;
+          }
+        }
+        runChar = t;
+        runStart = r;
+        runLen = t?1:0;
+      }
+    }
+  }
+
+  // 横方向
+  for(let r=0;r<ROWS;r++){
+    let runChar = null;
+    let runStart = 0;
+    let runLen = 0;
+    for(let j=0;j<=COLS;j++){
+      const t = (j<COLS)? board[r][j] : null;
+      if(t && t===runChar){
+        runLen++;
+      }else{
+        if(runChar && runLen>=3){
+          for(let jj=runStart; jj<runStart+runLen; jj++){
+            toClear[r][jj] = true;
+          }
+        }
+        runChar = t;
+        runStart = j;
+        runLen = t?1:0;
+      }
+    }
+  }
+
+  for(let r=0;r<ROWS;r++){
+    for(let j=0;j<COLS;j++){
+      if(toClear[r][j]){
+        board[r][j] = null;
+        count++;
+      }
+    }
+  }
+
+  if(count>0){
+    // 落下処理
+    for(let j=0;j<COLS;j++){
+      let stack = [];
+      for(let r=ROWS-1;r>=0;r--){
+        if(board[r][j]) stack.push(board[r][j]);
+      }
+      for(let r=ROWS-1;r>=0;r--){
+        board[r][j] = stack.length ? stack.shift() : null;
+      }
+    }
+  }
+
+  return count;
 }
 
-draw();
+function checkBonusTriple(ch){
+  let cnt = 0;
+  for(let r=0;r<ROWS;r++){
+    for(let j=0;j<COLS;j++){
+      if(board[r][j]===ch) cnt++;
+    }
+  }
+  return cnt>=3;
+}
+
+function triggerBonus(ch){
+  bonusMode = ch;
+  if(ch==="塩"){
+    bonusRemaining = 3;
+  }else if(ch==="代"){
+    bonusRemaining = 3;
+  }else if(ch==="岳"){
+    shuffleBoard();
+    bonusRemaining = 0;
+    bonusMode = null;
+  }
+}
+
+function shuffleBoard(){
+  let cells = [];
+  for(let r=0;r<ROWS;r++){
+    for(let j=0;j<COLS;j++){
+      if(board[r][j]) cells.push(board[r][j]);
+      board[r][j] = null;
+    }
+  }
+  for(let r=ROWS-1;r>=0;r--){
+    for(let j=0;j<COLS;j++){
+      if(cells.length===0) return;
+      const idx = Math.floor(Math.random()*cells.length);
+      board[r][j] = cells[idx];
+      cells.splice(idx,1);
+    }
+  }
+}
+
+// タッチ操作（スワイプ＋ボーナスタップ）
+
+let touchStartX = 0;
+let touchStartY = 0;
+let touchStartTime = 0;
+
+c.addEventListener("touchstart",e=>{
+  const t = e.touches[0];
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
+  touchStartTime = performance.now();
+});
+
+c.addEventListener("touchend",e=>{
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touchStartX;
+  const dy = t.clientY - touchStartY;
+  const dist = Math.hypot(dx,dy);
+  const dt = performance.now() - touchStartTime;
+
+  // ボーナスモード中のタップ（ほぼ動いていない）
+  if(bonusMode && dist<20){
+    handleBonusTap(t);
+    return;
+  }
+
+  if(!cur || gameOver || bonusMode) return;
+
+  // スワイプ判定
+  if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30){
+    // 左右
+    if(dx>0){
+      if(cur.x < COLS-1 && !board[cur.y][cur.x+1]) cur.x++;
+    }else{
+      if(cur.x > 0 && !board[cur.y][cur.x-1]) cur.x--;
+    }
+  }else if(dy>30){
+    // 下スワイプで加速
+    fastDrop = true;
+  }
+
+  draw();
+});
+
+function handleBonusTap(t){
+  const rect = c.getBoundingClientRect();
+  const x = t.clientX - rect.left;
+  const y = t.clientY - rect.top;
+
+  const col = Math.floor((x-20)/SIZE);
+  const row = Math.floor((y-120)/SIZE);
+
+  if(col<0 || col>=COLS || row<0 || row>=ROWS) return;
+
+  if(bonusMode==="塩"){
+    if(board[row][col]){
+      board[row][col] = null;
+      bonusRemaining--;
+      if(bonusRemaining<=0){
+        bonusMode = null;
+        handleLanding(null);
+      }else{
+        clearMatches();
+      }
+    }
+  }else if(bonusMode==="代"){
+    if(!selectedCell){
+      if(board[row][col]){
+        selectedCell = {r:row,c:col};
+      }
+    }else{
+      const r1 = selectedCell.r, c1 = selectedCell.c;
+      const tmp = board[r1][c1];
+      board[r1][c1] = board[row][col];
+      board[row][col] = tmp;
+      selectedCell = null;
+      bonusRemaining--;
+      if(bonusRemaining<=0){
+        bonusMode = null;
+        handleLanding(null);
+      }else{
+        clearMatches();
+      }
+    }
+  }
+
+  draw();
+}
+
+// メインループ
+
+function loop(timestamp){
+  if(started && !gameOver){
+    const interval = fastDrop ? fallInterval/5 : fallInterval;
+    if(timestamp - lastFallTime >= interval){
+      lastFallTime = timestamp;
+      stepFall();
+      fastDrop = false;
+    }
+  }
+  draw();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+// 画面スケール調整（スマホ向け）
+
+function resizeCanvas(){
+  const scale = Math.min(window.innerWidth/360, window.innerHeight/680);
+  const wrap = document.getElementById("wrap");
+  wrap.style.transform = `scale(${scale})`;
+  wrap.style.transformOrigin = "top center";
+}
+window.addEventListener("resize",resizeCanvas);
+resizeCanvas();
+
 </script>
 </body>
 </html>
