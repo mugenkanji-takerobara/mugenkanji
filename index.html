@@ -1,1 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>きぼうかんじ（とやまの無限漢字）</title>
 
+<style>
+body{
+  margin:0;
+  background:#87CEEB;
+  font-family:sans-serif;
+  overflow:hidden;
+  text-align:center;
+}
+
+/* =========================
+   オープニング画面
+   ========================= */
+#opening{
+  position:fixed;
+  inset:0;
+  background: linear-gradient(135deg,
+    rgba(255,120,120,0.8),
+    rgba(255,220,120,0.8),
+    rgba(120,220,160,0.8),
+    rgba(120,200,255,0.8)
+  );
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:20;
+}
+
+/* 立山シルエット */
+#tateyama{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:180px;
+  background:linear-gradient(to top, rgba(0,0,0,0.25), transparent);
+  clip-path: polygon(
+    0% 100%, 0% 60%,
+    10% 50%, 20% 60%, 30% 45%,
+    40% 55%, 50% 40%, 60% 55%,
+    70% 48%, 80% 60%, 90% 50%,
+    100% 60%, 100% 100%
+  );
+}
+
+/* 縦書きタイトル */
+#titleVertical{
+  writing-mode: vertical-rl;
+  font-size:48px;
+  color:white;
+  text-shadow:0 0 6px rgba(0,0,0,0.4);
+  margin-bottom:20px;
+  position:relative;
+}
+
+/* ♥ の点滅 */
+.heart{
+  color:#FF69B4;
+  animation: blink 1.8s infinite;
+}
+@keyframes blink{
+  0%{opacity:1;}
+  50%{opacity:0.2;}
+  100%{opacity:1;}
+}
+
+/* オープニングのボタン */
+.openBtn{
+  background:white;
+  color:#444;
+  border:none;
+  border-radius:12px;
+  padding:12px 26px;
+  margin:6px;
+  font-size:18px;
+  box-shadow:0 3px 6px rgba(0,0,0,0.2);
+}
+
+/* =========================
+   ゲーム画面（既存）
+   ========================= */
+#wrap{
+  display:inline-block;
+  margin-top:10px;
+}
+
+canvas{
+  display:block;
+  margin:0 auto;
+  border:8px solid #fff;
+  border-radius:20px;
+  background:#fff;
+  touch-action:none;
+}
+
+button{
+  display:inline-block;
+  margin:6px 4px;
+  padding:10px 22px;
+  font-size:16px;
+  background:#FF69B4;
+  color:white;
+  border:none;
+  border-radius:12px;
+}
+
+#info{
+  font-size:13px;
+  color:#fff;
+  margin-top:4px;
+  line-height:1.4;
+}
+
+#controls{
+  margin-top:6px;
+}
+#controls button{
+  background:#FFA500;
+}
+#resetBtn{
+  background:#888;
+  font-size:13px;
+  padding:6px 14px;
+}
+
+/* 一時停止＋メイン */
+#gameControlButtons{
+  margin-top:6px;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+}
+#gameControlButtons button{
+  background:#FFA500;
+  font-size:14px;
+  padding:6px 14px;
+}
+
+/* 説明書モーダル */
+.hidden{ display:none; }
+
+#manualOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:30;
+}
+
+#manualContent{
+  background:#fff;
+  padding:1rem;
+  max-width:90%;
+  max-height:80%;
+  overflow-y:auto;
+  border-radius:8px;
+  text-align:left;
+  font-size:14px;
+}
+#manualContent h2{ margin-top:0; font-size:18px; }
+#manualContent h3{ margin-bottom:4px; margin-top:10px; font-size:15px; }
+#manualContent ul{ padding-left:1.2rem; }
+#manualContent button{
+  background:#FF69B4;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     オープニング画面
+     ========================= -->
+<div id="opening">
+  <div id="titleVertical">
+    き<span class="heart">♥</span>ぼうかん<span class="heart">♥</span>じ
+  </div>
+
+  <button class="openBtn" id="openStart">はじめる</button>
+  <button class="openBtn" id="openManual">説明書</button>
+  <button class="openBtn" id="openGuide">観光案内</button>
+
+  <div id="tateyama"></div>
+</div>
+
+<!-- ここからゲーム本体 -->
+<div id="wrap" style="display:none;">
+  <canvas id="c" width="360" height="640"></canvas>
+
+  <div id="gameControlButtons" style="display:none;">
+    <button id="pauseBtn">一時停止 ||</button>
+    <button id="mainBtn">メイン</button>
+  </div>
+
+  <div id="controls">
+    <button id="easyBtn" onclick="startGame('easy')">やさしい</button>
+    <button id="hardBtn" onclick="startGame('hard')">むずかしい</button>
+    <button id="resetBtn" onclick="resetRecords()">記録をリセット</button>
+    <button id="restartBtn" onclick="restartGame()" style="display:none;">もう一度あそぶ</button>
+    <button id="manualBtn">説明書</button>
+  </div>
+
+  <div id="info">
+    左右スワイプで移動、下スワイプで加速！<br>
+    縦・横に3つそろえると消えるよ。
+  </div>
+</div>
+
+<!-- 説明書モーダル -->
+<div id="manualOverlay" class="hidden">
+  <div id="manualContent">
+    <h2>きぼうかんじ 説明書</h2>
+
+    <h3>ゲームの目的</h3>
+    <p>同じ読みの漢字を縦・横に3つそろえて消し、スコアを集めるゲームです。</p>
+
+    <h3>操作説明</h3>
+    <ul>
+      <li>左右スワイプ：漢字ブロックを左右に動かします。</li>
+      <li>下スワイプ：漢字ブロックを早く落とします。</li>
+      <li>一時停止 ||：ゲームを一時停止します。</li>
+      <li>メイン：タイトル画面にもどります。</li>
+    </ul>
+
+    <h3>モードについて</h3>
+    <ul>
+      <li>やさしい：落下速度がゆっくりで遊びやすいモードです。</li>
+      <li>むずかしい：落下が速く、NEXT2 も使われる上級者向けモードです。</li>
+    </ul>
+
+    <h3>ボーナス漢字</h3>
+    <ul>
+      <li>塩：指定したマスを消すことができます。</li>
+      <li>代：2つのマスの漢字を入れ替えることができます。</li>
+      <li>岳：盤面をシャッフルして連鎖のチャンスを作ります。</li>
+    </ul>
+
+    <button id="manualCloseBtn">とじる</button>
+  </div>
+</div>
+
+<audio id="bgmNormal" src="retropark.mp3" loop></audio>
+<audio id="bgmBonus" src="retroparty.mp3" loop></audio>
+<audio id="bgmOpening" src="okinawa.mp3"></audio>
+
+<script>
+  
