@@ -51,21 +51,118 @@
       font-size:13px;
       padding:6px 14px;
     }
+
+    /* 一時停止＋メインボタン用 */
+    #gameControlButtons{
+      margin-top:6px;
+      display:flex;
+      justify-content:center;
+      gap:8px;
+    }
+    #gameControlButtons button{
+      background:#FFA500;
+      font-size:14px;
+      padding:6px 14px;
+    }
+
+    /* 説明書モーダル */
+    .hidden{
+      display:none;
+    }
+    #manualOverlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.5);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:10;
+    }
+    #manualContent{
+      background:#fff;
+      padding:1rem;
+      max-width:90%;
+      max-height:80%;
+      overflow-y:auto;
+      border-radius:8px;
+      text-align:left;
+      font-size:14px;
+    }
+    #manualContent h2{
+      margin-top:0;
+      font-size:18px;
+    }
+    #manualContent h3{
+      margin-bottom:4px;
+      margin-top:10px;
+      font-size:15px;
+    }
+    #manualContent ul{
+      padding-left:1.2rem;
+    }
+    #manualContent button{
+      background:#FF69B4;
+      margin-top:10px;
+    }
   </style>
 </head>
 <body>
 
 <div id="wrap">
   <canvas id="c" width="360" height="640"></canvas>
+
+  <!-- NEXT の下に相当する位置に配置される操作ボタン群 -->
+  <div id="gameControlButtons" style="display:none;">
+    <button id="pauseBtn">一時停止 ||</button>
+    <button id="mainBtn">メイン</button>
+  </div>
+
   <div id="controls">
     <button id="easyBtn" onclick="startGame('easy')">やさしい</button>
     <button id="hardBtn" onclick="startGame('hard')">むずかしい</button>
     <button id="resetBtn" onclick="resetRecords()">記録をリセット</button>
     <button id="restartBtn" onclick="restartGame()" style="display:none;">もう一度あそぶ</button>
+    <button id="manualBtn">説明書</button>
   </div>
   <div id="info">
     左右スワイプで移動、下スワイプで加速！<br>
     縦・横に3つそろえると消えるよ。
+  </div>
+</div>
+
+<!-- 説明書モーダル -->
+<div id="manualOverlay" class="hidden">
+  <div id="manualContent">
+    <h2>きぼうかんじ 説明書</h2>
+
+    <h3>ゲームの目的</h3>
+    <p>同じ読みの漢字を縦・横に3つそろえて消し、スコアを集めるゲームです。</p>
+
+    <h3>操作説明</h3>
+    <ul>
+      <li>左右スワイプ：漢字ブロックを左右に動かします。</li>
+      <li>下スワイプ：漢字ブロックを早く落とします。</li>
+      <li>一時停止 ||：ゲームを一時停止します。</li>
+      <li>メイン：タイトル画面にもどります。</li>
+    </ul>
+
+    <h3>モードについて</h3>
+    <ul>
+      <li>やさしい：落下速度がゆっくりで、遊びやすいモードです。</li>
+      <li>むずかしい：落下が速く、NEXT2 も使われる少し上級者向けモードです。</li>
+    </ul>
+
+    <h3>ボーナス漢字</h3>
+    <ul>
+      <li>塩：指定したマスを消すことができます。</li>
+      <li>代：2つのマスの漢字を入れ替えることができます。</li>
+      <li>岳：盤面をシャッフルして、新しい連鎖のチャンスを作ります。</li>
+    </ul>
+
+    <h3>記録について</h3>
+    <p>スコアは上位3つまで自動で保存されます。「記録をリセット」で消去できます。</p>
+
+    <button id="manualCloseBtn">とじる</button>
   </div>
 </div>
 
@@ -114,6 +211,17 @@ const SCORE_KEY = 'kibou_scores';
 
 const titleChars = ['き','ぼ','う','か','ん','じ'];
 
+// 一時停止フラグ
+let isPaused = false;
+
+// DOM 要素参照
+const pauseBtn = document.getElementById("pauseBtn");
+const mainBtn  = document.getElementById("mainBtn");
+const gameControlButtons = document.getElementById("gameControlButtons");
+const manualBtn = document.getElementById("manualBtn");
+const manualOverlay = document.getElementById("manualOverlay");
+const manualCloseBtn = document.getElementById("manualCloseBtn");
+
 function playNormalBGM(){
   bgmBonus.pause();
   bgmBonus.currentTime = 0;
@@ -129,8 +237,7 @@ function stopAllBGM(){
   bgmNormal.pause();
   bgmBonus.pause();
 }
-
-class Piece{
+  class Piece{
   constructor(isPair=false){
     if(isPair){
       this.blocks = [
@@ -352,6 +459,72 @@ function drawNextPieces(){
   ctx.restore();
 }
 
+function drawKanjiCell(x,y,t,isCurrent){
+  const px = OFFSET_X + x*SIZE + SIZE/2;
+  const py = OFFSET_Y + y*SIZE + SIZE/2;
+
+  ctx.beginPath();
+  ctx.fillStyle = isCurrent ? 'rgba(255,255,255,0.98)' : 'rgba(255,255,255,0.9)';
+  ctx.arc(px,py,18,0,Math.PI*2);
+  ctx.fill();
+
+  if(bonusList.includes(t)){
+    ctx.strokeStyle = '#FFD700';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(px,py,20,0,Math.PI*2);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = '#000000';
+  ctx.font = isCurrent ? 'bold 24px sans-serif' : 'bold 20px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(t, px, py+1);
+}
+
+function drawPauseOverlay(){
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.fillRect(40,260,280,120);
+  ctx.fillStyle = 'white';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = '20px sans-serif';
+  ctx.fillText('一時停止中', 180, 300);
+  ctx.font = '14px sans-serif';
+  ctx.fillText('「再開 ▶」でつづきから遊べます。', 180, 330);
+}
+
+function drawGameOverOverlay(){
+  ctx.fillStyle = 'rgba(0,0,0,0.7)';
+  ctx.fillRect(30,230,300,200);
+  ctx.fillStyle = 'white';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  ctx.font = '22px sans-serif';
+  ctx.fillText('GAME OVER', 180, 250);
+
+  ctx.font = '18px sans-serif';
+  ctx.fillText('SCORE '+score, 180, 280);
+
+  const arr = loadScores();
+  ctx.font = '16px sans-serif';
+  ctx.fillText('TOP 3', 180, 310);
+
+  ctx.textAlign = 'left';
+  let y = 335;
+  for(let i=0;i<3;i++){
+    const item = arr[i];
+    if(item){
+      const rank = (i+1).toString();
+      const line = `${rank}  ${item.score}  ${item.date}`;
+      ctx.fillText(line, 80, y);
+      y += 22;
+    }
+  }
+}
+
 function draw(){
   ctx.clearRect(0,0,360,640);
   drawBackground();
@@ -388,6 +561,10 @@ function draw(){
     drawGameOverOverlay();
   }
 
+  if(isPaused && !gameOver && started){
+    drawPauseOverlay();
+  }
+
   if(bonusMode){
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.fillRect(20,260,320,140);
@@ -408,30 +585,6 @@ function draw(){
       ctx.fillText('連鎖のチャンス！', 100, 350);
     }
   }
-}
-
-function drawKanjiCell(x,y,t,isCurrent){
-  const px = OFFSET_X + x*SIZE + SIZE/2;
-  const py = OFFSET_Y + y*SIZE + SIZE/2;
-
-  ctx.beginPath();
-  ctx.fillStyle = isCurrent ? 'rgba(255,255,255,0.98)' : 'rgba(255,255,255,0.9)';
-  ctx.arc(px,py,18,0,Math.PI*2);
-  ctx.fill();
-
-  if(bonusList.includes(t)){
-    ctx.strokeStyle = '#FFD700';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(px,py,20,0,Math.PI*2);
-    ctx.stroke();
-  }
-
-  ctx.fillStyle = '#000000';
-  ctx.font = isCurrent ? 'bold 24px sans-serif' : 'bold 20px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(t, px, py+1);
 }
 
 function resetBoard(){
@@ -455,9 +608,12 @@ function resetGame(){
 function startGame(lv){
   level = lv;
   started = true;
+  isPaused = false;
   document.getElementById("easyBtn").style.display = "none";
   document.getElementById("hardBtn").style.display = "none";
   document.getElementById("restartBtn").style.display = "none";
+  gameControlButtons.style.display = "flex";
+  pauseBtn.textContent = '一時停止 ||';
   document.getElementById("info").textContent =
     "左右スワイプで移動、下スワイプで加速！ 縦・横に3つそろえると消えるよ。";
   resetGame();
@@ -468,11 +624,14 @@ function startGame(lv){
 function restartGame(){
   started = false;
   gameOver = false;
+  isPaused = false;
   stopAllBGM();
   resetGame();
   document.getElementById("easyBtn").style.display = "inline-block";
   document.getElementById("hardBtn").style.display = "inline-block";
   document.getElementById("restartBtn").style.display = "none";
+  gameControlButtons.style.display = "none";
+  pauseBtn.textContent = '一時停止 ||';
 }
 
 function spawnPiece(){
@@ -491,7 +650,7 @@ function spawnPiece(){
 }
 
 function stepFall(){
-  if(gameOver || bonusMode) return;
+  if(gameOver || bonusMode || isPaused) return;
   if(!cur){
     spawnPiece();
     return;
@@ -652,8 +811,7 @@ function shuffleBoard(){
     }
   }
 }
-
-// タッチ操作
+  // タッチ操作
 
 let touchStartX = 0;
 let touchStartY = 0;
@@ -675,7 +833,7 @@ c.addEventListener("touchend",e=>{
     return;
   }
 
-  if(!cur || gameOver || bonusMode) return;
+  if(!cur || gameOver || bonusMode || isPaused) return;
 
   if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30){
     if(dx>0){
@@ -798,40 +956,10 @@ function resetRecords(){
   }
 }
 
-function drawGameOverOverlay(){
-  ctx.fillStyle = 'rgba(0,0,0,0.7)';
-  ctx.fillRect(30,230,300,200);
-  ctx.fillStyle = 'white';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  ctx.font = '22px sans-serif';
-  ctx.fillText('GAME OVER', 180, 250);
-
-  ctx.font = '18px sans-serif';
-  ctx.fillText('SCORE '+score, 180, 280);
-
-  const arr = loadScores();
-  ctx.font = '16px sans-serif';
-  ctx.fillText('TOP 3', 180, 310);
-
-  ctx.textAlign = 'left';
-  let y = 335;
-  for(let i=0;i<3;i++){
-    const item = arr[i];
-    if(item){
-      const rank = (i+1).toString();
-      const line = `${rank}  ${item.score}  ${item.date}`;
-      ctx.fillText(line, 80, y);
-      y += 22;
-    }
-  }
-}
-
 // メインループ
 
 function loop(timestamp){
-  if(started && !gameOver){
+  if(started && !gameOver && !isPaused){
     const interval = fastDrop ? fallInterval/5 : fallInterval;
     if(timestamp - lastFallTime >= interval){
       lastFallTime = timestamp;
@@ -854,6 +982,31 @@ function resizeCanvas(){
 }
 window.addEventListener("resize",resizeCanvas);
 resizeCanvas();
+
+// 一時停止ボタンの動作
+pauseBtn.addEventListener("click", ()=>{
+  if(!started || gameOver) return;
+  isPaused = !isPaused;
+  pauseBtn.textContent = isPaused ? '再開 ▶' : '一時停止 ||';
+});
+
+// メインボタンの動作（タイトルへ戻る）
+mainBtn.addEventListener("click", ()=>{
+  restartGame();
+});
+
+// 説明書の開閉
+manualBtn.addEventListener("click", ()=>{
+  manualOverlay.classList.remove("hidden");
+});
+manualCloseBtn.addEventListener("click", ()=>{
+  manualOverlay.classList.add("hidden");
+});
+manualOverlay.addEventListener("click",(e)=>{
+  if(e.target === manualOverlay){
+    manualOverlay.classList.add("hidden");
+  }
+});
 
 </script>
 </body>
