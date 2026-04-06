@@ -6,7 +6,6 @@
     <title>海と白き峰の記憶｜きぼうかんじ</title>
 
     <style>
-
 /* 画面全体の基本設定 */
 body {
     margin: 0;
@@ -15,7 +14,6 @@ body {
     font-family: "Noto Sans JP", sans-serif;
     color: #000;
 }
-
 /* 画面切り替え用 */
 .screen {
     width: 100%;
@@ -24,7 +22,6 @@ body {
     padding: 20px;
     box-sizing: border-box;
 }
-
 /* 物語タイトル */
 .story-title {
     font-size: 22px;
@@ -32,7 +29,6 @@ body {
     text-align: center;
     margin-bottom: 20px;
 }
-
 /* 本文 */
 .story-text {
     font-size: 18px;
@@ -44,7 +40,6 @@ body {
 .story-text.en {
     font-size: 16px;
 }
-
 /* 言語切り替えボタン */
 .lang-buttons {
     display: flex;
@@ -65,7 +60,6 @@ body {
     background: #000;
     color: #fff;
 }
-
 /* ナビゲーション */
 .nav-buttons {
     display: flex;
@@ -80,7 +74,6 @@ body {
     background: #fff;
     border-radius: 6px;
 }
-
 /* タイトルへ戻る */
 .back-title {
     text-align: center;
@@ -90,7 +83,6 @@ body {
 .back-title .nav-btn {
     width: 60%;
 }
-
 /* フェードイン */
 .fade {
     animation: fadeIn 0.6s ease;
@@ -107,7 +99,6 @@ body {
     text-align: center;
     margin: 30px 0 20px;
 }
-
 /* ▼ 春夏秋冬の見出し */
 .season {
     font-size: 22px;
@@ -116,7 +107,6 @@ body {
     padding-left: 10px;
     border-left: 4px solid #444;
 }
-
 /* ▼ 観光地ブロック */
 .spot {
     background: #f8f8f8;
@@ -125,26 +115,22 @@ body {
     margin: 12px 0;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-
 /* ▼ 観光地名 */
 .spot h3 {
     font-size: 18px;
     margin: 0 0 5px;
 }
-
 /* ▼ 英語名 */
 .spot .en {
     font-size: 14px;
     color: #666;
 }
-
 /* ▼ 住所 */
 .addr {
     font-size: 14px;
     margin: 0;
     color: #444;
 }
-
 /* ▼ 特別枠（クリックできる観光地） */
 .spot.special {
     background: #fff4d6;
@@ -154,7 +140,6 @@ body {
 .spot.special:hover {
     background: #ffe9b3;
 }
-
 /* タイトル画面 */
 .title-main {
     font-size: 28px;
@@ -181,7 +166,6 @@ body {
     text-align: center;
     margin: 30px 0 15px;
 }
-
 /* ▼ 詳細画面の説明文 */
 .detail-text {
     font-size: 16px;
@@ -189,7 +173,6 @@ body {
     margin: 10px 20px;
     color: #444;
 }
-
 /* ▼ 詳細画面の小見出し */
 .detail-sub {
     font-size: 20px;
@@ -198,7 +181,6 @@ body {
     padding-left: 12px;
     border-left: 4px solid #888;
 }
-
 /* ▼ 詳細画面のリスト */
 .detail-list {
     margin: 10px 25px 20px;
@@ -305,12 +287,10 @@ body {
     from { opacity: 0; }
     to { opacity: 1; }
 }
-
     </style>
 </head>
 
 <body>
-
     <!-- ▼ タイトル画面（後で中身を追加） -->
     <div id="titleScreen" class="screen">
         <h1 class="title-main">きぼうかんじ</h1>
@@ -318,49 +298,38 @@ body {
 <div class="title-buttons">
     <button id="startStoryBtn" class="nav-btn">物語を読む</button>
 </div>
-
     </div>
-
     <!-- ▼ ゲーム画面（後で中身を追加） -->
     <div id="gameScreen" class="screen" style="display:none;">
         <!-- ゲームのcanvasやUIを後で追加 -->
     </div>
-
 <!-- ▼ 物語モード画面 -->
 <div id="storyScreen" class="screen" style="display:none;">
-
     <!-- サブタイトル -->
     <h2 id="storyTitle" class="story-title"></h2>
-
     <!-- 日本語本文 -->
     <div id="storyTextJP" class="story-text jp"></div>
-
     <!-- 英語本文 -->
     <div id="storyTextEN" class="story-text en" style="display:none;"></div>
-
     <!-- 言語切り替えボタン -->
     <div class="lang-buttons">
         <button id="btnJP" class="lang-btn active">日本語</button>
         <button id="btnEN" class="lang-btn">English</button>
     </div>
-
     <!-- ナビゲーションボタン -->
     <div class="nav-buttons">
         <button id="prevBtn" class="nav-btn">← もどる</button>
         <button id="nextBtn" class="nav-btn">つぎへ →</button>
     </div>
-
     <!-- タイトル画面へ戻る -->
     <div class="back-title">
         <button id="backToTitle" class="nav-btn">タイトルへ</button>
     </div>
-
 </div>
     <!-- ▼ とやま画面 -->
 <div id="toyamaScreen" class="screen" style="display:none;">
 
     <h1 class="toyama-title">とやま / TOYAMA</h1>
-
     <!-- 春 -->
     <h2 class="season">春 / Spring</h2>
     <div class="spot">
@@ -418,7 +387,6 @@ body {
         <h3>ブリしゃぶ<br><span class="en">Yellowtail Shabu-shabu</span></h3>
         <p class="addr">富山県内各地</p>
     </div>
-
     <!-- ▼ ここから20観光地（あなたの順番どおり） -->
 
     <div class="spot special" id="tateyamaMuseumBtn">
@@ -515,7 +483,6 @@ body {
         <h3>富山市役所展望塔<br><span class="en">Toyama City Hall Observatory</span></h3>
         <p class="addr">富山県富山市新桜町7-38</p>
     </div>
-
     <script>
         // ------------------------------
 // 物語データ（後で本文を追加）
@@ -801,14 +768,12 @@ function showStory(chapter) {
     document.getElementById("storyTitle").textContent = data.title;
     document.getElementById("storyTextJP").textContent = data.jp;
     document.getElementById("storyTextEN").textContent = data.en;
-
     // フェードイン
     document.getElementById("storyScreen").classList.add("fade");
     setTimeout(() => {
         document.getElementById("storyScreen").classList.remove("fade");
     }, 600);
 }
-
 // ------------------------------
 // 言語切り替え
 // ------------------------------
@@ -827,7 +792,6 @@ document.getElementById("btnEN").addEventListener("click", () => {
     document.getElementById("btnEN").classList.add("active");
     document.getElementById("btnJP").classList.remove("active");
 });
-
 // ------------------------------
 // 次へ・戻る
 // ------------------------------
@@ -836,13 +800,11 @@ document.getElementById("nextBtn").addEventListener("click", () => {
         showStory(currentChapter + 1);
     }
 });
-
 document.getElementById("prevBtn").addEventListener("click", () => {
     if (currentChapter > 0) {
         showStory(currentChapter - 1);
     }
 });
-
 // ------------------------------
 // タイトルへ戻る
 // ------------------------------
@@ -850,7 +812,6 @@ document.getElementById("backToTitle").addEventListener("click", () => {
     document.getElementById("storyScreen").style.display = "none";
     document.getElementById("titleScreen").style.display = "block";
 });
-
 // ------------------------------
 // タイトル画面から物語へ（後でボタン追加）
 // ------------------------------
@@ -863,20 +824,17 @@ document.getElementById("startStoryBtn").addEventListener("click", startStory);
 // ------------------------------
 // とやま画面 → 各詳細画面への遷移
 // ------------------------------
-
 // 雨晴海岸 → 物語へ
 document.getElementById("amaharashiBtn").addEventListener("click", () => {
     document.getElementById("toyamaScreen").style.display = "none";
     document.getElementById("storyScreen").style.display = "block";
     showStory(0); // 物語1章へ
 });
-
 // 立山博物館 → まんだら遊苑ページへ
 document.getElementById("tateyamaMuseumBtn").addEventListener("click", () => {
     document.getElementById("toyamaScreen").style.display = "none";
     document.getElementById("tateyamaDetailScreen").style.display = "block";
 });
-
 // 富山市役所展望塔 → 開館時間ページへ
 document.getElementById("cityHallBtn").addEventListener("click", () => {
     document.getElementById("toyamaScreen").style.display = "none";
@@ -926,7 +884,6 @@ document.getElementById("cityHallBtn").addEventListener("click", () => {
     <div class="back-title">
         <button id="backFromCityHall" class="nav-btn">とやまへ戻る</button>
     </div>
-
 </div>
         // ------------------------------
 // とやま画面へ戻る（立山博物館 → とやま）
@@ -935,7 +892,6 @@ document.getElementById("backFromTateyama").addEventListener("click", () => {
     document.getElementById("tateyamaDetailScreen").style.display = "none";
     document.getElementById("toyamaScreen").style.display = "block";
 });
-
 // ------------------------------
 // とやま画面へ戻る（市役所展望塔 → とやま）
 // ------------------------------
