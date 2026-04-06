@@ -825,6 +825,28 @@ function startStory() {
     showStory(0);
 }
 document.getElementById("startStoryBtn").addEventListener("click", startStory);
+// ------------------------------
+// とやま画面 → 各詳細画面への遷移
+// ------------------------------
+
+// 雨晴海岸 → 物語へ
+document.getElementById("amaharashiBtn").addEventListener("click", () => {
+    document.getElementById("toyamaScreen").style.display = "none";
+    document.getElementById("storyScreen").style.display = "block";
+    showStory(0); // 物語1章へ
+});
+
+// 立山博物館 → まんだら遊苑ページへ
+document.getElementById("tateyamaMuseumBtn").addEventListener("click", () => {
+    document.getElementById("toyamaScreen").style.display = "none";
+    document.getElementById("tateyamaDetailScreen").style.display = "block";
+});
+
+// 富山市役所展望塔 → 開館時間ページへ
+document.getElementById("cityHallBtn").addEventListener("click", () => {
+    document.getElementById("toyamaScreen").style.display = "none";
+    document.getElementById("cityHallDetailScreen").style.display = "block";
+});
 
     </script>
 
