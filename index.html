@@ -25,7 +25,36 @@
 
     <!-- ▼ 物語モード画面（ここに物語HTMLを追加） -->
     <div id="storyScreen" class="screen" style="display:none;">
-        <!-- 物語モードのHTMLを後で追加 -->
+        <!-- ▼ 物語モード画面 -->
+<div id="storyScreen" class="screen" style="display:none;">
+
+    <!-- サブタイトル -->
+    <h2 id="storyTitle" class="story-title"></h2>
+
+    <!-- 日本語本文 -->
+    <div id="storyTextJP" class="story-text jp"></div>
+
+    <!-- 英語本文 -->
+    <div id="storyTextEN" class="story-text en" style="display:none;"></div>
+
+    <!-- 言語切り替えボタン -->
+    <div class="lang-buttons">
+        <button id="btnJP" class="lang-btn active">日本語</button>
+        <button id="btnEN" class="lang-btn">English</button>
+    </div>
+
+    <!-- ナビゲーションボタン -->
+    <div class="nav-buttons">
+        <button id="prevBtn" class="nav-btn">← もどる</button>
+        <button id="nextBtn" class="nav-btn">つぎへ →</button>
+    </div>
+
+    <!-- タイトル画面へ戻る -->
+    <div class="back-title">
+        <button id="backToTitle" class="nav-btn">タイトルへ</button>
+    </div>
+
+</div>
     </div>
 
     <!-- ▼ JavaScript（後でJSをここに追加） -->
