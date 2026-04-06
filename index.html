@@ -149,9 +149,126 @@ body {
 </div>
     </div>
 
-    <!-- ▼ JavaScript（後でJSをここに追加） -->
     <script>
-        // 後でここにJavaScriptを貼ります
+        // ------------------------------
+// 物語データ（後で本文を追加）
+// ------------------------------
+const STORY = [
+    {
+        title: "海のほとりにひらく景色",
+        jp: "",
+        en: ""
+    },
+    {
+        title: "牛若丸と呼ばれた子",
+        jp: "",
+        en: ""
+    },
+    {
+        title: "源氏の旗と荒れる海",
+        jp: "",
+        en: ""
+    },
+    {
+        title: "北へ向かう旅",
+        jp: "",
+        en: ""
+    },
+    {
+        title: "雨をさける岩の下",
+        jp: "",
+        en: ""
+    },
+    {
+        title: "雨が晴れたときの光",
+        jp: "",
+        en: ""
+    },
+    {
+        title: "四季の移ろい",
+        jp: "",
+        en: ""
+    },
+    {
+        title: "旅のつづきと今の浜",
+        jp: "",
+        en: ""
+    }
+];
+
+// 現在の章
+let currentChapter = 0;
+
+// ------------------------------
+// 物語を表示する関数
+// ------------------------------
+function showStory(chapter) {
+    currentChapter = chapter;
+
+    const data = STORY[chapter];
+
+    document.getElementById("storyTitle").textContent = data.title;
+    document.getElementById("storyTextJP").textContent = data.jp;
+    document.getElementById("storyTextEN").textContent = data.en;
+
+    // フェードイン
+    document.getElementById("storyScreen").classList.add("fade");
+    setTimeout(() => {
+        document.getElementById("storyScreen").classList.remove("fade");
+    }, 600);
+}
+
+// ------------------------------
+// 言語切り替え
+// ------------------------------
+document.getElementById("btnJP").addEventListener("click", () => {
+    document.getElementById("storyTextJP").style.display = "block";
+    document.getElementById("storyTextEN").style.display = "none";
+
+    document.getElementById("btnJP").classList.add("active");
+    document.getElementById("btnEN").classList.remove("active");
+});
+
+document.getElementById("btnEN").addEventListener("click", () => {
+    document.getElementById("storyTextJP").style.display = "none";
+    document.getElementById("storyTextEN").style.display = "block";
+
+    document.getElementById("btnEN").classList.add("active");
+    document.getElementById("btnJP").classList.remove("active");
+});
+
+// ------------------------------
+// 次へ・戻る
+// ------------------------------
+document.getElementById("nextBtn").addEventListener("click", () => {
+    if (currentChapter < STORY.length - 1) {
+        showStory(currentChapter + 1);
+    }
+});
+
+document.getElementById("prevBtn").addEventListener("click", () => {
+    if (currentChapter > 0) {
+        showStory(currentChapter - 1);
+    }
+});
+
+// ------------------------------
+// タイトルへ戻る
+// ------------------------------
+document.getElementById("backToTitle").addEventListener("click", () => {
+    document.getElementById("storyScreen").style.display = "none";
+    document.getElementById("titleScreen").style.display = "block";
+});
+
+// ------------------------------
+// タイトル画面から物語へ（後でボタン追加）
+// ------------------------------
+function startStory() {
+    document.getElementById("titleScreen").style.display = "none";
+    document.getElementById("storyScreen").style.display = "block";
+    showStory(0);
+}
+// 後でここにJavaScriptを貼ります
     </script>
 
 </body>
