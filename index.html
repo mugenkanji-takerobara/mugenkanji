@@ -893,7 +893,22 @@ document.getElementById("cityHallBtn").addEventListener("click", () => {
     </div>
 
 </div>
-        
+        // ------------------------------
+// とやま画面へ戻る（立山博物館 → とやま）
+// ------------------------------
+document.getElementById("backFromTateyama").addEventListener("click", () => {
+    document.getElementById("tateyamaDetailScreen").style.display = "none";
+    document.getElementById("toyamaScreen").style.display = "block";
+});
+
+// ------------------------------
+// とやま画面へ戻る（市役所展望塔 → とやま）
+// ------------------------------
+document.getElementById("backFromCityHall").addEventListener("click", () => {
+    document.getElementById("cityHallDetailScreen").style.display = "none";
+    document.getElementById("toyamaScreen").style.display = "block";
+});
+
     </script>
 
 </body>
