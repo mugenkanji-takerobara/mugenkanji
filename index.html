@@ -1227,9 +1227,24 @@ function handleBonusTap(t){
   if(col<0 || col>=COLS || row<0 || row>=ROWS) return;
 
   if(bonusMode==="塩"){
-    if(board[row][col]){
+  if(board[row][col]){
+    if(confirm("このマスを消していいですか？")){
       board[row][col] = null;
       bonusRemaining--;
+      const result = clearMatchesAndBonus();
+      if(result.cleared>0){
+        chainCount++;
+        score += result.cleared * 10 * chainCount;
+      }else{
+        chainCount = 0;
+      }
+      if(bonusRemaining<=0){
+        bonusMode = null;
+        playNormalBGM();
+      }
+    }
+  }
+}
       const result = clearMatchesAndBonus();
       if(result.cleared>0){
         chainCount++;
@@ -1272,6 +1287,15 @@ function handleBonusTap(t){
   }
   draw();
 }
+  }else if(ch==="岳"){
+  if(confirm("盤面を替えていいですか？")){
+    shuffleBoard();
+  }
+  bonusRemaining = 0;
+  bonusMode = null;
+  playNormalBGM();
+}
+
 
 // スコア保存・TOP3
 function getTodayString(){
