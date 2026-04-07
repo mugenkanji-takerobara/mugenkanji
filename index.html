@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>きぼうかんじ（とやまの無限漢字 ～立山から富山湾まで、希望の数え唄～）</title>
+  <title>きぼうかんじ（とやまの無限漢字 ～立山連峰から日本海まで、希望の数え唄～）</title>
   <style>
     body{
       margin:0;
@@ -332,12 +332,12 @@
         <button id="easyBtn" onclick="startGame('easy')">やさしい</button>
         <button id="hardBtn" onclick="startGame('hard')">むずかしい</button>
         <button id="resetBtn" onclick="resetRecords()">記録をリセット</button>
-        <button id="restartBtn" onclick="restartGame()" style="display:none;">もう一度あそぶ</button>
-        <button id="manualBtn">説明書</button>
+        <button id="restartBtn" onclick="restartGame()" style="display:none;">もう一度</button>
+        <button id="manualBtn">操作方法</button>
       </div>
       <div id="info">
         左右スワイプで移動、下スワイプで加速！<br>
-        縦・横に3つそろえると消えるよ。
+        縦か横に3つそろえると消えるよ。
       </div>
     </div>
   </div>
@@ -346,15 +346,15 @@
 <!-- 説明書モーダル -->
 <div id="manualOverlay" class="hidden">
   <div id="manualContent">
-    <h2>きぼうかんじ 説明書</h2>
+    <h2>きぼうかんじ 操作方法</h2>
 
     <h3>ゲームの目的</h3>
-    <p>同じ漢字を縦か横に3つそろえて消しスコアを集める。</p>
+    <p>おなじ漢字を縦か横に3つそろえて消しスコアを集める。</p>
 
-    <h3>操作説明</h3>
+    <h3>操作方法</h3>
     <ul>
-      <li>左右スワイプ：漢字ブロックを左右に動かす。</li>
-      <li>下スワイプ：漢字ブロックを早く落とす。</li>
+      <li>左右スワイプ：マスを左右に動かす。</li>
+      <li>下スワイプ：マスを早く落とす。</li>
       <li>一時停止 ||：ゲームを中断。</li>
       <li>メイン：タイトル画面にもどる。</li>
     </ul>
@@ -368,12 +368,12 @@
     <h3>ボーナス漢字</h3>
     <ul>
       <li>塩：指定したマスを消す。</li>
-      <li>代：2つのマスの漢字を入れ替え。</li>
-      <li>岳：盤面を入れ替えして新しい連鎖のチャンスを作る。</li>
+      <li>代：2つのマスを入れ替え。</li>
+      <li>岳：盤面替えして新しい連鎖のチャンスを作る。</li>
     </ul>
 
     <h3>記録</h3>
-    <p>スコアは上位3つまで自動で保存。「記録をリセット」で消去。</p>
+    <p>スコア上位3つ自動で保存。記録をリセットで消去。</p>
 
     <button id="manualCloseBtn">とじる</button>
   </div>
@@ -421,7 +421,7 @@
 
       <div class="spot">
         <h3>岩瀬の町並み<br><span class="en">Iwase District</span></h3>
-        <p class="addr">富山県富山市岩瀬大町</p>
+        <p class="addr">富山県富山市岩瀬大町（岩瀬浜駅 徒歩3分、東岩瀬駅 徒歩10分</p>
       </div>
 
       <div class="spot">
@@ -487,7 +487,7 @@
     </p>
 
     <div class="back-title">
-      <button id="backFromTateyama" class="nav-btn">富山にもどる</button>
+      <button id="backFromTateyama" class="nav-btn">とやまにもどる</button>
     </div>
   </div>
 </div>
