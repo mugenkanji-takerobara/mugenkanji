@@ -1015,7 +1015,7 @@ function spawnPiece(){
     if(board[0][b.x]){
       gameOver = true;
       stopAllBGM();
-      document.getElementById("restartBtn").style.display = "inline-block";
+      document.getElementById("restartBtn").classList.remove("hidden");
       updateScores();
       return;
     }
