@@ -1000,10 +1000,10 @@ function restartGame(){
   isPaused = false;
   stopAllBGM();
   resetGame();
-  document.getElementById("easyBtn").style.display = "inline-block";
-  document.getElementById("hardBtn").style.display = "inline-block";
-  document.getElementById("restartBtn").style.display = "none";
-  gameControlButtons.style.display = "none";
+  document.getElementById("easyBtn").classList.remove("hidden");
+document.getElementById("hardBtn").classList.remove("hidden");
+document.getElementById("restartBtn").classList.add("hidden");
+gameControlButtons.classList.add("hidden");
   pauseBtn.textContent = '一時停止 ||';
 }
 
