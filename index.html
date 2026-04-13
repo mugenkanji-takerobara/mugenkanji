@@ -1063,8 +1063,8 @@ function handleLanding(){
     if(board[0][j]){
       gameOver = true;
       stopAllBGM();
-      document.getElementById("restartBtn").style.display = "inline-block";
-      updateScores();
+      document.getElementById("restartBtn").classList.remove("hidden");
+
       break;
     }
   }
