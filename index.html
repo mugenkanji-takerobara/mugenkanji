@@ -1716,34 +1716,40 @@ function showStory(chapter){
   document.getElementById("storyTextEN").textContent = data.en;
 }
 
+// 日本語ボタン切り替え
 document.getElementById("btnJP").addEventListener("click", ()=>{
-  document.getElementById("storyTextJP").style.display = "block";
-  document.getElementById("storyTextEN").style.display = "none";
+  document.getElementById("storyTextJP").classList.remove("hidden"); // blockの代わり
+  document.getElementById("storyTextEN").classList.add("hidden");    // noneの代わり
   document.getElementById("btnJP").classList.add("active");
   document.getElementById("btnEN").classList.remove("active");
 });
 
+// 英語ボタン切り替え
 document.getElementById("btnEN").addEventListener("click", ()=>{
-  document.getElementById("storyTextJP").style.display = "none";
-  document.getElementById("storyTextEN").style.display = "block";
+  document.getElementById("storyTextJP").classList.add("hidden");    // noneの代わり
+  document.getElementById("storyTextEN").classList.remove("hidden"); // blockの代わり
   document.getElementById("btnEN").classList.add("active");
   document.getElementById("btnJP").classList.remove("active");
 });
 
+// 次へボタン
 document.getElementById("nextBtn").addEventListener("click", ()=>{
   if(currentChapter < STORY.length - 1){
     showStory(currentChapter + 1);
   }
 });
+
+// 前へボタン
 document.getElementById("prevBtn").addEventListener("click", ()=>{
   if(currentChapter > 0){
     showStory(currentChapter - 1);
   }
 });
 
+// タイトルへ戻る
 document.getElementById("backToTitle").addEventListener("click", ()=>{
-  storyScreen.style.display = "none";
-  titleScreen.style.display = "flex";
+  storyScreen.classList.add("hidden");    // noneの代わり
+  titleScreen.classList.remove("hidden"); // flex(表示)の代わり
 });
 </script>
 </body>
