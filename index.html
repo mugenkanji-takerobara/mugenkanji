@@ -1251,31 +1251,23 @@ function handleBonusTap(t){
     }
   }
 }
-      const result = clearMatchesAndBonus();
-      if(result.cleared>0){
-        chainCount++;
-        score += result.cleared * 10 * chainCount;
-      }else{
-        chainCount = 0;
-      }
-      if(bonusRemaining<=0){
-        bonusMode = null;
-        playNormalBGM();
-      }
-    }
-  }else if(bonusMode==="代"){
-    if(!selectedCell){
-      if(board[row][col]){
-        selectedCell = {r:row,c:col};
-      }
-    }else{
-      const r1 = selectedCell.r, c1 = selectedCell.c;
-      const r2 = row, c2 = col;
-      if(confirm("これとこれを入れ替えていいですか？")){
-        const tmp = board[r1][c1];
-        board[r1][c1] = board[r2][c2];
-        board[r2][c2] = tmp;
+function handleBonusTap(t){
+  const rect = c.getBoundingClientRect();
+  const x = t.clientX - rect.left;
+  const y = t.clientY - rect.top;
+
+  const col = Math.floor((x - OFFSET_X)/SIZE);
+  const row = Math.floor((y - OFFSET_Y)/SIZE);
+
+  if(col<0 || col>=COLS || row<0 || row>=ROWS) return;
+
+  // --- 塩 ---
+  if(bonusMode==="塩"){
+    if(board[row][col]){
+      if(confirm("このマスを消していいですか？")){
+        board[row][col] = null;
         bonusRemaining--;
+
         const result = clearMatchesAndBonus();
         if(result.cleared>0){
           chainCount++;
@@ -1283,6 +1275,39 @@ function handleBonusTap(t){
         }else{
           chainCount = 0;
         }
+
+        if(bonusRemaining<=0){
+          bonusMode = null;
+          playNormalBGM();
+        }
+      }
+    }
+  }
+
+  // --- 代 ---
+  else if(bonusMode==="代"){
+    if(!selectedCell){
+      if(board[row][col]){
+        selectedCell = {r:row,c:col};
+      }
+    }else{
+      const r1 = selectedCell.r, c1 = selectedCell.c;
+      const r2 = row, c2 = col;
+
+      if(confirm("これとこれを入れ替えていいですか？")){
+        const tmp = board[r1][c1];
+        board[r1][c1] = board[r2][c2];
+        board[r2][c2] = tmp;
+        bonusRemaining--;
+
+        const result = clearMatchesAndBonus();
+        if(result.cleared>0){
+          chainCount++;
+          score += result.cleared * 10 * chainCount;
+        }else{
+          chainCount = 0;
+        }
+
         if(bonusRemaining<=0){
           bonusMode = null;
           playNormalBGM();
@@ -1291,18 +1316,10 @@ function handleBonusTap(t){
       selectedCell = null;
     }
   }
+
   draw();
 }
-  }else if(ch==="岳"){
-  if(confirm("盤面を替えていいですか？")){
-    shuffleBoard();
-  }
-  bonusRemaining = 0;
-  bonusMode = null;
-  playNormalBGM();
-}
-
-
+  
 // スコア保存・TOP3
 function getTodayString(){
   const d = new Date();
