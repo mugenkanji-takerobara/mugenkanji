@@ -982,10 +982,10 @@ function startGame(lv){
   level = lv;
   started = true;
   isPaused = false;
-  document.getElementById("easyBtn").style.display = "none";
-  document.getElementById("hardBtn").style.display = "none";
-  document.getElementById("restartBtn").style.display = "none";
-  gameControlButtons.style.display = "flex";
+  document.getElementById("easyBtn").classList.add("hidden");
+document.getElementById("hardBtn").classList.add("hidden");
+document.getElementById("restartBtn").classList.add("hidden");
+gameControlButtons.classList.remove("hidden");  // flex の代わり
   pauseBtn.textContent = '一時停止 ||';
   document.getElementById("info").textContent =
     "左右スワイプで移動、下スワイプで加速。 縦か横に3つそろえて。";
