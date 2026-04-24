@@ -359,45 +359,6 @@
   </div>
 </div>
 
-<!-- 説明書モーダル -->
-<div id="manualOverlay" class="hidden">
-  <div id="manualContent">
-    <h2>きぼうかんじ 遊びかた</h2>
-
-    <h3>ゲームの目的</h3>
-    <p>おなじ漢字を縦または横に3つそろえて消し高得点をねらう。</p>
-
-    <h3>操作方法</h3>
-    <ul>
-      <li>左右スワイプ：マスを左右に移動。</li>
-      <li>下スワイプ：マスを素早く落とす。</li>
-      <li>一時停止 ||：ゲームを中断。</li>
-      <li>メイン：タイトル画面にもどる。</li>
-    </ul>
-
-    <h3>難易モード</h3>
-    <ul>
-      <li>やさしい：落下がゆっくり。</li>
-      <li>むずかしい：落下が速く、NEXT2 も使用する。</li>
-    </ul>
-
-    <h3>ボーナス漢字</h3>
-    <ul>
-      <li>塩：指定したマスを消す。</li>
-      <li>代：2つのマスを入れ替え。</li>
-      <li>岳：盤面替えして新しい連鎖のチャンスを作る。</li>
-    </ul>
-
-    <h3>記録</h3>
-    <p>得点上位3つを自動で保存。リセットで記録を消去。</p>
-
-    <button id="manualCloseBtn">とじる</button>
-  </div>
-</div>
-
-<audio id="bgmNormal" src="retropark.mp3" loop></audio>
-<audio id="bgmBonus" src="retroparty.mp3" loop></audio>
-
 <!-- とやま画面 -->
 <div id="toyamaScreen" class="screen hidden">
   <div class="screen-inner">
@@ -1755,5 +1716,44 @@ document.getElementById("backToTitle").addEventListener("click", ()=>{
   
 }); // DOMContentLoaded の閉じ
 </script>
+<!-- 説明書モーダル -->
+<div id="manualOverlay" class="hidden">
+  <div id="manualContent">
+    <h2>きぼうかんじ 遊びかた</h2>
+
+    <h3>ゲームの目的</h3>
+    <p>おなじ漢字を縦または横に3つそろえて消し高得点をねらう。</p>
+
+    <h3>操作方法</h3>
+    <ul>
+      <li>左右スワイプ：マスを左右に移動。</li>
+      <li>下スワイプ：マスを素早く落とす。</li>
+      <li>一時停止 ||：ゲームを中断。</li>
+      <li>メイン：タイトル画面にもどる。</li>
+    </ul>
+
+    <h3>難易モード</h3>
+    <ul>
+      <li>やさしい：落下がゆっくり。</li>
+      <li>むずかしい：落下が速く、NEXT2 も使用する。</li>
+    </ul>
+
+    <h3>ボーナス漢字</h3>
+    <ul>
+      <li>塩：指定したマスを消す。</li>
+      <li>代：2つのマスを入れ替え。</li>
+      <li>岳：盤面替えして新しい連鎖のチャンスを作る。</li>
+    </ul>
+
+    <h3>記録</h3>
+    <p>得点上位3つを自動で保存。リセットで記録を消去。</p>
+
+    <button id="manualCloseBtn">とじる</button>
+  </div>
+</div>
+
+<audio id="bgmNormal" src="retropark.mp3" loop></audio>
+<audio id="bgmBonus" src="retroparty.mp3" loop></audio>
+
 </body>
 </html>
