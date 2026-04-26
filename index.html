@@ -1758,12 +1758,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
     });
   }
 
-  if (manualOverlay && manualCloseBtn) {
-    manualCloseBtn.addEventListener("click", () => {
-      manualOverlay.classList.add("hidden");
-    });
-  }
-
+  
   document.getElementById("backToTitle").addEventListener("click", ()=>{
     storyScreen.classList.add("hidden");
     titleScreen.classList.remove("hidden");
