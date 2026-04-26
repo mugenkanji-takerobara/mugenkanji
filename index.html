@@ -1742,7 +1742,9 @@ document.getElementById("prevBtn").addEventListener("click", ()=>{
 document.addEventListener("DOMContentLoaded", ()=>{
 
   const storyScreen = document.getElementById("storyScreen");
-　const titleScreen = document.getElementById("titleScreen");
+  const titleScreen = document.getElementById("titleScreen");
+
+  titleScreen.classList.remove("hidden");
 
   const manualOverlay = document.getElementById("manualOverlay");
   const manualCloseBtn = document.getElementById("manualCloseBtn");
