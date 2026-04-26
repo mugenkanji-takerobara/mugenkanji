@@ -1720,6 +1720,13 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   const manualOverlay = document.getElementById("manualOverlay");
   const manualCloseBtn = document.getElementById("manualCloseBtn");
+  const manualBtn = document.getElementById("manualBtn");
+
+  if (manualBtn && manualOverlay) {
+    manualBtn.addEventListener("click", () => {
+      manualOverlay.classList.remove("hidden");
+    });
+  }
 
   if (manualOverlay && manualCloseBtn) {
     manualCloseBtn.addEventListener("click", () => {
@@ -1727,7 +1734,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     });
   }
 
-  // タイトルへ戻る
   document.getElementById("backToTitle").addEventListener("click", ()=>{
     storyScreen.classList.add("hidden");
     titleScreen.classList.remove("hidden");
