@@ -528,6 +528,24 @@
 </div>
 
 <script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  showScreen("titleScreen");
+
+  document.getElementById("startBtn").addEventListener("click", () => {
+    showScreen("gameScreen");
+  });
+
+  document.getElementById("manualBtn").addEventListener("click", () => {
+    showScreen("manualOverlay");
+  });
+
+  document.getElementById("toyamaBtn").addEventListener("click", () => {
+    showScreen("toyamaScreen");
+  });
+
+}); // ← これが DOMContentLoaded の終わり
+
 window.addEventListener("DOMContentLoaded", () => {
   
 /* =========================
