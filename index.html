@@ -929,6 +929,14 @@ function drawKanjiCell(x,y,t,isCurrent){
   ctx.fillStyle = isCurrent ? 'rgba(255,255,255,0.98)' : 'rgba(255,255,255,0.9)';
   ctx.arc(px,py,18,0,Math.PI*2);
   ctx.fill();
+  // ★ 代ボーナスの選択ハイライト
+if (bonusMode === "代" && selectedCell && selectedCell.x === x && selectedCell.y === y) {
+  ctx.strokeStyle = '#FFD700';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.arc(px, py, 22, 0, Math.PI * 2);
+  ctx.stroke();
+}
 
   if(bonusList.includes(t)){
     ctx.strokeStyle = '#FFD700';
