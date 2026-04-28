@@ -1156,7 +1156,7 @@ function handleLanding(){
 function clearMatchesAndBonus(){
   let toClear = Array.from({length:ROWS},()=>Array(COLS).fill(false));
   let count = 0;
-  let bonusCount = { '塩':0, '代':0, '岳':0 };
+  let bonusCount = { '岳':0, '代':0 };
 
   // 縦
   for(let j=0;j<COLS;j++){
