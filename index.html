@@ -1456,7 +1456,15 @@ pauseBtn.addEventListener("click", ()=>{
   pauseBtn.textContent = isPaused ? '再開 ▶' : '一時停止 ||';
 });
 
-// メインボタン（タイトルへ戻る）
+/* ★ ここに追加 ★ */
+mainBtn.addEventListener("click", () => {
+  stopAllBGM();
+  started = false;
+  isPaused = false;
+  gameOver = false;
+  showScreen("titleScreen");
+});
+  // メインボタン（タイトルへ戻る）
 mainBtn.addEventListener("click", ()=>{
   restartGame();
   stopAllBGM();
