@@ -1453,16 +1453,17 @@ function handleBonusTap(t){
     }
   }
   // --- 代 ---
-  else if(bonusMode === "代"){
-    if(!selectedCell){
-      if(board[row][col]){
-        selectedCell = {r:row,c:col};
-      }
-    }else{
-      const r1 = selectedCell.r, c1 = selectedCell.c;
-      const r2 = row, c2 = col;
+else if(bonusMode === "代"){
+  if(!selectedCell){
+    if(board[row][col]){
+      selectedCell = {r:row,c:col};
+    }
+  }else{
+    const r1 = selectedCell.r, c1 = selectedCell.c;
+    const r2 = row, c2 = col;
 
-      if(confirm("これとこれを入れ替えていいですか？")){
+    showBonusDialog("この二つを入れ替えます", (ok) => {
+      if(ok){
         const tmp = board[r1][c1];
         board[r1][c1] = board[r2][c2];
         board[r2][c2] = tmp;
@@ -1482,13 +1483,13 @@ function handleBonusTap(t){
         }
       }
       selectedCell = null;
-    }
+      draw();
+    });
   }
-
-  draw();
 }
 
-  
+  draw();
+} 
 // スコア保存・TOP3
 function getTodayString(){
   const d = new Date();
