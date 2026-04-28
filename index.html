@@ -628,6 +628,14 @@
 </div>
 
 <script>
+function showScreen(id){
+  document.getElementById("titleScreen").style.display = "none";
+  document.getElementById("gameScreen").style.display = "none";
+  document.getElementById("howtoScreen").style.display = "none";
+  document.getElementById("toyamaScreen").style.display = "none";
+
+  document.getElementById(id).style.display = "flex";
+}
 function showBonusDialog(message, callback) {
   const dialog = document.getElementById("bonusDialog");
   const text = document.getElementById("bonusDialogText");
