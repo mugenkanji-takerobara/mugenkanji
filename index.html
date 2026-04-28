@@ -620,6 +620,9 @@ document.getElementById("prevBtn").addEventListener("click", () => {
   document.getElementById("nextBtn").addEventListener("click", () => {
     showNextStory();
   });
+document.getElementById("backToTitle").addEventListener("click", () => {
+  showScreen("titleScreen");
+});
 }); // ← これが DOMContentLoaded の終わり
 /* =========================
    きぼうかんじ ゲーム本体
