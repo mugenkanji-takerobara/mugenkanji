@@ -628,6 +628,32 @@
 </div>
 
 <script>
+function showBonusDialog(message, callback) {
+  const dialog = document.getElementById("bonusDialog");
+  const text = document.getElementById("bonusDialogText");
+  const okBtn = document.getElementById("bonusOkBtn");
+  const cancelBtn = document.getElementById("bonusCancelBtn");
+
+  text.textContent = message;
+
+  const close = () => {
+    dialog.style.display = "none";
+    okBtn.onclick = null;
+    cancelBtn.onclick = null;
+  };
+
+  okBtn.onclick = () => {
+    close();
+    callback(true);
+  };
+
+  cancelBtn.onclick = () => {
+    close();
+    callback(false);
+  };
+
+  dialog.style.display = "flex";
+}
 function showScreen(id) {
   // すべての .screen を非表示
   document.querySelectorAll('.screen').forEach(s => {
