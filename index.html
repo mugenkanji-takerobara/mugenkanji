@@ -662,12 +662,6 @@ function showBonusDialog(message, callback) {
 
   dialog.style.display = "flex";
 }
-function showScreen(id) {
-  // すべての .screen を非表示
-  document.querySelectorAll('.screen').forEach(s => {
-    s.classList.add('hidden');
-  });
-
   // 指定した画面だけ表示
   const target = document.getElementById(id);
   if (target) {
