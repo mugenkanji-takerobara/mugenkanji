@@ -1748,33 +1748,6 @@ document.getElementById("prevBtn").addEventListener("click", ()=>{
     showStory(currentChapter - 1);
   }
 });  
-  
-document.addEventListener("DOMContentLoaded", ()=>{
-
-  showScreen("titleScreen"); 
-  const storyScreen = document.getElementById("storyScreen");
-  const titleScreen = document.getElementById("titleScreen");
-
-  titleScreen.classList.remove("hidden");
-
-  const manualOverlay = document.getElementById("manualOverlay");
-  const manualCloseBtn = document.getElementById("manualCloseBtn");
- const manualBtn = document.getElementById("btnHowTo");
-
-
-  if (manualBtn && manualOverlay) {
-    manualBtn.addEventListener("click", () => {
-      manualOverlay.classList.remove("hidden");
-    });
-  }
-
-  
-  document.getElementById("backToTitle").addEventListener("click", ()=>{
-    storyScreen.classList.add("hidden");
-    titleScreen.classList.remove("hidden");
- }); 
-  
-}); // DOMContentLoaded の閉じ
 </script>
 <!-- 説明書モーダル -->
 <div id="manualOverlay" class="overlay hidden">
