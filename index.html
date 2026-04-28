@@ -1107,8 +1107,10 @@ function spawnPiece(){
   }
 }
 
+
 function stepFall(){
-  if(gameOver || bonusMode || isPaused) return;
+  if (isPaused) return;   
+  if (gameOver || bonusMode) return;
   if(!cur){
     spawnPiece();
     return;
