@@ -605,7 +605,14 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("backFromAmaharashi").addEventListener("click", () => {
     showScreen("toyamaScreen");
   });
-
+document.getElementById("btnJP").addEventListener("click", () => {
+  document.getElementById("storyTextJP").style.display = "block";
+  document.getElementById("storyTextEN").style.display = "none";
+});
+document.getElementById("btnEN").addEventListener("click", () => {
+  document.getElementById("storyTextJP").style.display = "none";
+  document.getElementById("storyTextEN").style.display = "block";
+});
 }); // ← これが DOMContentLoaded の終わり
 /* =========================
    きぼうかんじ ゲーム本体
