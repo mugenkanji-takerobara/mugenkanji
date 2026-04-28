@@ -573,35 +573,41 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("toyamaBtn").addEventListener("click", () => {
     showScreen("toyamaScreen");
   });
-document.getElementById("tateyamaMuseumBtn").addEventListener("click", () => {
-  showScreen("tateyamaDetailScreen");
-});
 
-document.getElementById("cityHallBtn").addEventListener("click", () => {
-  showScreen("cityHallDetailScreen");
-});
-document.getElementById("backFromToyama").addEventListener("click", () => {
-  showScreen("titleScreen");
-});
-document.getElementById("backFromTateyama").addEventListener("click", () => {
-  showScreen("toyamaScreen");
-});
+  document.getElementById("tateyamaMuseumBtn").addEventListener("click", () => {
+    showScreen("tateyamaDetailScreen");
+  });
 
-document.getElementById("backFromCityHall").addEventListener("click", () => {
-  showScreen("toyamaScreen");
-});
+  document.getElementById("cityHallBtn").addEventListener("click", () => {
+    showScreen("cityHallDetailScreen");
+  });
+
+  document.getElementById("backFromToyama").addEventListener("click", () => {
+    showScreen("titleScreen");
+  });
+
+  document.getElementById("backFromTateyama").addEventListener("click", () => {
+    showScreen("toyamaScreen");
+  });
+
+  document.getElementById("backFromCityHall").addEventListener("click", () => {
+    showScreen("toyamaScreen");
+  });
+
+  // ← ここから追加3つ
+  document.getElementById("manualCloseBtn").addEventListener("click", () => {
+    showScreen("titleScreen");
+  });
+
+  document.getElementById("amaharashiSpot").addEventListener("click", () => {
+    showScreen("amaharashiDetailScreen");
+  });
+
+  document.getElementById("backFromAmaharashi").addEventListener("click", () => {
+    showScreen("toyamaScreen");
+  });
 
 }); // ← これが DOMContentLoaded の終わり
-document.getElementById("manualCloseBtn").addEventListener("click", () => {
-  showScreen("titleScreen");
-});  
-document.getElementById("amaharashiSpot").addEventListener("click", () => {
-  showScreen("amaharashiDetailScreen");
-});
-
-document.getElementById("backFromAmaharashi").addEventListener("click", () => {
-  showScreen("toyamaScreen");
-});
 /* =========================
    きぼうかんじ ゲーム本体
    ========================= */
