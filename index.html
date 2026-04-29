@@ -862,7 +862,40 @@ document.addEventListener("DOMContentLoaded", () => {
       currentLang = "jp";
     }
   });
+/* ★★★ 日本語⇔英語切替（タイトル＋サブタイトル＋ボタン3つ） ★★★ */
+let currentLang = "jp";
 
+document.getElementById("btnLang").addEventListener("click", () => {
+
+  if (currentLang === "jp") {
+    // 英語に切り替え
+    document.getElementById("titleVertical").textContent =
+      "KIBOUKANJI — Where Every Character Carries Hope";
+
+    document.getElementById("subtitle").textContent =
+      "Infinite Stories of Hope Written in Every Character";
+
+    document.getElementById("btnStartGame").textContent = "Start Game";
+    document.getElementById("btnHowTo").textContent = "How to Play";
+    document.getElementById("toyamaBtn").textContent = "Toyama";
+
+    currentLang = "en";
+
+  } else {
+    // 日本語に戻す
+    document.getElementById("titleVertical").textContent =
+      "きぼうかんじ";
+
+    document.getElementById("subtitle").textContent =
+      "とやまの無限漢字 〜立山連峰から日本海まで、希望の数え唄〜";
+
+    document.getElementById("btnStartGame").textContent = "ゲームスタート";
+    document.getElementById("btnHowTo").textContent = "使い方";
+    document.getElementById("toyamaBtn").textContent = "とやま";
+
+    currentLang = "jp";
+  }
+});
 }); // ← これが DOMContentLoaded の終わり
 /* =========================
    きぼうかんじ ゲーム本体
