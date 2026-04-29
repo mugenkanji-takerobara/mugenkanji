@@ -821,24 +821,48 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("backFromAmaharashi").addEventListener("click", () => {
     showScreen("toyamaScreen");
   });
-document.getElementById("btnJP").addEventListener("click", () => {
-  document.getElementById("storyTextJP").style.display = "block";
-  document.getElementById("storyTextEN").style.display = "none";
-});
-document.getElementById("btnEN").addEventListener("click", () => {
-  document.getElementById("storyTextJP").style.display = "none";
-  document.getElementById("storyTextEN").style.display = "block";
-});
-document.getElementById("prevBtn").addEventListener("click", () => {
+
+  document.getElementById("btnJP").addEventListener("click", () => {
+    document.getElementById("storyTextJP").style.display = "block";
+    document.getElementById("storyTextEN").style.display = "none";
+  });
+
+  document.getElementById("btnEN").addEventListener("click", () => {
+    document.getElementById("storyTextJP").style.display = "none";
+    document.getElementById("storyTextEN").style.display = "block";
+  });
+
+  document.getElementById("prevBtn").addEventListener("click", () => {
     showPrevStory();
   });
 
   document.getElementById("nextBtn").addEventListener("click", () => {
     showNextStory();
   });
-document.getElementById("backToTitle").addEventListener("click", () => {
-  showScreen("titleScreen");
-});
+
+  document.getElementById("backToTitle").addEventListener("click", () => {
+    showScreen("titleScreen");
+  });
+
+  /* ★★★ 日本語⇔英語切替（ここに追加） ★★★ */
+  let currentLang = "jp";
+
+  document.getElementById("btnLang").addEventListener("click", () => {
+
+    if (currentLang === "jp") {
+      document.getElementById("btnStartGame").textContent = "Start Game";
+      document.getElementById("btnHowTo").textContent = "How to Play";
+      document.getElementById("toyamaBtn").textContent = "Toyama";
+      currentLang = "en";
+
+    } else {
+      document.getElementById("btnStartGame").textContent = "ゲームスタート";
+      document.getElementById("btnHowTo").textContent = "使い方";
+      document.getElementById("toyamaBtn").textContent = "とやま";
+      currentLang = "jp";
+    }
+  });
+
 }); // ← これが DOMContentLoaded の終わり
 /* =========================
    きぼうかんじ ゲーム本体
