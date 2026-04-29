@@ -331,13 +331,26 @@
   display: none;
 }
 
-    #manualOverlay {
+#manualOverlay {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.6);
   z-index: 9999;
-}#manualOverlay .screen-inner {
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+#manualOverlay .screen-inner {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 16px;
+  box-sizing: border-box;
   display: block;
+}
+
+.manual-text {
+  font-size: 1.4rem;
 }
 .manual-text {
   font-size: 1.4rem;
