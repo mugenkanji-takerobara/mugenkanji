@@ -763,12 +763,19 @@
 
 <script>
 function showScreen(id){
-  document.getElementById("titleScreen").style.display = "none";
-  document.getElementById("gameScreen").style.display = "none";
-  document.getElementById("howtoScreen").style.display = "none";
-  document.getElementById("toyamaScreen").style.display = "none";
+  const screens = [
+    "titleScreen","gameScreen","howtoScreen","toyamaScreen",
+    "manualOverlay","tateyamaDetailScreen","cityHallDetailScreen",
+    "amaharashiDetailScreen"
+  ];
 
-  document.getElementById(id).style.display = "flex";
+  screens.forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.style.display = "none";
+  });
+
+  const target = document.getElementById(id);
+  if (target) target.style.display = "flex";
 }
 function showBonusDialog(message, callback) {
   const dialog = document.getElementById("bonusDialog");
