@@ -74,13 +74,17 @@
         rgba(120,200,255,0.8)
       );
     }
-    #titleVertical{
-      writing-mode:vertical-rl;
-      font-size:48px;
-      color:white;
-      text-shadow:0 0 6px rgba(0,0,0,0.4);
-      margin-bottom:24px;
-    }
+   /* タイトル（日本語は縦書き、英語は横書き） */
+#titleVertical {
+  writing-mode: vertical-rl;      /* 日本語は縦書き */
+  text-orientation: upright;
+  font-size: 56px;                /* ← 日本語タイトル6文字の最適サイズ */
+  color: white;
+  text-shadow: 0 0 6px rgba(0,0,0,0.4);
+  margin-bottom: 28px;
+  letter-spacing: 6px;            /* ← 文字間を少し広げて視認性UP */
+  line-height: 1.25;
+}
     .heart{
       color:#FF69B4;
       animation:blink 1.8s infinite;
