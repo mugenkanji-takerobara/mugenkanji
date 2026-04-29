@@ -418,6 +418,36 @@
   background: linear-gradient(#e8c75a, #e3b94a); /* 濃い山吹の和紙色 */
   background-size: cover;
 }
+/* タイトル（縦書き・中央配置） */
+.title-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 3.2rem;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: 0.15em;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* 濁点（縦書き用） */
+.dakuon {
+  font-size: 0.55em;
+  font-weight: 900;
+  display: inline-block;
+  transform: translateY(-0.35em);
+  margin-left: -0.25em;
+}
+
+/* ♫ → 朱色 */
+.dakuon-music {
+  color: #d9534f;
+}
+
+/* ♥♥ → 赤茶色 */
+.dakuon-heart {
+  color: #8b2e2e;
+}
   </style>
 </head>
 <body>
