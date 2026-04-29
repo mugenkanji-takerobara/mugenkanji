@@ -516,25 +516,26 @@
   </div>
 </div>
 <!-- タイトル画面 -->
-<div id="titleScreen" class="screen hidden">
-  <!-- 日本語⇔英語切替 -->
-  <button class="lang-switch" id="btnLang">日本語 / EN</button>
+<div id="titleScreen">
 
-  <!-- タイトル（縦書き） -->
+  <!-- 右上の日本語⇔英語ボタン -->
+  <button id="btnLang">日本語 / English</button>
+
+  <!-- タイトル（縦書き6文字） -->
   <div id="titleVertical" class="title-vertical">
-  きぼうかんじ
-</div>
-  <!-- サブタイトル -->
-  <div id="subtitle" class="subtitle">
-    とやまの無限漢字 〜立山連峰から日本海まで、希望の数え唄〜
+    きぼうかんじ
   </div>
 
-  <!-- ボタン3つ（均一間隔・中央寄せ） -->
-  <div class="title-buttons">
-    <button class="title-main-btn" id="btnStartGame">ゲームスタート</button>
-    <button class="title-main-btn" id="btnHowTo">使い方</button>
-    <button class="title-main-btn" id="toyamaBtn">とやま</button>
+  <!-- サブタイトル（横書き2行） -->
+  <div id="subtitle" class="subtitle">
+    <div class="sub-line">とやまの無限漢字</div>
+    <div class="sub-line">～立山連峰から日本海まで希望の数え唄～</div>
   </div>
+
+  <!-- メインの3ボタン -->
+  <button id="btnStartGame" class="title-main-btn">ゲームスタート</button>
+  <button id="btnHowTo" class="title-main-btn">説明書</button>
+  <button id="toyamaBtn" class="title-main-btn">とやま</button>
 
 </div>
 <!-- ゲーム画面 -->
