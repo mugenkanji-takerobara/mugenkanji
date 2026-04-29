@@ -2144,6 +2144,53 @@ document.getElementById("prevBtn").addEventListener("click", ()=>{
     showStory(currentChapter - 1);
   }
 });  
+/* ★★★ 日本語⇔英語切替（タイトル＋サブタイトル＋ボタン3つ） ★★★ */
+let currentLang = "jp";
+
+document.getElementById("btnLang").addEventListener("click", () => {
+
+  if (currentLang === "jp") {
+
+    // 英語タイトル（横書き）
+    document.getElementById("titleVertical").style.writingMode = "horizontal-tb";
+    document.getElementById("titleVertical").style.fontSize = "36px";  // ← 英語は36px
+    document.getElementById("titleVertical").style.letterSpacing = "0px";
+    document.getElementById("titleVertical").textContent =
+      "KIBOUKANJI — Where Every Character Carries Hope";
+
+    // 英語サブタイトル
+    document.getElementById("subtitle").innerHTML =
+      "Infinite Stories of Hope Written in Every Character";
+
+    // ボタン
+    document.getElementById("btnStartGame").textContent = "Start Game";
+    document.getElementById("btnHowTo").textContent = "How to Play";
+    document.getElementById("toyamaBtn").textContent = "Toyama";
+
+    currentLang = "en";
+
+  } else {
+
+    // 日本語タイトル（縦書き）
+    document.getElementById("titleVertical").style.writingMode = "vertical-rl";
+    document.getElementById("titleVertical").style.fontSize = "56px";  // ← 日本語は56px
+    document.getElementById("titleVertical").style.letterSpacing = "6px";
+    document.getElementById("titleVertical").innerHTML = "きぼうかんじ";
+
+    // 日本語サブタイトル（2行）
+    document.getElementById("subtitle").innerHTML = `
+      <div class="sub-line">とやまの無限漢字</div>
+      <div class="sub-line">～立山連峰から日本海まで希望の数え唄～</div>
+    `;
+
+    // ボタン
+    document.getElementById("btnStartGame").textContent = "ゲームスタート";
+    document.getElementById("btnHowTo").textContent = "説明書";
+    document.getElementById("toyamaBtn").textContent = "とやま";
+
+    currentLang = "jp";
+  }
+});
 </script>
 <!-- 説明書モーダル -->
 <div id="manualOverlay" class="overlay hidden">
