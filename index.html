@@ -54,14 +54,18 @@
 #titleVertical {
   writing-mode: vertical-rl;
   text-orientation: upright;
-  font-size: 56px;
+
+  font-size: 48px;      /* ← 少し小さくして1行に収める */
+  line-height: 1.1;     /* ← 行間を詰める */
+  letter-spacing: 6px;
+
   color: white;
   text-shadow: 0 0 6px rgba(0,0,0,0.4);
-  margin-bottom: 28px;
-  letter-spacing: 6px;
-  line-height: 1.25;
-}
 
+  position: absolute;   /* ← これが無いとズレて重なる */
+  top: 20px;
+  left: 20px;
+}
     .heart{
       color:#FF69B4;
       animation:blink 1.8s infinite;
