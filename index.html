@@ -40,11 +40,12 @@
     }
 
     /* 画面共通 */
-    .screen{
-  position:fixed;
+.screen{
+  position:absolute;   /* ← fixed を absolute に変更 */
   inset:0;
   background:#87CEEB;
   overflow-y:auto;
+  z-index:1;           /* ← これを追加 */
 }
 
     .screen-inner{
