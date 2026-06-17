@@ -1169,10 +1169,24 @@ try {
 // 末尾の閉じを必ず入れる
 }); // ← DOMContentLoaded の閉じ括弧
 // 画面切り替え（共通）
+// 画面切替（CSS の .hidden を使うサイト向け）
 function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
+  // 全画面を非表示にする（hidden クラスを付与）
+  document.querySelectorAll('.screen').forEach(s=>{
+    s.classList.add('hidden');
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+
+  // 指定画面を表示（hidden を外す）
   const el = document.getElementById(id);
-  if(el) el.style.display='block';
+  if(!el) return;
+  el.classList.remove('hidden');
+  el.classList.add('active');
+  el.style.display = 'block';
+  el.style.visibility = 'visible';
+}
+window.showScreen = showScreen;
 }
 
 // 説明書
