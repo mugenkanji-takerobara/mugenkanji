@@ -1157,57 +1157,61 @@ try {
   } catch(e){ console.error('expose funcs error', e); }
 
   // REPLAY と戻るを隠す（安全に）
-  ['restartBtn','back-to-game','globalBack'].forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.style.display = 'none';
-  });
-
-} catch(e){
-  console.error('bind buttons error', e);
-}
-
-// 末尾の閉じを必ず入れる
-}); // ← DOMContentLoaded の閉じ括弧
-// 画面切り替え（共通）
-// 画面切替（CSS の .hidden を使うサイト向け）
+// --- 画面切替（安全版） ---
 function showScreen(id){
-  // 全画面を非表示にする（hidden クラスを付与）
   document.querySelectorAll('.screen').forEach(s=>{
     s.classList.add('hidden');
     s.classList.remove('active');
     s.style.display = 'none';
   });
-
-  // 指定画面を表示（hidden を外す）
   const el = document.getElementById(id);
   if(!el) return;
   el.classList.remove('hidden');
   el.classList.add('active');
   el.style.display = 'block';
   el.style.visibility = 'visible';
+  el.style.opacity = '1';
+  el.style.zIndex = '9999';
 }
 window.showScreen = showScreen;
-}
 
-// 説明書
-function showHowto(){
-  showScreen('manualOverlay');
-}
+// 画面切替関数（HTML に合わせる）
+function showHowto(){ showScreen('manualOverlay'); }
+function showToyama(){ showScreen('toyamaScreen'); }
+function showAmahara(){ showScreen('storyScreen'); }
 
-// とやま
-function showToyama(){
-  showScreen('toyamaScreen');
-}
+// ボタンバインド（重複安全）
+(function(){
+  try {
+    const bindIf = (id, fn) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const has = (el._boundHandlers || []).includes(fn);
+      if (!has) {
+        el.addEventListener('click', fn);
+        el._boundHandlers = (el._boundHandlers || []).concat(fn);
+        console.log('bound', id);
+      }
+      if (el.getAttribute && el.getAttribute('onclick')) {
+        try { el.removeAttribute('onclick'); } catch(e){}
+      }
+    };
 
-// 物語（雨晴）
-function showAmahara(){
-  showScreen('storyScreen');
-}
+    bindIf('manual-button', typeof showHowto === 'function' ? showHowto : ()=>console.warn('showHowto missing'));
+    bindIf('toyama-button', typeof showToyama === 'function' ? showToyama : ()=>console.warn('showToyama missing'));
+    bindIf('toyama-amaharashi', typeof showAmahara === 'function' ? showAmahara : ()=>console.warn('showAmahara missing'));
+    bindIf('amaharashiStoryBtn', typeof showAmahara === 'function' ? showAmahara : ()=>console.warn('showAmahara missing'));
 
-})(); // ← 即時関数の閉じ括弧
-try {
-  document.getElementById('manual-button')?.addEventListener('click', ()=>showHowto());
-  document.getElementById('toyama-button')?.addEventListener('click', ()=>showToyama());
-  document.getElementById('toyama-amaharashi')?.addEventListener('click', ()=>showAmahara());
-  document.getElementById('amaharashiStoryBtn')?.addEventListener('click', ()=>showAmahara());
-} catch(e){}
+    window.showHowto = typeof showHowto === 'function' ? showHowto : undefined;
+    window.showToyama = typeof showToyama === 'function' ? showToyama : undefined;
+    window.showAmahara = typeof showAmahara === 'function' ? showAmahara : undefined;
+
+    ['restartBtn','back-to-game','globalBack'].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.style.display = 'none';
+    });
+
+  } catch(e){
+    console.error('bind buttons error', e);
+  }
+})(); // 即時関数の閉じ
