@@ -1168,4 +1168,26 @@ try {
 
 // 末尾の閉じを必ず入れる
 }); // ← DOMContentLoaded の閉じ括弧
+// 画面切り替え（共通）
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
+  const el = document.getElementById(id);
+  if(el) el.style.display='block';
+}
+
+// 説明書
+function showHowto(){
+  showScreen('manualOverlay');
+}
+
+// とやま
+function showToyama(){
+  showScreen('toyamaScreen');
+}
+
+// 物語（雨晴）
+function showAmahara(){
+  showScreen('storyScreen');
+}
+
 })(); // ← 即時関数の閉じ括弧
