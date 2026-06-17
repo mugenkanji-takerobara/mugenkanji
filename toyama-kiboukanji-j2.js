@@ -1205,3 +1205,9 @@ function showAmahara(){
 }
 
 })(); // ← 即時関数の閉じ括弧
+try {
+  document.getElementById('manual-button')?.addEventListener('click', ()=>showHowto());
+  document.getElementById('toyama-button')?.addEventListener('click', ()=>showToyama());
+  document.getElementById('toyama-amaharashi')?.addEventListener('click', ()=>showAmahara());
+  document.getElementById('amaharashiStoryBtn')?.addEventListener('click', ()=>showAmahara());
+} catch(e){}
