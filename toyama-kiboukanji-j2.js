@@ -1127,8 +1127,7 @@ if (c) {
       window._gameLoopStarted = true;
       requestAnimationFrame(loop);
     }
-　　// --- 安全にボタンへイベントを結びつける（重複チェックあり） ---
-　　// --- 最終ブロック（ここをファイル末尾に置き換える） ---
+　// --- 最終ブロック（ここをファイル末尾に置き換える） ---
 try {
   const bindIf = (id, fn) => {
     const el = document.getElementById(id);
