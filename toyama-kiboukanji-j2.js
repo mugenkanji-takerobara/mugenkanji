@@ -1127,36 +1127,6 @@ if (c) {
       window._gameLoopStarted = true;
       requestAnimationFrame(loop);
     }
-　// --- 最終ブロック（ここをファイル末尾に置き換える） ---
-try {
-  const bindIf = (id, fn) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const has = (el._boundHandlers || []).includes(fn);
-    if (!has) {
-      el.addEventListener('click', fn);
-      el._boundHandlers = (el._boundHandlers || []).concat(fn);
-      console.log('bound', id);
-    }
-    if (el.getAttribute && el.getAttribute('onclick')) {
-      try { el.removeAttribute('onclick'); } catch(e){}
-    }
-  };
-
-  bindIf('manual-button', typeof showHowto === 'function' ? showHowto : () => console.warn('showHowto missing'));
-  bindIf('toyama-button', typeof showToyama === 'function' ? showToyama : () => console.warn('showToyama missing'));
-  bindIf('toyama-amaharashi', typeof showAmahara === 'function' ? showAmahara : () => console.warn('showAmahara missing'));
-  bindIf('amaharashiStoryBtn', typeof showAmahara === 'function' ? showAmahara : () => console.warn('showAmahara missing'));
-
-  // グローバルにも公開（念のため）
-  try {
-    window.showScreen = typeof showScreen === 'function' ? showScreen : undefined;
-    window.showHowto = typeof showHowto === 'function' ? showHowto : undefined;
-    window.showToyama = typeof showToyama === 'function' ? showToyama : undefined;
-    window.showAmahara = typeof showAmahara === 'function' ? showAmahara : undefined;
-  } catch(e){ console.error('expose funcs error', e); }
-
-  // REPLAY と戻るを隠す（安全に）
 // --- 画面切替（安全版） ---
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>{
@@ -1197,14 +1167,14 @@ function showAmahara(){ showScreen('storyScreen'); }
       }
     };
 
-    bindIf('manual-button', typeof showHowto === 'function' ? showHowto : ()=>console.warn('showHowto missing'));
-    bindIf('toyama-button', typeof showToyama === 'function' ? showToyama : ()=>console.warn('showToyama missing'));
-    bindIf('toyama-amaharashi', typeof showAmahara === 'function' ? showAmahara : ()=>console.warn('showAmahara missing'));
-    bindIf('amaharashiStoryBtn', typeof showAmahara === 'function' ? showAmahara : ()=>console.warn('showAmahara missing'));
+    bindIf('manual-button', showHowto);
+    bindIf('toyama-button', showToyama);
+    bindIf('toyama-amaharashi', showAmahara);
+    bindIf('amaharashiStoryBtn', showAmahara);
 
-    window.showHowto = typeof showHowto === 'function' ? showHowto : undefined;
-    window.showToyama = typeof showToyama === 'function' ? showToyama : undefined;
-    window.showAmahara = typeof showAmahara === 'function' ? showAmahara : undefined;
+    window.showHowto = showHowto;
+    window.showToyama = showToyama;
+    window.showAmahara = showAmahara;
 
     ['restartBtn','back-to-game','globalBack'].forEach(id=>{
       const el = document.getElementById(id);
