@@ -1184,8 +1184,8 @@ function showAmahara(){ showScreen('storyScreen'); }
       if(el) el.style.display = 'none';
     });
 
-    } catch(e){
+  } catch(e){
     console.error('bind buttons error', e);
-}
+  }
 
 })(); // 即時関数の閉じ
