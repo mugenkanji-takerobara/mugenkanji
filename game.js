@@ -5,7 +5,7 @@ if (typeof window.loadMainGameScript !== "function") {
     if (window.loadingMainGame) return;
     window.loadingMainGame = true;
     const s = document.createElement('script');
-　  s.src = 'toyama-kiboukanji-j2.js';
+　  s.src = 'script src="toyama-kiboukanji-j2.local.js';
     s.async = true;
     const to = setTimeout(()=>{ if(!window.mainGameLoaded){ window.loadingMainGame = false; console.error('load timeout', s.src); } }, 10000);
     s.onload = () => { clearTimeout(to); window.mainGameLoaded = true; window.loadingMainGame = false; cb && cb(); };
