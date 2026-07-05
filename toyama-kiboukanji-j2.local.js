@@ -1067,29 +1067,36 @@ window.next2 = next2;
     document.body.appendChild(td);
   }
 
-  // --- 7. スポットボタン (iwase, yao, sci, toyamajo, mirage) ---
-  const spotBtns = [
+ // --- 7. スポットボタン (iwase, yao, sci, toyamajo, mirage) ---
+  var spotBtns = [
     ['iwaseSpotBtn', 'toyamaScreen', 'iwaseDetailScreen'],
     ['yaoSpotBtn', 'toyamaScreen', 'yaoDetailScreen'],
     ['sciSpotBtn', 'toyamaScreen', 'sciDetailScreen'],
     ['toyamajoSpotBtn', 'toyamaScreen', 'toyamajoDetailScreen'],
     ['mirageSpotBtn', 'toyamaScreen', 'mirageDetailScreen']
   ];
-  spotBtns.forEach(s => {
-    const btn = getEl(s[0]);
-    if (btn) btn.addEventListener('click', () => {
-      getEl(s[1])?.classList.add('hidden');
-      getEl(s[2])?.classList.remove('hidden');
-      showTransient(3500);
-    });
-  });
+
+  for (var i = 0; i < spotBtns.length; i++) {
+    (function(s) {
+      var btn = getEl(s[0]);
+      if (btn) {
+        btn.addEventListener('click', function() {
+          var el1 = getEl(s[1]);
+          var el2 = getEl(s[2]);
+          if (el1) el1.classList.add('hidden');
+          if (el2) el2.classList.remove('hidden');
+          showTransient(3500);
+        });
+      }
+    })(spotBtns[i]);
+  }
 
   // --- 8. REPLAY ---
-  const restartBtn = getEl('restartBtn');
+  var restartBtn = getEl('restartBtn');
   if (restartBtn) {
-    restartBtn.onclick = () => {
+    restartBtn.onclick = function() {
       restartBtn.classList.add('hidden');
-      const gs = getEl('game-screen');
+      var gs = getEl('game-screen');
       if (gs) gs.style.display = 'block';
       if (typeof resetGame === 'function') resetGame();
       if (typeof startFkGame === 'function') startFkGame();
@@ -1106,12 +1113,13 @@ window.next2 = next2;
 
 // --- 画面切替（安全版） ---
 function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>{
-    s.classList.add('hidden');
-    s.classList.remove('active');
-    s.style.display = 'none';
-  });
-  const el = document.getElementById(id);
+  var screens = document.querySelectorAll('.screen');
+  for (var i = 0; i < screens.length; i++) {
+    screens[i].classList.add('hidden');
+    screens[i].classList.remove('active');
+    screens[i].style.display = 'none';
+  }
+  var el = document.getElementById(id);
   if(!el) return;
   el.classList.remove('hidden');
   el.classList.add('active');
@@ -1128,8 +1136,8 @@ function showAmahara(){ showScreen('storyScreen'); }
 
 (function(){
   try {
-    const bindIf = (id, fn) => {
-      const el = document.getElementById(id);
+    var bindIf = function(id, fn) {
+      var el = document.getElementById(id);
       if (!el) return;
       el.addEventListener('click', fn);
     };
