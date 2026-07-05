@@ -962,33 +962,46 @@ window.next2 = next2;
       if (shamisenIntro) shamisenIntro.currentTime = 0;
     } catch (e) {}
 
-    canvas = $('game-canvas') || $('c') || document.querySelector('canvas');
+  // IDをHTML(gameCanvas)に合わせる
+    canvas = document.getElementById('gameCanvas') || document.querySelector('canvas');
     if (canvas) {
       ctx = canvas.getContext('2d');
-       canvas.width = canvas.clientWidth || 360;
-      canvas.height = canvas.clientHeight || 640;
+      
+      // ★ 最重要修正：非表示状態（clientWidth=0）に引っ張られないよう、内部解像度をゲーム仕様（360x640）に固定！
+      canvas.width = 360;
+      canvas.height = 640;
+      
+      // CSS上の見た目のサイズをコンテナに合わせる
+      canvas.style.display = 'block';
+      canvas.style.width = '100%';
+      canvas.style.height = '100%'; 
+      canvas.style.maxHeight = '80vh'; // 画面からはみ出さないように調整
 
+      console.log('Canvas ready. Size:', canvas.width, canvas.height);
+
+      // タッチ・クリックイベントの設定
       canvas.addEventListener('click', onFkClick);
       canvas.addEventListener('touchstart', onFkClick, { passive: true });
 
       canvas.addEventListener('click', e => {
         const rect = canvas.getBoundingClientRect();
-        const x = Math.floor((e.clientX - rect.left - OFFSET_X) / SIZE);
-        const y = Math.floor((e.clientY - rect.top - OFFSET_Y) / SIZE);
+        // 実際の表示サイズと内部解像度(360x640)の比率を計算して正確なタップ位置を取得
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = Math.floor(((e.clientX - rect.left) * scaleX - OFFSET_X) / SIZE);
+        const y = Math.floor(((e.clientY - rect.top) * scaleY - OFFSET_Y) / SIZE);
+        
         if (x >= 0 && x < COLS && y >= 0 && y < ROWS) {
           selectedCell = { x, y };
         }
       });
-　　　// ★ Canvas を必ず表示させる（最重要）
-const c = document.getElementById('game-canvas') || document.querySelector('canvas');
-if (c) {
-  c.style.display = 'block';
-  c.style.width = '100%';
-  c.style.height = '600px';   // ← とりあえず固定でOK（後で調整）
-  c.width = c.clientWidth;
-  c.height = c.clientHeight;
-  console.log('Canvas forced visible:', c.clientWidth, c.clientHeight);
-}
+
+      canvas.addEventListener('touchstart', e => {
+        if (e.touches && e.touches[0]) {
+          handleBonusTapTouch(e.touches[0]);
+        }
+      }, { passive: true });
+    }
 
       canvas.addEventListener('touchstart', e => {
         if (e.touches && e.touches[0]) {
