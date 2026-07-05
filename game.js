@@ -5,7 +5,10 @@ if (typeof window.loadMainGameScript !== "function") {
     if (window.loadingMainGame) return;
     window.loadingMainGame = true;
     const s = document.createElement('script');
-　  s.src = 'script src="toyama-kiboukanji-j2.local.js';
+    
+    // ★ここを修正：ファイル名だけを指定する
+    s.src = 'toyama-kiboukanji-j2.local.js';
+    
     s.async = true;
     const to = setTimeout(()=>{ if(!window.mainGameLoaded){ window.loadingMainGame = false; console.error('load timeout', s.src); } }, 10000);
     s.onload = () => { clearTimeout(to); window.mainGameLoaded = true; window.loadingMainGame = false; cb && cb(); };
@@ -13,7 +16,6 @@ if (typeof window.loadMainGameScript !== "function") {
     document.head.appendChild(s);
   };
 }
-
 console.log("game.js loaded");
 
 const kanjiList = ['三','五','八','九','百','千','万','億','兆'];
