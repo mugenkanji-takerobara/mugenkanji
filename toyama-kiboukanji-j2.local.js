@@ -997,147 +997,113 @@ window.next2 = next2;
       });
 
       canvas.addEventListener('touchstart', e => {
-  if (e.touches && e.touches[0]) {
-        handleBonusTapTouch(e.touches[0]);
-      }
-    }, { passive: true });
-  }
-
-  // ★ここに欠けていた閉じカッコを追加しました
+ // --- 1. wireTouchHandlers ---
   if (typeof wireTouchHandlers === 'function') {
     try {
       wireTouchHandlers();
     } catch (e) {
-   // ★安全な記述（Optional Chainingを使わずifで分岐）
-  const startBtn = document.getElementById('start-button');
+      console.error('wireTouchHandlers error', e);
+    }
+  }
+
+  // --- 2. ユーティリティ (getElementヘルパー) ---
+  const getEl = (id) => document.getElementById(id);
+
+  // --- 3. Startボタンの統合 ---
+  const startBtn = getEl('start-button');
   if (startBtn) {
     startBtn.addEventListener('click', () => {
-      console.log('Start clicked, _gameLoopStarted:', !!window._gameLoopStarted);
-
-      // ★ 1) 最初に showScreen を呼ぶ
+      console.log('Start clicked');
       showScreen('game-screen');
-
-      // ★ 2) 念のため直接 display:block も付ける
-      const gs = document.getElementById('game-screen');
+      const gs = getEl('game-screen');
       if (gs) {
         gs.style.display = 'block';
         gs.style.visibility = 'visible';
         gs.style.minHeight = '100vh';
       }
-    }); // ← ここで click イベントの関数を閉じる
-  } // ← ここで if (startBtn) を閉じる
-  // 既にループが始まっていたら何もしない
-  if (window._gameLoopStarted) return;
-
-  // BGM
-  try { safePlay && safePlay(waveBGM); } catch(e){}
-
-  // ゲーム初期化
-  try {
-    if (typeof startFkGame === 'function') startFkGame();
-    if (typeof resetGame === 'function') resetGame();
-  } catch(e){}
-
-  // ループ開始
-  window._gameLoopStarted = true;
-  window.started = true;
-
+      if (window._gameLoopStarted) return;
+      try { safePlay && safePlay(waveBGM); } catch(e){}
+      try {
+        if (typeof startFkGame === 'function') startFkGame();
+        if (typeof resetGame === 'function') resetGame();
+      } catch(e){}
+      window._gameLoopStarted = true;
+      window.started = true;
       if (typeof updateStoryBGM === 'function') updateStoryBGM(1);
     });
+  }
 
-    $('story-prev')?.addEventListener('click', () => {
-      if (typeof updateStoryBGM === 'function') updateStoryBGM(0);
-    });
+  // --- 4. その他のボタンイベント ---
+  const storyPrev = getEl('story-prev');
+  if (storyPrev) storyPrev.addEventListener('click', () => {
+    if (typeof updateStoryBGM === 'function') updateStoryBGM(0);
+  });
 
-    $('langToggle')?.addEventListener('click', () => {
-      if (typeof setLang === 'function' && typeof currentLang !== 'undefined') {
-        setLang(currentLang === 'jp' ? 'en' : 'jp');
-      }
-    });
-
-    setTimeout(() => showTransient(5000), 2000);
-    setInterval(() => showTransient(4000 + Math.floor(Math.random() * 3000)), 30000);
-
-    ['click', 'touchstart', 'mousemove'].forEach(ev =>
-      window.addEventListener(ev, () => showTransient(5000), { passive: true })
-    );
-
-    if (!$('score-display')) {
-      const sd = document.createElement('div');
-      sd.id = 'score-display';
-      sd.style.display = 'none';
-      document.body.appendChild(sd);
+  const langToggle = getEl('langToggle');
+  if (langToggle) langToggle.addEventListener('click', () => {
+    if (typeof setLang === 'function' && typeof currentLang !== 'undefined') {
+      setLang(currentLang === 'jp' ? 'en' : 'jp');
     }
+  });
 
-    if (!$('time-display')) {
-      const td = document.createElement('div');
-      td.id = 'time-display';
-      td.style.display = 'none';
-      document.body.appendChild(td);
-    }
+  // --- 5. Transient UI ---
+  setTimeout(() => showTransient(5000), 2000);
+  setInterval(() => showTransient(4000 + Math.floor(Math.random() * 3000)), 30000);
+  ['click', 'touchstart', 'mousemove'].forEach(ev =>
+    window.addEventListener(ev, () => showTransient(5000), { passive: true })
+  );
 
-    $('iwaseSpotBtn')?.addEventListener('click', () => {
-      $('toyamaScreen')?.classList.add('hidden');
-      $('iwaseDetailScreen')?.classList.remove('hidden');
+  // --- 6. スコア・時間ディスプレイ ---
+  if (!getEl('score-display')) {
+    const sd = document.createElement('div');
+    sd.id = 'score-display';
+    sd.style.display = 'none';
+    document.body.appendChild(sd);
+  }
+  if (!getEl('time-display')) {
+    const td = document.createElement('div');
+    td.id = 'time-display';
+    td.style.display = 'none';
+    document.body.appendChild(td);
+  }
+
+  // --- 7. スポットボタン (iwase, yao, sci, toyamajo, mirage) ---
+  const spotBtns = [
+    ['iwaseSpotBtn', 'toyamaScreen', 'iwaseDetailScreen'],
+    ['yaoSpotBtn', 'toyamaScreen', 'yaoDetailScreen'],
+    ['sciSpotBtn', 'toyamaScreen', 'sciDetailScreen'],
+    ['toyamajoSpotBtn', 'toyamaScreen', 'toyamajoDetailScreen'],
+    ['mirageSpotBtn', 'toyamaScreen', 'mirageDetailScreen']
+  ];
+  spotBtns.forEach(s => {
+    const btn = getEl(s[0]);
+    if (btn) btn.addEventListener('click', () => {
+      getEl(s[1])?.classList.add('hidden');
+      getEl(s[2])?.classList.remove('hidden');
       showTransient(3500);
     });
+  });
 
-    $('yaoSpotBtn')?.addEventListener('click', () => {
-      $('toyamaScreen')?.classList.add('hidden');
-      $('yaoDetailScreen')?.classList.remove('hidden');
-      showTransient(3500);
-    });
+  // --- 8. REPLAY ---
+  const restartBtn = getEl('restartBtn');
+  if (restartBtn) {
+    restartBtn.onclick = () => {
+      restartBtn.classList.add('hidden');
+      const gs = getEl('game-screen');
+      if (gs) gs.style.display = 'block';
+      if (typeof resetGame === 'function') resetGame();
+      if (typeof startFkGame === 'function') startFkGame();
+    };
+  }
 
-    $('sciSpotBtn')?.addEventListener('click', () => {
-      $('toyamaScreen')?.classList.add('hidden');
-      $('sciDetailScreen')?.classList.remove('hidden');
-      showTransient(3500);
-    });
+  if (window._startLoopWhenReady && typeof loop === 'function') {
+    window._startLoopWhenReady = false;
+    window._gameLoopStarted = true;
+    requestAnimationFrame(loop);
+  }
 
-    $('toyamajoSpotBtn')?.addEventListener('click', () => {
-      $('toyamaScreen')?.classList.add('hidden');
-      $('toyamajoDetailScreen')?.classList.remove('hidden');
-      showTransient(3500);
-    });
+}); // DOMContentLoadedの閉じカッコ
 
-    $('mirageSpotBtn')?.addEventListener('click', () => {
-      $('toyamaScreen')?.classList.add('hidden');
-      $('mirageDetailScreen')?.classList.remove('hidden');
-      showTransient(3500);
-    });
-
-    // --- Start（上書き） ---
-    const startBtn = document.getElementById('start-button');
-    if (startBtn) {
-      startBtn.onclick = () => {
-        showScreen('game-screen');
-        gameOver = false;
-        isPaused = false;
-        if (typeof resetGame === 'function') resetGame();
-        if (typeof startFkGame === 'function') startFkGame();
-        window._gameLoopStarted = true;
-        if (typeof loop === 'function') requestAnimationFrame(loop);
-      };
-    }
-
-    // --- REPLAY（上書き） ---
-    const restartBtn = document.getElementById('restartBtn');
-    if (restartBtn) {
-      restartBtn.onclick = () => {
-        restartBtn.classList.add('hidden');
-        gameOver = false;
-        isPaused = false;
-        if (typeof resetGame === 'function') resetGame();
-        if (typeof startFkGame === 'function') startFkGame();
-      };
-    }
-
-    if (window._startLoopWhenReady && typeof loop === 'function') {
-      window._startLoopWhenReady = false;
-      window._gameLoopStarted = true;
-      requestAnimationFrame(loop);
-    }
-  }); // ★★★ ここに `});` を追加！！！ ★★★
 // --- 画面切替（安全版） ---
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>{
@@ -1156,29 +1122,17 @@ function showScreen(id){
 }
 window.showScreen = showScreen;
 
-// 画面切替関数（HTML に合わせる）
 function showHowto(){ showScreen('manualOverlay'); }
 function showToyama(){ showScreen('toyamaScreen'); }
 function showAmahara(){ showScreen('storyScreen'); }
 
-// ボタンバインド（重複安全）
-(function(){   // 
-
+(function(){
   try {
     const bindIf = (id, fn) => {
       const el = document.getElementById(id);
       if (!el) return;
-      const has = (el._boundHandlers || []).includes(fn);
-      if (!has) {
-        el.addEventListener('click', fn);
-        el._boundHandlers = (el._boundHandlers || []).concat(fn);
-        console.log('bound', id);
-      }
-      if (el.getAttribute && el.getAttribute('onclick')) {
-        try { el.removeAttribute('onclick'); } catch(e){}
-      }
+      el.addEventListener('click', fn);
     };
-
     bindIf('manual-button', showHowto);
     bindIf('toyama-button', showToyama);
     bindIf('toyama-amaharashi', showAmahara);
@@ -1187,14 +1141,5 @@ function showAmahara(){ showScreen('storyScreen'); }
     window.showHowto = showHowto;
     window.showToyama = showToyama;
     window.showAmahara = showAmahara;
-
-    ['restartBtn','back-to-game','globalBack'].forEach(id=>{
-      const el = document.getElementById(id);
-      if(el) el.style.display = 'none';
-    });
-
-  } catch(e){
-    console.error('bind buttons error', e);
-  }
-
-})(); // 即時関数の閉じ
+  } catch(e){ console.error(e); }
+})();
