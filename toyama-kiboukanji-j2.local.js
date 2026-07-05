@@ -1008,25 +1008,24 @@ window.next2 = next2;
     try {
       wireTouchHandlers();
     } catch (e) {
-      console.error('wireTouchHandlers error', e);
-    }
-  }
-  
-  // ★全角スペースをすべて半角に修正しました
-  document.getElementById('start-button')?.addEventListener('click', () => {
-  console.log('Start clicked, _gameLoopStarted:', !!window._gameLoopStarted);
+   // ★安全な記述（Optional Chainingを使わずifで分岐）
+  const startBtn = document.getElementById('start-button');
+  if (startBtn) {
+    startBtn.addEventListener('click', () => {
+      console.log('Start clicked, _gameLoopStarted:', !!window._gameLoopStarted);
 
-  // ★ 1) 最初に showScreen を呼ぶ（これが最重要）
-  showScreen('game-screen');
+      // ★ 1) 最初に showScreen を呼ぶ
+      showScreen('game-screen');
 
-  // ★ 2) 念のため直接 display:block も付ける
-  const gs = document.getElementById('game-screen');
-  if (gs) {
-    gs.style.display = 'block';
-    gs.style.visibility = 'visible';
-    gs.style.minHeight = '100vh';
-  }
-
+      // ★ 2) 念のため直接 display:block も付ける
+      const gs = document.getElementById('game-screen');
+      if (gs) {
+        gs.style.display = 'block';
+        gs.style.visibility = 'visible';
+        gs.style.minHeight = '100vh';
+      }
+    }); // ← ここで click イベントの関数を閉じる
+  } // ← ここで if (startBtn) を閉じる
   // 既にループが始まっていたら何もしない
   if (window._gameLoopStarted) return;
 
