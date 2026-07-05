@@ -997,27 +997,23 @@ window.next2 = next2;
       });
 
       canvas.addEventListener('touchstart', e => {
-        if (e.touches && e.touches[0]) {
-          handleBonusTapTouch(e.touches[0]);
-        }
-      }, { passive: true });
-    }
-
-      canvas.addEventListener('touchstart', e => {
-        if (e.touches && e.touches[0]) {
-          handleBonusTapTouch(e.touches[0]);
-        }
-      }, { passive: true });
-    }
-
-    if (typeof wireTouchHandlers === 'function') {
-      try {
-        wireTouchHandlers();
-      } catch (e) {
-        console.error('wireTouchHandlers error', e);
+  if (e.touches && e.touches[0]) {
+        handleBonusTapTouch(e.touches[0]);
       }
+    }, { passive: true });
+  }
+
+  // ★ここに欠けていた閉じカッコを追加しました
+  if (typeof wireTouchHandlers === 'function') {
+    try {
+      wireTouchHandlers();
+    } catch (e) {
+      console.error('wireTouchHandlers error', e);
     }
-　　　　$('start-button')?.addEventListener('click', () => {
+  }
+  
+  // ★全角スペースをすべて半角に修正しました
+  document.getElementById('start-button')?.addEventListener('click', () => {
   console.log('Start clicked, _gameLoopStarted:', !!window._gameLoopStarted);
 
   // ★ 1) 最初に showScreen を呼ぶ（これが最重要）
