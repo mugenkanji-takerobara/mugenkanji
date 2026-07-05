@@ -997,51 +997,47 @@ window.next2 = next2;
       });
 
       canvas.addEventListener('touchstart', e => {
-// --- 7. スポットボタン (iwase, yao, sci, toyamajo, mirage) ---
-  var spotBtns = [
-    ['iwaseSpotBtn', 'toyamaScreen', 'iwaseDetailScreen'],
-    ['yaoSpotBtn', 'toyamaScreen', 'yaoDetailScreen'],
-    ['sciSpotBtn', 'toyamaScreen', 'sciDetailScreen'],
-    ['toyamajoSpotBtn', 'toyamaScreen', 'toyamajoDetailScreen'],
-    ['mirageSpotBtn', 'toyamaScreen', 'mirageDetailScreen']
-  ];
+// --- 安全のための強制閉じ ---
+// ここより前のエラーを無視して強制的に閉じるための処置です
+})(); })(); })(); })(); })(); 
 
-  for (var i = 0; i < spotBtns.length; i++) {
-    (function(s) {
-      var btn = document.getElementById(s[0]);
-      if (btn) {
-        btn.onclick = function() {
-          var el1 = document.getElementById(s[1]);
-          var el2 = document.getElementById(s[2]);
-          if (el1) el1.classList.add('hidden');
-          if (el2) el2.classList.remove('hidden');
-          if (typeof showTransient === 'function') showTransient(3500);
-        };
-      }
-    })(spotBtns[i]);
-  }
+// --- 7. スポットボタン ---
+var spotBtns = [
+  ['iwaseSpotBtn', 'toyamaScreen', 'iwaseDetailScreen'],
+  ['yaoSpotBtn', 'toyamaScreen', 'yaoDetailScreen'],
+  ['sciSpotBtn', 'toyamaScreen', 'sciDetailScreen'],
+  ['toyamajoSpotBtn', 'toyamaScreen', 'toyamajoDetailScreen'],
+  ['mirageSpotBtn', 'toyamaScreen', 'mirageDetailScreen']
+];
 
-  // --- 8. REPLAY ---
-  var restartBtn = document.getElementById('restartBtn');
-  if (restartBtn) {
-    restartBtn.onclick = function() {
-      restartBtn.classList.add('hidden');
-      var gs = document.getElementById('game-screen');
-      if (gs) gs.style.display = 'block';
-      if (typeof resetGame === 'function') resetGame();
-      if (typeof startFkGame === 'function') startFkGame();
-    };
-  }
+for (var i = 0; i < spotBtns.length; i++) {
+  (function(s) {
+    var btn = document.getElementById(s[0]);
+    if (btn) {
+      btn.onclick = function() {
+        var el1 = document.getElementById(s[1]);
+        var el2 = document.getElementById(s[2]);
+        if (el1) el1.classList.add('hidden');
+        if (el2) el2.classList.remove('hidden');
+        if (typeof showTransient === 'function') showTransient(3500);
+      };
+    }
+  })(spotBtns[i]);
+}
 
-  if (window._startLoopWhenReady && typeof loop === 'function') {
-    window._startLoopWhenReady = false;
-    window._gameLoopStarted = true;
-    requestAnimationFrame(loop);
-  }
+// --- 8. REPLAY ---
+var restartBtn = document.getElementById('restartBtn');
+if (restartBtn) {
+  restartBtn.onclick = function() {
+    restartBtn.classList.add('hidden');
+    var gs = document.getElementById('game-screen');
+    if (gs) gs.style.display = 'block';
+    if (typeof resetGame === 'function') resetGame();
+    if (typeof startFkGame === 'function') startFkGame();
+  };
+}
 
-}); // DOMContentLoadedの閉じ
-
-// --- 画面切替（安全版） ---
+// --- 画面切替関数 ---
 function showScreen(id){
   var screens = document.querySelectorAll('.screen');
   for (var i = 0; i < screens.length; i++) {
@@ -1055,8 +1051,6 @@ function showScreen(id){
   el.classList.add('active');
   el.style.display = 'block';
   el.style.visibility = 'visible';
-  el.style.opacity = '1';
-  el.style.zIndex = '9999';
 }
 
 function showHowto(){ showScreen('manualOverlay'); }
@@ -1064,19 +1058,12 @@ function showToyama(){ showScreen('toyamaScreen'); }
 function showAmahara(){ showScreen('storyScreen'); }
 
 (function(){
-  try {
-    var bindIf = function(id, fn) {
-      var el = document.getElementById(id);
-      if (!el) return;
-      el.onclick = fn;
-    };
-    bindIf('manual-button', showHowto);
-    bindIf('toyama-button', showToyama);
-    bindIf('toyama-amaharashi', showAmahara);
-    bindIf('amaharashiStoryBtn', showAmahara);
-
-    window.showHowto = showHowto;
-    window.showToyama = showToyama;
-    window.showAmahara = showAmahara;
-  } catch(e){ console.error(e); }
+  var bindIf = function(id, fn) {
+    var el = document.getElementById(id);
+    if (el) el.onclick = fn;
+  };
+  bindIf('manual-button', showHowto);
+  bindIf('toyama-button', showToyama);
+  bindIf('toyama-amaharashi', showAmahara);
+  bindIf('amaharashiStoryBtn', showAmahara);
 })();
