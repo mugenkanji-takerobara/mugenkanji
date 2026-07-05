@@ -1142,6 +1142,7 @@ window.next2 = next2;
       window._gameLoopStarted = true;
       requestAnimationFrame(loop);
     }
+  }); // ★★★ ここに `});` を追加！！！ ★★★
 // --- 画面切替（安全版） ---
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>{
