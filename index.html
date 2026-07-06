@@ -700,6 +700,33 @@ button, .btn {
   <span>KIBOUKANJI</span><br> — Every Character Carries Hope —<br>
   Produced by Team shiob
 </div>
+<style>
+#next-era-button {
+  background-color: #D4A857; /* 通常の金色 */
+  color: #4FB7E8;           /* 通常の水色 */
+  border: 2px solid #E8C98A;
+  padding: 14px 28px;
+  font-size: 1.2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  width: 90%;               /* スマホ縦画面で中央に大きく */
+  max-width: 420px;         /* 横に伸びすぎない */
+  margin: 20px auto;        /* 中央配置 */
+  display: block;
+  transition: all 0.25s ease; /* ふわっと浮くアニメーション */
+}
+
+/* ホバー（PC）＋ タッチ（スマホ） */
+#next-era-button:hover,
+#next-era-button:active {
+  background-color: #E6C46A; /* 明るい金色 */
+  color: #BEE8FF;            /* 白寄りの水色 */
+  border-color: #F3DFA0;     /* 光の金色 */
+  transform: translateY(-4px); /* ふわっと浮く */
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* 浮いた影 */
+}
+</style>
+<button id="next-era-button">そして波音の記憶が共鳴の時代へ</button>
 
 <button id="story-back">戻る</button>
 </div> <!-- storyScreen の閉じタグ -->
