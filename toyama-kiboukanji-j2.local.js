@@ -997,10 +997,6 @@ window.next2 = next2;
       });
 
       canvas.addEventListener('touchstart', e => {
-// --- 安全のための強制閉じ ---
-// ここより前のエラーを無視して強制的に閉じるための処置です
-})(); })(); })(); })(); })(); 
-
 // --- 7. スポットボタン ---
 var spotBtns = [
   ['iwaseSpotBtn', 'toyamaScreen', 'iwaseDetailScreen'],
