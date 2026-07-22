@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>きぼうかんじ 音声・動画確認</title>
+<style>
+body{margin:0;background:#edf4f5;color:#26353a;font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic",Meiryo,sans-serif}
+main{width:min(100% - 28px,620px);margin:24px auto 60px}
+h1{font-size:25px}p{line-height:1.8}
+.card{margin:12px 0;padding:15px;border-radius:14px;background:#fff;box-shadow:0 5px 18px rgba(31,67,77,.09)}
+.row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.name{font-weight:900;overflow-wrap:anywhere}.status{font-size:14px;margin-top:7px}
+.ok{color:#187644}.ng{color:#ad2d2d}
+button{min-width:96px;min-height:42px;border:0;border-radius:10px;background:#397d91;color:#fff;font-weight:800}
+video{display:block;width:100%;margin-top:12px;border-radius:10px;background:#000}
+code{background:#fff;padding:2px 5px}
+</style>
+</head>
+<body>
+<main>
+<h1>音声・動画ファイル確認</h1>
+<p>各行が「読み込み成功」になればゲームから使えます。再生は必ず指で押してください。</p>
+<div id="audio-list"></div>
+<div class="card">
+  <div class="name">続編予告動画：future_teaser.mp4</div>
+  <div id="video-status" class="status">確認中…</div>
+  <video id="video-check" controls playsinline preload="metadata" poster="future_teaser_poster.jpg">
+    <source src="future_teaser.mp4?v=1.0.1" type="video/mp4">
+  </video>
+</div>
+<p>失敗する場合は、ファイル名の末尾に <code>(1)</code> が付いていないか、<code>.mp3.mp3</code>になっていないか確認してください。</p>
+</main>
+<script>
+const files=[
+  ['通常BGM','retroparty.mp3'],
+  ['特の符「代・岳」BGM','retropark.mp3'],
+  ['雨晴海岸の波音','warayatakashi.mp3'],
+  ['三味線導入','shamisen_intro.mp3'],
+  ['漢字消去','se_match.mp3'],
+  ['急降下','se_drop.mp3'],
+  ['特の符獲得','se_bonus.mp3'],
+  ['ためておく','se_store.mp3'],
+  ['背景変更','se_scene.mp3']
+];
+const list=document.getElementById('audio-list');
+files.forEach(([label,file])=>{
+  const card=document.createElement('div');
+  card.className='card';
+  card.innerHTML=`<div class="row"><div><div class="name">${label}：${file}</div><div class="status">確認中…</div></div><button type="button">音を鳴らす</button></div>`;
+  list.appendChild(card);
+  const status=card.querySelector('.status');
+  const button=card.querySelector('button');
+  const audio=new Audio(`${file}?v=1.0.1`);
+  audio.preload='metadata';
+  audio.addEventListener('loadedmetadata',()=>{
+    const sec=Number.isFinite(audio.duration)?audio.duration.toFixed(2):'?';
+    status.textContent=`読み込み成功（${sec}秒）`;
+    status.className='status ok';
+  },{once:true});
+  audio.addEventListener('error',()=>{
+    status.textContent='見つからない、または再生できない形式です';
+    status.className='status ng';
+    button.disabled=true;
+  },{once:true});
+  button.addEventListener('click',()=>{
+    audio.currentTime=0;
+    audio.play().catch(()=>{
+      status.textContent='ブラウザが再生を止めました。もう一度押してください';
+      status.className='status ng';
+    });
+  });
+  audio.load();
+});
+const video=document.getElementById('video-check');
+const videoStatus=document.getElementById('video-status');
+video.addEventListener('loadedmetadata',()=>{
+  const sec=Number.isFinite(video.duration)?video.duration.toFixed(2):'?';
+  videoStatus.textContent=`読み込み成功（${sec}秒）`;
+  videoStatus.className='status ok';
+},{once:true});
+video.addEventListener('error',()=>{
+  videoStatus.textContent='動画を読み込めません';
+  videoStatus.className='status ng';
+},{once:true});
+</script>
+</body>
+</html>

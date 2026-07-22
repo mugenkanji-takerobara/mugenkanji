@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<meta content="富山の風景と漢字を楽しむ、スマートフォン向け落ち物パズルゲーム。" name="description"/>
+<meta content="#87b8c7" name="theme-color">
+<title>きぼうかんじ</title>
+<style>
+:root{
+  --paper:#f8f4ed;
+  --ink:#3f3834;
+  --muted:#756b65;
+  --gold:#d4a857;
+  --gold-deep:#9e701d;
+  --silver:#4b5563;
+  --silver-light:#d7dde5;
+  --sky:#87b8c7;
+  --shadow:0 10px 30px rgba(42,48,55,.16);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;color:var(--ink);background:#dfeff3}
+button,a{font:inherit}
+button{touch-action:manipulation}
+img{max-width:100%;height:auto}
+.hidden{display:none!important}
+.screen{display:none;min-height:100dvh}
+.screen.active{display:block}
+
+/* タイトル画面 */
+#title-screen{position:relative;width:100%;height:100vh;height:100svh;min-height:0;overflow:hidden;background:#dfeff3}
+.title-bg-image{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center center;z-index:0;background:#dfeff3}
+.title-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:12vh;color:#fff;text-align:center;z-index:0;background:linear-gradient(160deg,#142536,#7eb5c6 58%,#d7c18a)}
+.title-fallback strong{font-size:clamp(38px,10vw,70px);letter-spacing:.08em}
+.title-fallback span{margin-top:10px;font-size:15px;letter-spacing:.1em}
+#title-screen.image-ready .title-fallback{display:none}
+#title-screen::after{display:none}
+.title-btn-wrap{position:absolute;z-index:2;right:max(8px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));width:clamp(108px,26vw,168px);display:flex;flex-direction:column;gap:8px}
+.title-btn{min-height:56px;padding:12px 9px;border:1px solid rgba(255,255,255,.88);border-radius:13px;background:linear-gradient(180deg,rgba(255,224,120,.97),rgba(201,145,35,.97));color:#fff;font-weight:800;font-size:clamp(15px,4vw,19px);letter-spacing:.03em;box-shadow:0 5px 0 rgba(95,62,9,.22),0 10px 24px rgba(0,0,0,.18)}
+.title-btn:active{transform:translateY(2px);box-shadow:0 3px 0 rgba(95,62,9,.22)}
+
+/* 共通画面 */
+.page-shell{width:min(100%,520px);min-height:100dvh;margin:0 auto;background:var(--paper);box-shadow:var(--shadow)}
+.page-head{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:48px 1fr 48px;align-items:center;min-height:58px;padding:6px 8px;background:rgba(248,244,237,.95);backdrop-filter:blur(9px);border-bottom:1px solid rgba(90,75,65,.10)}
+.page-head h1{margin:0;text-align:center;font-size:17px;font-weight:700;letter-spacing:.04em}
+.icon-btn{width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.86);color:#574d47;font-size:20px;font-weight:800;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.content{padding:18px 16px 40px}
+
+/* ゲーム */
+#game-screen{background:linear-gradient(#91cbd8,#d8edf0)}
+.game-shell{width:min(100%,420px);min-height:100dvh;margin:0 auto;display:flex;flex-direction:column;align-items:center;padding:8px 8px 20px}
+.game-toolbar{width:100%;display:flex;justify-content:space-between;align-items:center;min-height:52px}
+.game-toolbar .icon-btn{background:rgba(255,255,255,.84)}
+.pause-btn{min-width:104px;min-height:44px;padding:8px 14px;border:0;border-radius:22px;background:rgba(255,255,255,.88);color:#42616b;font-weight:800;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+#game-canvas{display:block;width:min(100%,360px);height:auto;aspect-ratio:360/640;border:7px solid rgba(255,255,255,.95);border-radius:18px;background:#8dc9d8;box-shadow:0 12px 30px rgba(38,85,101,.22);touch-action:none}
+.game-help{margin:9px 0 0;font-size:12px;color:#42616b;text-align:center}
+#restartBtn{position:fixed;z-index:50;left:50%;top:auto;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);min-width:148px;min-height:42px;padding:8px 16px;border:0;border-radius:12px;background:linear-gradient(#ffde72,#c88f20);color:#fff;font-weight:900;font-size:15px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+
+/* ボーナス確認 */
+.bonus-confirm-modal{position:fixed;z-index:1200;inset:0;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(8,13,18,.76)}
+.bonus-confirm-modal.open{display:flex}
+.bonus-confirm-box{width:min(100%,360px);padding:22px 18px;border:1px solid rgba(255,255,255,.75);border-radius:18px;background:linear-gradient(180deg,#f8fafc,#d8dde4);box-shadow:0 18px 48px rgba(0,0,0,.34);text-align:center}
+.bonus-confirm-box h2{margin:0 0 12px;font-size:19px;color:#29313a}
+.bonus-confirm-box p{margin:0 0 16px;font-size:15px;line-height:1.8;color:#404955}
+.bonus-selection-preview{display:flex;justify-content:center;gap:12px;min-height:52px;margin:8px 0 18px}
+.bonus-chip{display:inline-flex;align-items:center;justify-content:center;min-width:64px;height:48px;padding:0 12px;border:3px solid var(--silver-light);border-radius:24px;background:var(--silver);color:#fff;font-size:20px;font-weight:900;box-shadow:0 4px 12px rgba(34,42,52,.22)}
+.bonus-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bonus-action{min-height:48px;border:0;border-radius:12px;font-weight:800}
+.bonus-action.primary{background:linear-gradient(#f3d276,#c59129);color:#fff}
+.bonus-action.secondary{background:#fff;color:#4b5563;border:1px solid #b8c0ca}
+
+/* 説明書 */
+.manual-shell{background:#ece8e1}
+.manual-slides{padding:0}
+.manual-slide{position:relative;min-height:calc(100dvh - 58px);padding:28px 22px 96px;display:flex;flex-direction:column;overflow:hidden;border-bottom:1px solid rgba(60,50,45,.12)}
+.manual-slide .eyebrow{font-size:11px;letter-spacing:.2em;font-weight:700;opacity:.72;text-align:center;margin-bottom:12px}
+.manual-slide h2{margin:0 0 14px;text-align:center;font-size:clamp(26px,7vw,38px);line-height:1.35;letter-spacing:.05em;font-weight:650}
+.manual-slide .lead{margin:0 auto;max-width:420px;text-align:center;font-size:14px;line-height:1.95}
+.manual-body{flex:1;display:flex;flex-direction:column;justify-content:center;margin-top:18px}
+.manual-slide-footer{position:absolute;left:0;right:0;bottom:0;padding:16px 18px 18px;text-align:center;border-top:1px solid rgba(80,70,65,.10);font-size:10px;line-height:1.7;letter-spacing:.02em;background:rgba(255,255,255,.18)}
+.manual-slide-footer strong{font-size:11px}
+.manual-welcome{background:linear-gradient(#e2f1f8,#f6fbfd);color:#165d86}
+.manual-blue{background:linear-gradient(#eaf7fc,#f7fbfd);color:#176897}
+.manual-black{background:#050505;color:#fff}
+.manual-pink{background:linear-gradient(#fae5ec,#f8eef2);color:#8d205c}
+.manual-green{background:linear-gradient(#277d34,#36883f);color:#fff}
+.manual-teal{background:linear-gradient(#3d7780,#76a5a8);color:#fff}
+.manual-sand{background:linear-gradient(#5d3518,#b28720);color:#fff}
+.manual-autumn{background:linear-gradient(#55361d,#b48920);color:#fff}
+.manual-yellow{background:linear-gradient(#f7b914,#ffd83f);color:#573b23}
+.manual-white{background:#fff;color:#1b1b1b}
+.manual-credits{background:linear-gradient(#5c1780,#db3d15);color:#fff}
+.manual-photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}
+.manual-photo-grid img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.manual-photo-wide{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin:8px 0 16px;box-shadow:0 7px 20px rgba(0,0,0,.13)}
+.manual-culture-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.manual-culture-grid img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px}
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.how-tile{padding:15px 12px;border-radius:14px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);line-height:1.65}
+.how-tile strong{display:block;margin-bottom:6px;font-size:15px}
+.record-panel{padding:20px;border:1px solid rgba(255,255,255,.32);border-radius:16px;background:rgba(255,255,255,.12);text-align:center}
+.record-panel strong{display:block;font-size:28px;margin-bottom:10px}
+.score-graph{width:100%;max-width:400px;margin:12px auto 0;display:block}
+.graph-label{font-size:14px;fill:currentColor}
+.bonus-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.bonus-card{padding:20px 12px;border-radius:16px;background:rgba(255,255,255,.20);border:1px solid rgba(255,255,255,.36);text-align:center}
+.bonus-kanji{font-size:52px;font-weight:900}
+.bonus-desc{margin-top:8px;font-size:14px;line-height:1.7}
+.sns-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sns-box{padding:10px;text-align:center}
+.qr-img{display:block;width:100%;aspect-ratio:1/1;object-fit:contain;background:#fff;border:5px solid #503a31}
+.sns-label{margin:10px 0 3px;font-size:16px;font-weight:800}
+.sns-desc{margin:0;font-size:12px;overflow-wrap:anywhere}
+.credits-block{text-align:center;font-size:13px;line-height:2}
+.credits-block h3{margin:18px 0 4px;font-size:14px;letter-spacing:.12em}
+.asset-warning{margin:8px 0;padding:9px 10px;border-radius:8px;background:rgba(128,35,35,.10);color:#8b2b2b;font-size:11px;line-height:1.5;text-align:center}
+
+/* 観光一覧 */
+.section-heading{margin:24px 0 12px;padding:9px 12px;border-radius:10px;background:linear-gradient(90deg,rgba(214,190,172,.42),rgba(247,241,234,.8));color:#71635d;font-size:14px;font-weight:700;letter-spacing:.08em}
+.section-heading:first-child{margin-top:4px}
+.spot{margin:0 0 15px;padding:15px;border-radius:15px;background:rgba(255,255,255,.78);border:1px solid rgba(120,104,94,.10);box-shadow:0 5px 16px rgba(74,64,57,.06)}
+.spot h2{margin:0 0 8px;font-size:17px;line-height:1.5}
+.spot-img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;margin:7px 0 9px;border-radius:11px;background:#e9e5df}
+.spot-img.zoomable{cursor:zoom-in}
+.addr{margin:0;color:var(--muted);font-size:13px;line-height:1.65}
+.story-btn{display:block;width:100%;min-height:46px;margin-top:12px;border:0;border-radius:11px;background:linear-gradient(#f1d879,#c99931);color:#fff;font-weight:800}
+.next-era-button{display:block;width:100%;margin:12px auto 0;padding:15px 14px;border:2px solid #c79a3d;border-radius:14px;background:#d4a857;color:#26374c;font-size:16px;font-weight:900;line-height:1.5;box-shadow:0 7px 18px rgba(0,0,0,.12);text-decoration:none;text-align:center}
+
+/* 雨晴海岸物語 */
+#story-screen{background:#000}
+#story-screen .page-shell{background:#000;color:#fff}
+#story-screen .page-head{background:rgba(0,0,0,.92);border-bottom-color:rgba(255,255,255,.12)}
+#story-screen .page-head h1{color:#fff}
+#story-screen .icon-btn{background:rgba(255,255,255,.13);color:#fff}
+.story-page{padding:0 0 28px;margin-bottom:28px;border-bottom:1px solid rgba(255,255,255,.13)}
+.story-img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;object-position:center;border-radius:8px;box-shadow:0 9px 24px rgba(0,0,0,.34);background:#161616}
+.story-text{margin:15px 5px 0;font-size:15px;line-height:2;text-align:center;color:#fff;text-shadow:0 2px 5px rgba(0,0,0,.8)}
+.story-footer{text-align:center;color:#c8c8c8;font-size:11px;line-height:1.8}
+
+/* 写真拡大 */
+.photo-modal{position:fixed;z-index:1100;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(10,12,14,.92)}
+.photo-modal.open{display:flex}
+.photo-modal img{max-width:100%;max-height:88dvh;border-radius:10px;box-shadow:0 16px 40px rgba(0,0,0,.45)}
+.photo-close{position:fixed;top:max(12px,env(safe-area-inset-top));right:12px;color:#fff;background:rgba(255,255,255,.18)}
+
+@media (min-width:700px){.title-btn-wrap{right:5vw;width:180px}}
+
+
+/* 公開版Ver1.0 最終実装 */
+.manual-frame{
+  display:block;
+  width:100%;
+  height:calc(100dvh - 58px);
+  border:0;
+  background:#d7d1c9;
+}
+.tokunofu-panel{
+  width:min(100%,360px);
+  min-height:44px;
+  margin:0 0 7px;
+  padding:6px 8px;
+  display:grid;
+  grid-template-columns:auto 1fr 1fr;
+  gap:7px;
+  align-items:center;
+  border:1px solid rgba(255,255,255,.78);
+  border-radius:12px;
+  background:rgba(255,255,255,.78);
+  box-shadow:0 4px 14px rgba(38,85,101,.12);
+}
+.tokunofu-label{
+  padding:0 4px;
+  color:#3c5762;
+  font-weight:900;
+  font-size:13px;
+  white-space:nowrap;
+}
+.tokunofu-button{
+  min-height:32px;
+  border:1px solid rgba(115,88,42,.28);
+  border-radius:999px;
+  background:linear-gradient(#fff8dc,#e7c36b);
+  color:#473719;
+  font-weight:900;
+}
+.tokunofu-button:disabled{
+  opacity:.46;
+  filter:grayscale(.65);
+}
+.tokunofu-modal{
+  position:fixed;
+  z-index:1250;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(8,13,18,.78);
+}
+.tokunofu-modal.open{display:flex}
+.tokunofu-box{
+  width:min(100%,360px);
+  padding:25px 18px 20px;
+  border:2px solid rgba(244,214,126,.86);
+  border-radius:20px;
+  background:linear-gradient(180deg,#fffaf0,#e9dcc3);
+  box-shadow:0 20px 55px rgba(0,0,0,.38);
+  text-align:center;
+}
+.tokunofu-symbol{
+  display:grid;
+  place-items:center;
+  width:86px;
+  height:86px;
+  margin:0 auto 13px;
+  border:5px solid #d1a441;
+  border-radius:50%;
+  background:#fff;
+  color:#111;
+  font-size:46px;
+  font-weight:900;
+  box-shadow:0 0 0 8px rgba(223,184,82,.16);
+}
+.tokunofu-box h2{margin:0 0 10px;font-size:21px}
+.tokunofu-box p{margin:0 0 18px;font-size:15px;line-height:1.8}
+.tokunofu-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.bonus-flash{
+  position:fixed;
+  z-index:1300;
+  inset:0;
+  display:none;
+  place-items:center;
+  pointer-events:none;
+  background:radial-gradient(circle,rgba(255,234,157,.08),rgba(0,0,0,.52));
+}
+.bonus-flash.show{display:grid;animation:bonusFlashFade .9s ease both}
+.bonus-flash-ring{
+  position:absolute;
+  width:170px;
+  height:170px;
+  border:7px solid rgba(245,206,93,.88);
+  border-radius:50%;
+  animation:bonusRing .85s ease-out both;
+}
+.bonus-flash-kanji{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:112px;
+  height:112px;
+  border:6px solid #e4b84c;
+  border-radius:50%;
+  background:#fff;
+  color:#111;
+  font-size:64px;
+  font-weight:900;
+  box-shadow:0 12px 35px rgba(0,0,0,.34);
+  animation:bonusKanji .7s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes bonusRing{
+  from{transform:scale(.4);opacity:1}
+  to{transform:scale(1.65);opacity:0}
+}
+@keyframes bonusKanji{
+  0%{transform:scale(.25) rotate(-12deg);opacity:0}
+  55%{transform:scale(1.18) rotate(3deg);opacity:1}
+  100%{transform:scale(1);opacity:1}
+}
+@keyframes bonusFlashFade{
+  0%{opacity:0}
+  18%{opacity:1}
+  82%{opacity:1}
+  100%{opacity:0}
+}
+.toyama-jump{
+  position:sticky;
+  top:58px;
+  z-index:15;
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:10px 4px 12px;
+  margin:0 0 13px;
+  background:linear-gradient(180deg,rgba(248,244,237,.98),rgba(248,244,237,.88));
+  scrollbar-width:none;
+}
+.toyama-jump::-webkit-scrollbar{display:none}
+.toyama-jump a{
+  flex:0 0 auto;
+  padding:8px 11px;
+  border:1px solid rgba(124,102,88,.19);
+  border-radius:999px;
+  background:#fff;
+  color:#62544c;
+  font-size:12px;
+  font-weight:800;
+  text-decoration:none;
+}
+.section-heading{scroll-margin-top:126px}
+.spot.has-photo{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 106px;
+  grid-template-areas:
+    "title photo"
+    "address photo"
+    "action action";
+  column-gap:12px;
+  align-items:start;
+  min-height:108px;
+}
+.spot.has-photo h2{grid-area:title;margin:0 0 5px}
+.spot.has-photo .addr{grid-area:address}
+.spot.has-photo .spot-img{
+  grid-area:photo;
+  width:106px;
+  height:82px;
+  aspect-ratio:auto;
+  margin:0;
+  object-fit:cover;
+  border-radius:10px;
+}
+.spot.has-photo .story-btn{grid-area:action}
+.spot:not(.has-photo){min-height:88px}
+.story-text{
+  font-family:"Yu Mincho","Hiragino Mincho ProN","HGS明朝E","MS PMincho",serif;
+  font-size:clamp(17px,4.5vw,20px);
+  line-height:2.05;
+  text-align:left;
+}
+.next-era-button{
+  border-color:#efcf7a;
+  background:linear-gradient(180deg,#e3b950,#b88326);
+  color:#17243a;
+}
+.teaser-modal{
+  position:fixed;
+  z-index:1400;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));
+  background:rgba(2,6,10,.97);
+}
+.teaser-modal.open{display:flex}
+body.teaser-open{overflow:hidden}
+.teaser-video-shell{
+  width:min(100%,980px);
+  max-height:calc(100svh - 24px);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:12px;
+  border:1px solid rgba(235,208,126,.52);
+  border-radius:16px;
+  background:#05080b;
+  color:#fff;
+  box-shadow:0 22px 60px rgba(0,0,0,.55);
+}
+.teaser-video-shell h2{
+  margin:0;
+  font-family:"Yu Mincho","Hiragino Mincho ProN","HGS明朝E","MS PMincho",serif;
+  font-size:clamp(18px,4.8vw,25px);
+  text-align:center;
+}
+.teaser-video{
+  display:block;
+  width:100%;
+  max-height:min(72svh,620px);
+  aspect-ratio:16/9;
+  border-radius:10px;
+  background:#000;
+  object-fit:contain;
+}
+.teaser-status{
+  min-height:1.4em;
+  margin:0;
+  color:#f5dda0;
+  font-size:14px;
+  line-height:1.5;
+  text-align:center;
+}
+.teaser-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.teaser-action{
+  min-height:46px;
+  border:1px solid rgba(255,255,255,.48);
+  border-radius:12px;
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  font-weight:900;
+}
+.teaser-action.primary{
+  border-color:#e5bd58;
+  background:linear-gradient(180deg,#d7ae49,#9d681b);
+}
+.teaser-action[hidden]{display:none}
+@media (max-width:520px){
+  .teaser-video-shell{padding:9px;gap:8px}
+  .teaser-actions{grid-template-columns:1fr}
+  .teaser-video{max-height:66svh}
+}
+@media (max-width:360px){
+  .tokunofu-panel{grid-template-columns:auto 1fr 1fr}
+  .spot.has-photo{grid-template-columns:minmax(0,1fr) 92px}
+  .spot.has-photo .spot-img{width:92px;height:72px}
+}
+
+
+/* 公開版Ver1.0 RC2 読みやすさ調整 */
+#story-screen .story-text{
+  margin:18px 8px 0;
+  font-family:"Yu Mincho","Hiragino Mincho ProN","HGS明朝E","MS PMincho",serif;
+  font-size:clamp(20px,5.4vw,24px);
+  font-weight:700;
+  line-height:2.08;
+  letter-spacing:.025em;
+  text-align:left;
+  color:#fff;
+  text-shadow:0 2px 6px rgba(0,0,0,.88);
+}
+#story-screen .story-footer{
+  font-size:clamp(16px,4.2vw,19px);
+  font-weight:700;
+  line-height:1.95;
+}
+#story-screen .teaser-card p,
+#story-screen .teaser-card strong{
+  font-size:clamp(18px,4.8vw,21px);
+  font-weight:700;
+}
+
+
+
+/* 公開版 Ver1.0 RC3：スマートフォンのゲーム画面を一画面に収める */
+:root{--game-viewport-height:100dvh}
+body.game-open{overflow:hidden;overscroll-behavior:none}
+#game-screen.active{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:var(--game-viewport-height,100dvh);
+  min-height:0;
+  overflow:hidden;
+  overscroll-behavior:none;
+}
+#game-screen .game-shell{
+  width:min(100%,420px);
+  height:var(--game-viewport-height,100dvh);
+  min-height:0;
+  padding:max(3px,env(safe-area-inset-top)) 6px max(3px,env(safe-area-inset-bottom));
+  gap:3px;
+  overflow:hidden;
+}
+#game-screen .game-toolbar{
+  flex:0 0 42px;
+  width:100%;
+  min-height:42px;
+  height:42px;
+}
+#game-screen .game-toolbar .icon-btn{
+  width:38px;
+  height:38px;
+  font-size:18px;
+}
+#game-screen .pause-btn{
+  min-width:96px;
+  min-height:38px;
+  height:38px;
+  padding:5px 12px;
+}
+#game-screen .tokunofu-panel{
+  flex:0 0 38px;
+  width:min(100%,360px);
+  min-height:38px;
+  height:38px;
+  margin:0;
+  padding:3px 6px;
+  gap:5px;
+  border-radius:10px;
+}
+#game-screen .tokunofu-label{font-size:12px}
+#game-screen .tokunofu-button{
+  min-height:28px;
+  height:28px;
+  padding:2px 8px;
+  font-size:13px;
+}
+#game-screen #game-canvas{
+  flex:0 0 auto;
+  width:360px;
+  height:640px;
+  max-width:none;
+  border-width:5px;
+  border-radius:14px;
+  box-shadow:0 7px 20px rgba(38,85,101,.20);
+}
+#game-screen .game-help{
+  flex:0 0 auto;
+  margin:1px 0 0;
+  min-height:14px;
+  font-size:10px;
+  line-height:1.35;
+  white-space:nowrap;
+}
+@media (max-height:680px){
+  #game-screen .game-help{display:none}
+}
+
+
+/* RC4: タイトル画像は切り取らず、ブラウザの上下バー内に全体表示 */
+body.title-open{overflow:hidden;overscroll-behavior:none}
+@supports(height:100svh){#title-screen{height:100svh}}
+@media(max-height:660px){.title-btn{min-height:48px;padding:8px 7px}.title-btn-wrap{gap:6px}}
+</style>
+</meta></head>
+<body>
+<section aria-label="タイトル画面" class="screen active" id="title-screen">
+<div class="title-fallback"><strong>KIBOUKANJI</strong><span>希望を届ける、漢字パズル。</span></div>
+<img alt="きぼうかんじ タイトル背景" class="title-bg-image" data-src-candidates="title-kiboukanji.png|きぼうかんじTOP.png|(仮) TOP1.png" decoding="async" id="title-bg-image"/>
+<div class="title-btn-wrap">
+<button class="title-btn" id="start-button" type="button">パズル</button>
+<button class="title-btn" id="manual-button" type="button">使いかた</button>
+<button class="title-btn" id="toyama-button" type="button">とやま</button>
+</div>
+</section>
+<section class="screen" id="game-screen">
+<div class="game-shell">
+<div class="game-toolbar">
+<button aria-label="タイトルへ戻る" class="icon-btn back-button" type="button">◀</button>
+<button aria-label="一時停止" class="pause-btn" id="pause-button" type="button">一時停止</button>
+</div>
+<div aria-label="ためた特の符" class="tokunofu-panel" id="tokunofu-panel">
+<span class="tokunofu-label">特の符</span>
+<button class="tokunofu-button" data-tokunofu="代" disabled="" id="tokunofu-dai" type="button">代 × 0</button>
+<button class="tokunofu-button" data-tokunofu="岳" disabled="" id="tokunofu-gaku" type="button">岳 × 0</button>
+</div><canvas aria-label="きぼうかんじゲーム" height="640" id="game-canvas" width="360"></canvas>
+<p class="game-help">左右へ動かす　下へ動かすと高さに応じて急降下＋10～90</p>
+<button class="hidden" id="restartBtn" type="button">もう一度あそぶ</button>
+</div>
+</section>
+<section class="screen" id="manual-screen">
+<div class="page-shell manual-shell">
+<header class="page-head">
+<button aria-label="タイトルへ戻る" class="icon-btn back-button" type="button">◀</button>
+<h1>使いかた</h1><span></span>
+</header>
+<iframe class="manual-frame" id="manual-frame" src="manual.html?v=1.0.1" title="きぼうかんじ 使いかた"></iframe>
+</div>
+</section>
+<section class="screen" id="toyama-screen">
+<div class="page-shell">
+<header class="page-head">
+<button aria-label="タイトルへ戻る" class="icon-btn back-button" type="button">◀</button>
+<h1>富山県の魅力をご紹介します</h1><span></span>
+</header>
+<main class="content"><nav aria-label="観光地の目次" class="toyama-jump">
+<a href="#toyama-mountain">山と霊峰</a>
+<a href="#toyama-history">歴史と職人</a>
+<a href="#toyama-sea">日本海と街道</a>
+<a href="#toyama-nature">自然と学び</a>
+<a href="#toyama-city">駅近と水辺</a>
+</nav>
+<div class="section-heading" id="toyama-mountain">⛰ 山と霊峰</div>
+<article class="spot"><h2>黒部峡谷鉄道（トロッコ電車）</h2><p class="addr">富山県黒部市黒部峡谷口11</p></article>
+<article class="spot"><h2>相倉合掌造り集落</h2><p class="addr">富山県南砺市相倉</p></article>
+<article class="spot"><h2>称名滝</h2><p class="addr">富山県中新川郡立山町芦峅寺</p></article>
+<article class="spot"><h2>立山博物館（まんだら遊苑）</h2><p class="addr">富山県中新川郡立山町芦峅寺93-1</p></article>
+<div class="section-heading" id="toyama-history">🏺 歴史と職人</div>
+<article class="spot"><h2>井波の町並み（八日町通り）</h2><p class="addr">富山県南砺市井波</p></article>
+<article class="spot has-photo"><h2>歴史民俗博物館</h2><img alt="歴史民俗博物館" class="spot-img" data-src-candidates="uuu.JPG" decoding="async" loading="lazy"/><p class="addr">富山県魚津市小川寺字天神山1070</p></article>
+<article class="spot has-photo"><h2>郷土博物館（富山城）</h2><img alt="郷土博物館（富山城）" class="spot-img zoomable" data-src-candidates="t1.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市本丸1-62（富山城址公園内）</p></article>
+<article class="spot"><h2>氷見市潮風ギャラリー 藤子不二雄Ⓐアートコレクション</h2><p class="addr">富山県氷見市中央町3-4</p></article>
+<article class="spot has-photo"><h2>八尾おわら資料館</h2><img alt="八尾おわら資料館" class="spot-img zoomable" data-src-candidates="o16.jpg" decoding="async" loading="lazy"/><p class="addr">富山市八尾町東町2105番地1</p></article>
+<div class="section-heading" id="toyama-sea">🌊 日本海と街道</div>
+<article class="spot has-photo" id="amaharashi-spot">
+<h2>雨晴海岸</h2>
+<img alt="雨晴海岸" class="spot-img cinematic" data-src-candidates="lastlast.png" decoding="async" loading="lazy"/>
+<p class="addr">富山県高岡市太田雨晴</p>
+<button class="story-btn" id="story-button" type="button">物語を見る</button>
+</article>
+<article class="spot"><h2>ほたるいかミュージアム</h2><p class="addr">富山県滑川市中川原410</p></article>
+<article class="spot"><h2>海王丸パーク</h2><p class="addr">富山県射水市海王町8</p></article>
+<article class="spot has-photo"><h2>岩瀬の町並み</h2><img alt="岩瀬の町並み" class="spot-img zoomable" data-src-candidates="i1.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市岩瀬大町</p></article>
+<div class="section-heading" id="toyama-nature">🌿 丘の自然と知の空間</div>
+<article class="spot"><h2>ファミリーパーク</h2><p class="addr">富山県富山市古沢277</p></article>
+<article class="spot"><h2>富山市民俗民芸村</h2><p class="addr">富山県富山市安養坊1118-1</p></article>
+<article class="spot has-photo"><h2>富山市科学博物館</h2><img alt="富山市科学博物館" class="spot-img" data-src-candidates="sci.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市西中野町1-8-31</p></article>
+<article class="spot has-photo"><h2>ミラージュランド</h2><img alt="ミラージュランド" class="spot-img zoomable" data-src-candidates="m2.jpg" decoding="async" loading="lazy"/><p class="addr">富山県魚津市三ケ1390</p></article>
+<div class="section-heading" id="toyama-city">🏞 富山駅近から水辺</div>
+<article class="spot has-photo"><h2>富山県美術館</h2><img alt="富山県美術館" class="spot-img" data-src-candidates="art.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市木場町3-20</p></article>
+<article class="spot has-photo"><h2>富岩運河環水公園</h2><img alt="富岩運河環水公園" class="spot-img" data-src-candidates="c.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市湊入船町5</p></article>
+<article class="spot has-photo"><h2>池田屋安兵衛商店</h2><img alt="池田屋安兵衛商店" class="spot-img" data-src-candidates="k.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市堤町通り1-3-5</p></article>
+<article class="spot has-photo"><h2>富山市役所展望塔</h2><img alt="富山市役所展望塔" class="spot-img" data-src-candidates="city.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市新桜町7-38</p></article>
+</main>
+</div>
+</section>
+<section class="screen" id="story-screen">
+<div class="page-shell">
+<header class="page-head">
+<button aria-label="とやまへ戻る" class="icon-btn story-back-button" type="button">◀</button>
+<h1>雨晴海岸きぼうかんじ伝説</h1><span></span>
+</header>
+<main class="content">
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="ushiwaka_moon.png" decoding="async" loading="lazy"/><p class="story-text">今から800年前、京都にひとりの子が生まれる。名は牛若丸。のちの、源 義経だ。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="ushiwaka_smile.png" decoding="async" loading="lazy"/><p class="story-text">あきらめそうになる時や逃げ出したくなりそうでも、「よし、やってみよう！」と立ち向かおうというような、希望が肝心（きぼうかんじ）のこころざしを宿していた。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="ushiwaka_sword.png" decoding="async" loading="lazy"/><p class="story-text">山の寺で修行を重ね、剣の修行に励む日々。心の奥に静かな強さを秘める義経。彼はまだ、自らの過酷な運命を知らない。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="ushiwaka_bow.png" decoding="async" loading="lazy"/><p class="story-text">その影はやがて、未来へ続く道を歩きはじめる。激動の歴史の幕が上がろうとしていた。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="y1.png" decoding="async" loading="lazy"/><p class="story-text">月日は流れ義経は歴史の表舞台へと躍り出る。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="y3.png" decoding="async" loading="lazy"/><p class="story-text">激流うずまく壇ノ浦の合戦。義経は敵の矢をかいくぐり八艘飛びの奇策で平家を圧倒する。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="y2.png" decoding="async" loading="lazy"/><p class="story-text">平家の滅亡後、追われる身となった義経は、良質な馬の産地で、蝦夷地との交易拠点でもある平泉を目指した。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="north.png" decoding="async" loading="lazy"/><p class="story-text">平泉の奥州藤原氏には、義経の信頼する仲間も保護する力があった。平泉を目指す道中に北陸の地へと逃れる。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="north2.png" decoding="async" loading="lazy"/><p class="story-text">互いを信じ抜き、険しい旅を続ける義経の一行。途中、富山県高岡市の雨晴海岸へとたどり着く。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="b1.png" decoding="async" loading="lazy"/><p class="story-text">突然の激しいにわか雨。弁慶は義経の一行を守るため、怪力で巨大な岩を持ち上げた。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="b2.png" decoding="async" loading="lazy"/><p class="story-text">持ち上げられた岩の陰で身を寄せ合い、静かに雨が止むのを待ったという。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="b3.png" decoding="async" loading="lazy"/><p class="story-text">雨宿りをしながら日本海を見つめる義経。どれほどの窮地に立たされようとも、未来への希望の感情（きぼうかんじ）を捨てさることなく、前へ進むことを心に誓う。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="b4.png" decoding="async" loading="lazy"/><p class="story-text">やがて雲の切れ間から光が差し込み、空は晴れ渡った。義経の一行は再び平泉への歩みを進める。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="ama1.png" decoding="async" loading="lazy"/><p class="story-text">これこそが、雨晴（あまはらし）と呼ばれる地名の由来となった伝説の瞬間なのだ。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="ama2.png" decoding="async" loading="lazy"/><p class="story-text">歴史を駆け抜けた義経一行の軌跡は、現在もこの浜の記憶として、静かに息づいている。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="lastl1.png" decoding="async" loading="lazy"/><p class="story-text">春<br/>海風に花びらが舞い、白き峰にはまだ雪が残る。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="lastl2.png" decoding="async" loading="lazy"/><p class="story-text">初夏<br/>山々の雪解け水が流れ、海は澄んだ青を開く。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="last3.png" decoding="async" loading="lazy"/><p class="story-text">夏<br/>波間に白い光が燃え、入道雲が空へ立ちのぼる。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="lastlast4.png" decoding="async" loading="lazy"/><p class="story-text">秋<br/>夕暮れが浜を染め、山影がくっきりと深まる。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="last5.png" decoding="async" loading="lazy"/><p class="story-text">晩秋<br/>海から霧が立ちのぼり、峰々は淡い紅に染まる。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="ama3.png" decoding="async" loading="lazy"/><p class="story-text">冬<br/>雪が浜を覆い、世界は静寂に包まれる。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="lastl6.png" decoding="async" loading="lazy"/><p class="story-text">厳冬<br/>海から湯気のような気嵐が立ち、現代は氷霜の中を電車が走る。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="lastlast.png" decoding="async" loading="lazy"/><p class="story-text">四季はめぐり、景色は移ろう。それでもこの浜は、いにしえの記憶を静かに抱いている。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="lastlastlastlast.png" decoding="async" loading="lazy"/><p class="story-text">静かな浜辺に波の音だけがひびき、遠い日々の気配がそっと胸によみがえる。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="future2.jpg" decoding="async" loading="lazy"/><p class="story-text">立山連峰から日本海まで、無限に重ね合わされた未来の景色。これから観測するあなたたちの心が、希望の数え唄をつむいで現実へと収束させていくのでしょう。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="futureV.jpg" decoding="async" loading="lazy"/><p class="story-text">おしまい</p></article>
+<button class="next-era-button" id="next-era-button" type="button">
+      そして波音の記憶が共鳴の時代へ
+    </button><p class="story-footer">KIBOUKANJI — Every Character Carries Hope —<br/>Produced by Team shiob</p>
+</main>
+</div>
+</section>
+<div aria-labelledby="tokunofu-title" aria-modal="true" class="tokunofu-modal" id="tokunofu-modal" role="dialog">
+<div class="tokunofu-box">
+<div class="tokunofu-symbol" id="tokunofu-symbol">代</div>
+<h2 id="tokunofu-title">代を発動しますか？</h2>
+<p id="tokunofu-message">特の符を今使うか、ためておくか選んでください。</p>
+<div class="tokunofu-actions">
+<button class="bonus-action secondary" id="tokunofu-store" type="button">ためておく</button>
+<button class="bonus-action primary" id="tokunofu-use" type="button">使う</button>
+</div>
+</div>
+</div><div aria-hidden="true" class="bonus-flash" id="bonus-flash">
+<div class="bonus-flash-ring"></div>
+<div class="bonus-flash-kanji" id="bonus-flash-kanji">代</div>
+</div><div aria-labelledby="bonus-confirm-title" aria-modal="true" class="bonus-confirm-modal" id="bonus-confirm-modal" role="dialog">
+<div class="bonus-confirm-box">
+<h2 id="bonus-confirm-title">ボーナス確認</h2>
+<p id="bonus-confirm-message"></p>
+<div class="bonus-selection-preview" id="bonus-selection-preview"></div>
+<div class="bonus-confirm-actions">
+<button class="bonus-action secondary" id="bonus-confirm-no" type="button">選び直す</button>
+<button class="bonus-action primary" id="bonus-confirm-yes" type="button">決定する</button>
+</div>
+</div>
+</div>
+<div aria-labelledby="teaser-title" aria-modal="true" class="teaser-modal" id="teaser-modal" role="dialog">
+<div class="teaser-video-shell">
+<h2 id="teaser-title">続編「未来の雨晴海岸」予告</h2>
+<video aria-label="続編 未来の雨晴海岸 予告動画" class="teaser-video" controls="" id="teaser-video" playsinline="" poster="future_teaser_poster.jpg" preload="metadata">
+<source src="future_teaser.mp4?v=1.0.1" type="video/mp4"/>
+          お使いのブラウザでは動画を再生できません。
+        </video>
+<p aria-live="polite" class="teaser-status" id="teaser-status"></p>
+<div class="teaser-actions">
+<button class="teaser-action" hidden="" id="teaser-replay" type="button">もう一度見る</button>
+<button class="teaser-action primary" id="teaser-close" type="button">物語へ戻る</button>
+</div>
+</div>
+</div><div aria-label="写真を拡大表示" aria-modal="true" class="photo-modal" id="photo-modal" role="dialog">
+<button aria-label="閉じる" class="icon-btn photo-close" id="photo-close" type="button">×</button>
+<img alt="" id="photo-modal-image" src=""/>
+</div>
+<script src="game-core.js?v=1.0.1"></script>
+<script src="game-board.js?v=1.0.1"></script>
+<script src="game-draw.js?v=1.0.1"></script>
+<script src="game-audio.js?v=1.0.1"></script>
+<script src="game-ui.js?v=1.0.1"></script>
+</body>
+</html>

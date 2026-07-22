@@ -1,0 +1,358 @@
+{
+  "version": "1.0.1",
+  "note": "BGM・効果音・物語音・続編予告動画・富山城背景9枚は、公開パッケージに同梱済みです。",
+  "assets": [
+    {
+      "target": "title-kiboukanji.png",
+      "candidates": [
+        "title-kiboukanji.png",
+        "きぼうかんじTOP.png",
+        "(仮) TOP1.png"
+      ],
+      "category": "タイトル"
+    },
+    {
+      "target": "uuu.JPG",
+      "candidates": [
+        "uuu.JPG"
+      ],
+      "category": "とやま"
+    },
+    {
+      "target": "t1.jpg",
+      "candidates": [
+        "t1.jpg"
+      ],
+      "category": "とやま"
+    },
+    {
+      "target": "o16.jpg",
+      "candidates": [
+        "o16.jpg"
+      ],
+      "category": "とやま"
+    },
+    {
+      "target": "lastlast.png",
+      "candidates": [
+        "lastlast.png"
+      ],
+      "category": "とやま・物語"
+    },
+    {
+      "target": "i1.jpg",
+      "candidates": [
+        "i1.jpg"
+      ],
+      "category": "とやま"
+    },
+    {
+      "target": "sci.jpg",
+      "candidates": [
+        "sci.jpg"
+      ],
+      "category": "とやま"
+    },
+    {
+      "target": "m2.jpg",
+      "candidates": [
+        "m2.jpg"
+      ],
+      "category": "とやま"
+    },
+    {
+      "target": "art.jpg",
+      "candidates": [
+        "art.jpg"
+      ],
+      "category": "とやま"
+    },
+    {
+      "target": "c.jpg",
+      "candidates": [
+        "c.jpg"
+      ],
+      "category": "とやま"
+    },
+    {
+      "target": "k.jpg",
+      "candidates": [
+        "k.jpg"
+      ],
+      "category": "とやま"
+    },
+    {
+      "target": "city.jpg",
+      "candidates": [
+        "city.jpg"
+      ],
+      "category": "とやま"
+    },
+    {
+      "target": "ushiwaka_moon.png",
+      "candidates": [
+        "ushiwaka_moon.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "ushiwaka_smile.png",
+      "candidates": [
+        "ushiwaka_smile.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "ushiwaka_sword.png",
+      "candidates": [
+        "ushiwaka_sword.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "ushiwaka_bow.png",
+      "candidates": [
+        "ushiwaka_bow.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "y1.png",
+      "candidates": [
+        "y1.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "y3.png",
+      "candidates": [
+        "y3.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "y2.png",
+      "candidates": [
+        "y2.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "north.png",
+      "candidates": [
+        "north.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "north2.png",
+      "candidates": [
+        "north2.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "b1.png",
+      "candidates": [
+        "b1.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "b2.png",
+      "candidates": [
+        "b2.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "b3.png",
+      "candidates": [
+        "b3.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "b4.png",
+      "candidates": [
+        "b4.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "ama1.png",
+      "candidates": [
+        "ama1.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "ama2.png",
+      "candidates": [
+        "ama2.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "lastl1.png",
+      "candidates": [
+        "lastl1.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "lastl2.png",
+      "candidates": [
+        "lastl2.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "last3.png",
+      "candidates": [
+        "last3.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "lastlast4.png",
+      "candidates": [
+        "lastlast4.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "last5.png",
+      "candidates": [
+        "last5.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "ama3.png",
+      "candidates": [
+        "ama3.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "lastl6.png",
+      "candidates": [
+        "lastl6.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "lastlastlastlast.png",
+      "candidates": [
+        "lastlastlastlast.png"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "future2.jpg",
+      "candidates": [
+        "future2.jpg"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "futureV.jpg",
+      "candidates": [
+        "futureV.jpg"
+      ],
+      "category": "雨晴海岸物語"
+    },
+    {
+      "target": "u1.jpg",
+      "candidates": [
+        "u1.jpg"
+      ],
+      "category": "使いかた"
+    },
+    {
+      "target": "u2.jpg",
+      "candidates": [
+        "u2.jpg"
+      ],
+      "category": "使いかた"
+    },
+    {
+      "target": "u3.jpg",
+      "candidates": [
+        "u3.jpg"
+      ],
+      "category": "使いかた"
+    },
+    {
+      "target": "u4.jpg",
+      "candidates": [
+        "u4.jpg"
+      ],
+      "category": "使いかた"
+    },
+    {
+      "target": "photo01-01.jpg",
+      "candidates": [
+        "photo01-01.jpg"
+      ],
+      "category": "使いかた"
+    },
+    {
+      "target": "photo03-01.jpg",
+      "candidates": [
+        "photo03-01.jpg"
+      ],
+      "category": "使いかた"
+    },
+    {
+      "target": "photo02-01.jpg",
+      "candidates": [
+        "photo02-01.jpg"
+      ],
+      "category": "使いかた"
+    },
+    {
+      "target": "photo01-03.jpg",
+      "candidates": [
+        "photo01-03.jpg"
+      ],
+      "category": "使いかた"
+    },
+    {
+      "target": "i4.jpg",
+      "candidates": [
+        "i4.jpg"
+      ],
+      "category": "使いかた"
+    },
+    {
+      "target": "g.jpg",
+      "candidates": [
+        "g.jpg"
+      ],
+      "category": "使いかた"
+    },
+    {
+      "target": "i5.jpg",
+      "candidates": [
+        "i5.jpg"
+      ],
+      "category": "使いかた"
+    },
+    {
+      "target": "X.png",
+      "candidates": [
+        "X.png"
+      ],
+      "category": "使いかた"
+    },
+    {
+      "target": "innstaunnamed.png",
+      "candidates": [
+        "innstaunnamed.png"
+      ],
+      "category": "使いかた"
+    }
+  ]
+}
