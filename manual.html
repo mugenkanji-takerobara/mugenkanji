@@ -151,7 +151,14 @@ h3{font-size:clamp(22px,6vw,29px)}
   letter-spacing:-.08em;
   transform:rotate(-7deg);
 }
-.decorated-kana .music-mark{color:#357bb5}
+.decorated-kana .music-mark{
+  top:-.01em;
+  left:88%;
+  color:#357bb5;
+  font-size:.22em;
+  letter-spacing:-.20em;
+  transform:rotate(-4deg);
+}
 .decorated-kana .heart-mark{
   top:-.02em;
   left:66%;
@@ -211,9 +218,12 @@ h3{font-size:clamp(22px,6vw,29px)}
   margin-top:25px;
 }
 .quad img{
+  display:block;
   width:100%;
+  height:auto;
   aspect-ratio:4/3;
   object-fit:cover;
+  object-position:center;
   border-radius:3px;
 }
 .media-missing{
@@ -360,11 +370,25 @@ h3{font-size:clamp(22px,6vw,29px)}
   margin-top:28px;
 }
 .sns-card{
+  display:block;
+  min-height:100%;
   padding:18px 10px;
   text-align:center;
+  color:inherit;
+  text-decoration:none;
   border:1px solid rgba(255,255,255,.30);
   background:rgba(255,255,255,.11);
+  cursor:pointer;
+  touch-action:manipulation;
+  transition:transform .16s ease,background .16s ease,border-color .16s ease;
 }
+.sns-card:hover,
+.sns-card:focus-visible{
+  transform:translateY(-2px);
+  background:rgba(255,255,255,.20);
+  border-color:rgba(255,255,255,.58);
+}
+.sns-card:active{transform:translateY(0)}
 .sns-card img{
   width:136px;
   max-width:100%;
@@ -568,6 +592,12 @@ h3{font-size:clamp(22px,6vw,29px)}
   }
 }
 
+
+.credit-subtitle{margin:.35rem 0 1.2rem;font-size:clamp(13px,3.5vw,16px);line-height:1.5}
+.audio-credit-line{max-width:92%;margin-left:auto;margin-right:auto;line-height:1.7}
+.last-brand-title,.last-brand-subtitle{display:block}
+.last-brand-title{font-weight:800;letter-spacing:.05em}
+.last-brand-subtitle{margin-top:.35em;font-size:.82em;font-weight:600;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -579,7 +609,7 @@ h3{font-size:clamp(22px,6vw,29px)}
   <div class="cover-title">
     <span class="cover-title-main" aria-label="きぼうかんじ">
       <span class="sr-only">きぼうかんじ</span>
-      <span aria-hidden="true">き</span><span class="decorated-kana" aria-hidden="true">ほ<span class="kana-mark music-mark">♫</span></span><span aria-hidden="true">うかん</span><span class="decorated-kana" aria-hidden="true">し<span class="kana-mark heart-mark">♥♥</span></span>
+      <span aria-hidden="true">き</span><span class="decorated-kana" aria-hidden="true">ほ<span class="kana-mark music-mark">♩♩</span></span><span aria-hidden="true">うかん</span><span class="decorated-kana" aria-hidden="true">し<span class="kana-mark heart-mark">♥♥</span></span>
     </span>
     <span class="cover-title-sub">とやまの無限漢字</span>
     <span class="cover-title-copy">～立山連峰から富山湾まで、希望の数え唄～</span>
@@ -639,7 +669,7 @@ h3{font-size:clamp(22px,6vw,29px)}
 <section id="glyph" class="page toyama">
   <p class="kicker">02　漢字と富山</p>
   <h2 class="glyph-heading">
-    <span class="glyph-main">GLYPH（グリフ）＝漢字</span>
+    <span class="glyph-main">GLYPHS（グリフ）＝漢字</span>
     <span class="glyph-sub">静かに浮かび上がる。</span>
   </h2>
   <div class="rule"></div>
@@ -713,8 +743,12 @@ h3{font-size:clamp(22px,6vw,29px)}
   <p class="copy">ハイスコアの投稿、お気に入りのプレイ画面の保存、バグ報告、お問い合わせに利用できます。</p>
 
   <div class="sns-grid">
-    <div class="sns-card"><img src="X.png" alt="公式XのQRコード"><strong>公式X</strong><span>@kiboukanji429</span></div>
-    <div class="sns-card"><img src="innstaunnamed.png" alt="公式InstagramのQRコード"><strong>公式Instagram</strong><span>@26kibou4kanji29</span></div>
+    <a class="sns-card" href="https://x.com/kiboukanji429" target="_blank" rel="noopener noreferrer" aria-label="公式Xを開く">
+      <img src="X.png" alt="公式XのQRコード"><strong>公式X</strong><span>@kiboukanji429</span>
+    </a>
+    <a class="sns-card" href="https://www.instagram.com/26kibou4kanji29/" target="_blank" rel="noopener noreferrer" aria-label="公式Instagramを開く">
+      <img src="innstaunnamed.png" alt="公式InstagramのQRコード"><strong>公式Instagram</strong><span>@26kibou4kanji29</span>
+    </a>
   </div>
   <p class="note">URLまたはQRコードから、スマートフォンのブラウザで遊べます。ダウンロードや料金は必要ありません。</p>
 </section>
@@ -727,18 +761,19 @@ h3{font-size:clamp(22px,6vw,29px)}
 
 <section class="page credit-summer cinema-page">
   <p class="credit-label">PHOTO CREDITS</p>
+  <p class="credit-subtitle">（写真クレジット一覧）</p>
   <div class="credit-name">魚津市企画広報室<br><br>魚津市教育委員会<br><br>富山市観光協会</div>
 </section>
 
 <section class="page credit-autumn cinema-page">
-  <p class="credit-label">音響</p>
-  <div class="credit-name">BGM・効果音<br><br>Team Shiob<br><br>（オールオリジナル音源）</div>
+  <p class="credit-label">AUDIO CREDITS</p>
+  <div class="credit-name audio-credit-line">BGM・効果音　Team shiob（オールオリジナル音源）</div>
 </section>
 
 <section class="page credit-winter cinema-page">
-  <p class="produced-line">PRODUCED BY Team Shiob</p>
-  <div class="last-brand">KIBOUKANJI — Every Character Carries Hope —</div>
-  <p class="copyright-line">© 2026 Team Shiob All Rights Reserved.</p>
+  <p class="produced-line">PRODUCED BY Team shiob</p>
+  <div class="last-brand"><span class="last-brand-title">KIBOUKANJI</span><span class="last-brand-subtitle">— Every Character Carries Hope —</span></div>
+  <p class="copyright-line">© 2026 Team shiob All Rights Reserved.</p>
 </section>
 
 </main>

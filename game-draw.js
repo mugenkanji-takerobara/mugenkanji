@@ -1,147 +1,97 @@
-// きぼうかんじ 公開版 Ver.1.0
-// 富山城背景・特の符・連鎖演出
-// 更新日: 2026-07-16
-
 (() => {
   "use strict";
 
   const app = window.KibouKanji = window.KibouKanji || {};
 
-
-  app.富山城背景 = [
-    { file: "toyama-castle-01-sakura.jpg", name: "春　桜の富山城" },
-    { file: "toyama-castle-02-tulip.jpg", name: "春　花ひらく城下" },
-    { file: "toyama-castle-03-green.jpg", name: "初夏　新緑と水辺" },
-    { file: "toyama-castle-04-blue.jpg", name: "夏　青空の富山城" },
-    { file: "toyama-castle-05-cloud.jpg", name: "盛夏　雲わたる城" },
-    { file: "toyama-castle-06-detail.jpg", name: "城郭　白壁と瓦" },
-    { file: "toyama-castle-07-city.jpg", name: "街なかに息づく城" },
-    { file: "toyama-castle-08-autumn.jpg", name: "秋　城址の彩り" },
-    { file: "toyama-castle-09-night.jpg", name: "夜　水鏡の富山城" }
-  ].map(item => {
-    const image = new Image();
-    image.decoding = "async";
-    image.src = item.file;
-    return { ...item, image };
-  });
-
-  app.背景演出 = {
-    現在段階: -1,
-    前段階: -1,
-    切替時刻: 0
-  };
-
-  app.背景段階 = function () {
-    return Math.floor(app.状態.得点 / 100) % app.富山城背景.length;
-  };
-
-  app.画像全面描画 = function (ctx, image, width, height, alpha = 1) {
-    const imageWidth = image.naturalWidth || image.width;
-    const imageHeight = image.naturalHeight || image.height;
-    if (!imageWidth || !imageHeight) return false;
-
-    const scale = Math.max(width / imageWidth, height / imageHeight);
-    const drawWidth = imageWidth * scale;
-    const drawHeight = imageHeight * scale;
-    const x = (width - drawWidth) / 2;
-    const y = (height - drawHeight) / 2;
-
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.drawImage(image, x, y, drawWidth, drawHeight);
-    ctx.restore();
-    return true;
+  app.季節取得 = function (得点) {
+    return ["spring", "summer", "autumn", "winter"][Math.floor(得点 / 200) % 4];
   };
 
   app.背景描画 = function () {
     const ctx = app.状態.ctx;
     if (!ctx) return;
 
-    const 時刻 = performance.now();
-    const 新段階 = app.背景段階();
-    const 演出 = app.背景演出;
+    const 季節 = app.季節取得(app.状態.得点);
+    const sky = ctx.createLinearGradient(0, 0, 0, 140);
+    sky.addColorStop(0, "#87CEEB");
+    sky.addColorStop(1, "#E0FFFF");
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, 360, 140);
 
-    if (演出.現在段階 !== 新段階) {
-      const 初回表示 = 演出.現在段階 < 0;
-      演出.前段階 = 演出.現在段階;
-      演出.現在段階 = 新段階;
-      演出.切替時刻 = 時刻;
-      if (!初回表示 && app.状態.開始済み) app.背景変更音再生?.();
-    }
-
-    const 現在背景 = app.富山城背景[演出.現在段階];
-    const 前背景 = app.富山城背景[演出.前段階];
-    const 進行 = Math.min(1, Math.max(0, (時刻 - 演出.切替時刻) / 900));
-
-    const 現在読込済み = 現在背景?.image?.complete && 現在背景.image.naturalWidth > 0;
-    const 前読込済み = 前背景?.image?.complete && 前背景.image.naturalWidth > 0;
-
-    if (前読込済み && 進行 < 1) {
-      app.画像全面描画(ctx, 前背景.image, 360, 640, 1);
+    if (季節 === "spring") {
+      ctx.fillStyle = "#F0F8FF";
+      ctx.fillRect(0, 120, 360, 40);
+      ctx.fillStyle = "#87CEFA";
+      ctx.fillRect(0, 140, 360, 30);
+      ctx.fillStyle = "#228B22";
+      ctx.fillRect(0, 170, 360, 20);
+      ctx.fillStyle = "#FFC0CB";
+      for (let i = 0; i < 8; i++) {
+        ctx.beginPath();
+        ctx.arc(20 + i * 40, 130, 8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (季節 === "summer") {
+      ctx.fillStyle = "#2E8B57";
+      ctx.beginPath();
+      ctx.moveTo(0, 120);
+      ctx.lineTo(40, 80);
+      ctx.lineTo(90, 110);
+      ctx.lineTo(150, 70);
+      ctx.lineTo(210, 105);
+      ctx.lineTo(270, 75);
+      ctx.lineTo(330, 110);
+      ctx.lineTo(360, 90);
+      ctx.lineTo(360, 140);
+      ctx.lineTo(0, 140);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = "#228B22";
+      ctx.fillRect(0, 140, 360, 20);
+    } else if (季節 === "autumn") {
+      ctx.fillStyle = "#8B4513";
+      ctx.fillRect(0, 120, 360, 40);
+      const 色 = ["#FF8C00", "#FF4500", "#FFD700"];
+      for (let i = 0; i < 9; i++) {
+        ctx.fillStyle = 色[i % 3];
+        ctx.beginPath();
+        ctx.arc(20 + i * 40, 120, 10, 0, Math.PI * 2);
+        ctx.fill();
+      }
     } else {
-      const fallback = ctx.createLinearGradient(0, 0, 0, 640);
-      fallback.addColorStop(0, "#87CEEB");
-      fallback.addColorStop(0.5, "#DFF3F5");
-      fallback.addColorStop(1, "#2578A2");
-      ctx.fillStyle = fallback;
-      ctx.fillRect(0, 0, 360, 640);
+      ctx.fillStyle = "#F8F8FF";
+      ctx.beginPath();
+      ctx.moveTo(0, 130);
+      ctx.lineTo(40, 90);
+      ctx.lineTo(90, 120);
+      ctx.lineTo(150, 80);
+      ctx.lineTo(210, 115);
+      ctx.lineTo(270, 85);
+      ctx.lineTo(330, 120);
+      ctx.lineTo(360, 100);
+      ctx.lineTo(360, 140);
+      ctx.lineTo(0, 140);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = "#00BFFF";
+      ctx.fillRect(0, 140, 360, 40);
+      ctx.fillStyle = "#FFFFFF";
+      [[60,160,10,6],[120,162,12,5],[190,162,16,6]].forEach(([x,y,rx,ry]) => {
+        ctx.beginPath();
+        ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+      });
     }
-
-    if (現在読込済み) {
-      app.画像全面描画(ctx, 現在背景.image, 360, 640, 前読込済み ? 進行 : 1);
-    }
-
-    /* 写真の上でも漢字と得点が読みやすいよう、静かな陰影を重ねます。 */
-    const shade = ctx.createLinearGradient(0, 0, 0, 640);
-    shade.addColorStop(0, "rgba(8,22,34,.38)");
-    shade.addColorStop(0.20, "rgba(255,255,255,.04)");
-    shade.addColorStop(0.72, "rgba(18,31,40,.10)");
-    shade.addColorStop(1, "rgba(5,18,29,.42)");
-    ctx.fillStyle = shade;
-    ctx.fillRect(0, 0, 360, 640);
 
     const { 盤面左, 盤面上, 列数, 行数, マス寸法 } = app.設定;
+    ctx.fillStyle = "#F0F8FF";
+    ctx.fillRect(盤面左 - 4, 盤面上 - 4, 列数 * マス寸法 + 8, 行数 * マス寸法 + 8);
 
-    /* 盤面には半透明の和紙風パネルを置き、背景写真を感じながら遊べるようにします。 */
-    ctx.fillStyle = "rgba(246,250,250,.76)";
-    ctx.fillRect(
-      盤面左 - 5,
-      盤面上 - 5,
-      列数 * マス寸法 + 10,
-      行数 * マス寸法 + 10
-    );
-
-    ctx.strokeStyle = "rgba(255,255,255,.92)";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(
-      盤面左 - 5,
-      盤面上 - 5,
-      列数 * マス寸法 + 10,
-      行数 * マス寸法 + 10
-    );
-
-    /* 切替直後だけ風景名を表示し、写真そのものを邪魔しないようにします。 */
-    const 経過 = 時刻 - 演出.切替時刻;
-    if (経過 < 2600) {
-      const 表示率 = 経過 < 350
-        ? 経過 / 350
-        : 経過 > 2100
-          ? (2600 - 経過) / 500
-          : 1;
-
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, Math.min(1, 表示率));
-      ctx.fillStyle = "rgba(0,0,0,.56)";
-      ctx.fillRect(64, 61, 232, 38);
-      ctx.strokeStyle = "rgba(255,255,255,.48)";
-      ctx.strokeRect(66, 63, 228, 34);
-      ctx.fillStyle = "#fff";
-      ctx.font = "bold 14px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(現在背景?.name || "富山城", 180, 80);
-      ctx.restore();
-    }
+    const sea = ctx.createLinearGradient(0, 盤面上 + 行数 * マス寸法 + 10, 0, 640);
+    sea.addColorStop(0, "#00BFFF");
+    sea.addColorStop(1, "#1E90FF");
+    ctx.fillStyle = sea;
+    ctx.fillRect(0, 盤面上 + 行数 * マス寸法 + 10, 360, 640);
   };
 
   app.格子描画 = function () {
@@ -172,22 +122,22 @@
     const { 盤面左, 盤面上, マス寸法, ボーナス漢字 } = app.設定;
     const px = 盤面左 + x * マス寸法 + マス寸法 / 2;
     const py = 盤面上 + y * マス寸法 + マス寸法 / 2;
-    const 一つ目 = app.状態.選択セル;
-    const 二つ目 = app.状態.選択セル2;
-    const 選択1 = 一つ目 && 一つ目.c === x && 一つ目.r === y;
-    const 選択2 = 二つ目 && 二つ目.c === x && 二つ目.r === y;
-    const 選択中 = 選択1 || 選択2;
 
     ctx.beginPath();
-    ctx.fillStyle = 選択中
-      ? "rgba(75,85,99,.97)"
-      : 落下中
-        ? "rgba(255,255,255,.98)"
-        : "rgba(255,255,255,.90)";
+    ctx.fillStyle = 落下中 ? "rgba(255,255,255,.98)" : "rgba(255,255,255,.90)";
     ctx.arc(px, py, 18, 0, Math.PI * 2);
     ctx.fill();
 
-    if (ボーナス漢字.includes(文字) && !選択中) {
+    const 選択 = app.状態.選択セル;
+    if (app.状態.ボーナス中 === "代" && 選択 && 選択.c === x && 選択.r === y) {
+      ctx.strokeStyle = "#FFD700";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(px, py, 22, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    if (ボーナス漢字.includes(文字)) {
       ctx.strokeStyle = "#FFD700";
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -195,30 +145,11 @@
       ctx.stroke();
     }
 
-    if (選択中) {
-      ctx.strokeStyle = "#D7DDE5";
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.arc(px, py, 22, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-
-    ctx.fillStyle = 選択中 ? "#FFFFFF" : "#000000";
+    ctx.fillStyle = "#000";
     ctx.font = 落下中 ? "bold 24px sans-serif" : "bold 20px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(文字, px, py + 1);
-
-    if (選択中 && app.状態.ボーナス中 === "代") {
-      const 番号 = 選択1 ? "1" : "2";
-      ctx.beginPath();
-      ctx.fillStyle = "#D7DDE5";
-      ctx.arc(px + 14, py - 14, 8, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#303741";
-      ctx.font = "bold 10px sans-serif";
-      ctx.fillText(番号, px + 14, py - 13);
-    }
   };
 
   app.次表示描画 = function () {
@@ -297,50 +228,65 @@
     const ctx = app.状態.ctx;
     const 順位 = app.得点読込();
 
-    /* もう一度あそぶボタンと重ならない、大きなランキング表示 */
+    ctx.save();
     ctx.fillStyle = "rgba(0,0,0,.82)";
-    ctx.fillRect(14, 154, 332, 350);
+    ctx.fillRect(18, 142, 324, 468);
     ctx.strokeStyle = "#E5BE55";
-    ctx.lineWidth = 3;
-    ctx.strokeRect(22, 162, 316, 334);
+    ctx.lineWidth = 2;
+    ctx.strokeRect(26, 150, 308, 452);
 
+    ctx.fillStyle = "#fff";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-
-    ctx.fillStyle = "#fff";
-    ctx.font = "bold 21px sans-serif";
-    ctx.fillText("きぼうかんじ", 180, 193);
-
+    ctx.font = "bold 23px sans-serif";
+    ctx.fillText("きぼうかんじ", 180, 178);
     ctx.font = "13px sans-serif";
-    ctx.fillText("とやまの無限漢字", 180, 220);
-    ctx.fillText("立山連峰から富山湾まで　希望の数え唄", 180, 242);
+    ctx.fillText("とやまの無限漢字", 180, 204);
+    ctx.fillText("立山連峰から富山湾まで、希望の数え唄", 180, 224);
 
     ctx.fillStyle = "#FFD75A";
-    ctx.font = "bold 28px sans-serif";
-    ctx.fillText("スコアランキング", 180, 286);
-
-    ctx.fillStyle = "#fff";
     ctx.font = "bold 17px monospace";
-    ctx.fillText("TOP 3", 180, 319);
+    ctx.fillText("TOP 3", 180, 254);
 
     ctx.textAlign = "left";
-    ctx.font = "bold 19px monospace";
-
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 16px monospace";
     for (let i = 0; i < 3; i++) {
       const item = 順位[i];
       const score = item ? String(item.score).padStart(7, "0") : "-------";
       const date = item ? item.date : "--------";
-      const y = 365 + i * 43;
-
-      ctx.fillStyle = i === 0 ? "#FFE28A" : "#fff";
-      ctx.fillText(`${i + 1}位`, 55, y);
-      ctx.fillText(score, 119, y);
-
-      ctx.fillStyle = "rgba(255,255,255,.82)";
-      ctx.font = "bold 14px monospace";
-      ctx.fillText(date, 236, y);
-      ctx.font = "bold 19px monospace";
+      ctx.fillText(`${i + 1}   ${score}   ${date}`, 72, 286 + i * 28);
     }
+
+    // ランキング直下の保存案内
+    ctx.fillStyle = "rgba(255,255,255,.09)";
+    ctx.fillRect(38, 374, 284, 210);
+    ctx.strokeStyle = "rgba(255,255,255,.35)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(38.5, 374.5, 283, 209);
+
+    ctx.fillStyle = "#FFD75A";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.font = "bold 13px sans-serif";
+    ctx.fillText("ランキングについて", 50, 387);
+
+    ctx.fillStyle = "#fff";
+    ctx.font = "10px sans-serif";
+    const 案内 = [
+      "スコアは、この端末で現在使用しているブラウザに",
+      "保存されます。",
+      "Safari、Chrome、Google、Samsung Internet、",
+      "Microsoft Edge、Brave、Firefox、Operaなど、",
+      "異なるブラウザ間ではランキングを共有できません。",
+      "別のスマートフォン、タブレット、パソコンなどへ",
+      "端末を変更した場合も、ランキングは引き継がれません。",
+      "履歴やサイトデータを削除した場合、または",
+      "プライベートブラウズやシークレットモードでは、",
+      "記録が保存されない、または消えることがあります。"
+    ];
+    案内.forEach((行, i) => ctx.fillText(行, 50, 414 + i * 16));
+    ctx.restore();
   };
 
   app.重ね表示描画 = function () {
@@ -356,30 +302,22 @@
       ctx.font = "20px sans-serif";
       ctx.fillText("一時停止中", 180, 304);
       ctx.font = "14px sans-serif";
-      ctx.fillText("上の「再開」で続けられます", 180, 336);
+      ctx.fillText("▶で再開できます", 180, 336);
     }
 
     if (状態.ボーナス中) {
-      ctx.save();
-      ctx.fillStyle = "rgba(30,38,47,.88)";
-      ctx.fillRect(38, 101, 284, 34);
-      ctx.strokeStyle = "rgba(215,221,229,.92)";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(40, 103, 280, 30);
+      ctx.fillStyle = "rgba(0,0,0,.62)";
+      ctx.fillRect(20, 260, 320, 140);
       ctx.fillStyle = "#fff";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.font = "bold 13px sans-serif";
-
-      if (状態.ボーナス中 === "岳") {
-        const 選択文字 = 状態.選択セル?.文字;
-        ctx.fillText(選択文字 ? `岳：選んだ「${選択文字}」を確認` : "岳：消したい漢字を一つ選ぶ", 180, 118);
-      } else {
-        const 一つ目 = 状態.選択セル?.文字 || "未選択";
-        const 二つ目 = 状態.選択セル2?.文字 || "未選択";
-        ctx.fillText(`代：①${一つ目}　②${二つ目}　あと${状態.ボーナス残数}回`, 180, 118);
+      ctx.textAlign = "left";
+      ctx.textBaseline = "alphabetic";
+      ctx.font = "20px sans-serif";
+      ctx.fillText(`ボーナス発動！［${状態.ボーナス中}］`, 40, 295);
+      ctx.font = "16px sans-serif";
+      if (状態.ボーナス中 === "代") {
+        ctx.fillText("入れ替えたい漢字を二つ選んでください", 40, 326);
+        ctx.fillText(`のこり ${状態.ボーナス残数} 回`, 80, 352);
       }
-      ctx.restore();
     }
 
     if (状態.ゲーム終了) app.順位描画();
@@ -417,92 +355,22 @@
     app.重ね表示描画();
   };
 
-  app.加点表示 = function (文字) {
-    const effect = document.createElement("div");
-    effect.textContent = 文字;
-    Object.assign(effect.style, {
-      position: "fixed",
-      left: "50%",
-      top: "28%",
-      transform: "translate(-50%,-50%) scale(.88)",
-      padding: "12px 18px",
-      background: "linear-gradient(180deg,rgba(255,225,104,.98),rgba(204,137,22,.98))",
-      color: "#fff",
-      border: "2px solid rgba(255,255,255,.92)",
-      borderRadius: "999px",
-      boxShadow: "0 10px 26px rgba(0,0,0,.28)",
-      zIndex: "9999",
-      fontWeight: "900",
-      fontSize: "21px",
-      letterSpacing: ".05em",
-      opacity: "0",
-      transition: "opacity .15s ease, transform .15s ease"
-    });
-
-    document.body.appendChild(effect);
-    requestAnimationFrame(() => {
-      effect.style.opacity = "1";
-      effect.style.transform = "translate(-50%,-50%) scale(1)";
-    });
-
-    setTimeout(() => {
-      effect.style.opacity = "0";
-      effect.style.transform = "translate(-50%,-58%) scale(1.05)";
-    }, 650);
-
-    setTimeout(() => effect.remove(), 900);
-  };
-
   app.コンボ表示 = function (連鎖数, 加点) {
     const effect = document.createElement("div");
-    effect.textContent = 連鎖数 <= 1
-      ? `消去 +${加点}`
-      : `${連鎖数}連鎖${"！".repeat(Math.min(3, 連鎖数 - 1))} +${加点}`;
-
-    const 拡大率 = Math.min(1.35, 1 + Math.max(0, 連鎖数 - 1) * .08);
+    effect.textContent = `${連鎖数} コンボ！ +${加点}`;
     Object.assign(effect.style, {
       position: "fixed",
       left: "50%",
-      top: 連鎖数 <= 1 ? "22%" : "18%",
-      transform: `translate(-50%,-50%) scale(.72)`,
-      padding: "11px 17px",
-      background: 連鎖数 <= 1
-        ? "rgba(25,39,48,.82)"
-        : "linear-gradient(180deg,rgba(255,217,83,.98),rgba(197,113,20,.98))",
+      top: "20%",
+      transform: "translateX(-50%)",
+      padding: "9px 14px",
+      background: "rgba(0,0,0,.68)",
       color: "#fff",
-      border: "2px solid rgba(255,255,255,.86)",
-      borderRadius: "999px",
-      boxShadow: "0 12px 30px rgba(0,0,0,.28)",
+      borderRadius: "8px",
       zIndex: "9999",
-      fontWeight: "900",
-      fontSize: `${Math.min(30, 18 + 連鎖数 * 2)}px`,
-      opacity: "0",
-      transition: "opacity .14s ease, transform .18s cubic-bezier(.2,.8,.2,1)"
+      fontWeight: "800"
     });
-
     document.body.appendChild(effect);
-    requestAnimationFrame(() => {
-      effect.style.opacity = "1";
-      effect.style.transform = `translate(-50%,-50%) scale(${拡大率})`;
-    });
-
-    setTimeout(() => {
-      effect.style.opacity = "0";
-      effect.style.transform = `translate(-50%,-64%) scale(${拡大率 + .08})`;
-    }, 720);
-
-    setTimeout(() => effect.remove(), 980);
-  };
-
-  app.ボーナス成立演出 = function (文字) {
-    const overlay = app.要素("bonus-flash");
-    const kanji = app.要素("bonus-flash-kanji");
-    if (!overlay || !kanji) return;
-
-    kanji.textContent = 文字;
-    overlay.classList.remove("show");
-    void overlay.offsetWidth;
-    overlay.classList.add("show");
-    setTimeout(() => overlay.classList.remove("show"), 920);
+    setTimeout(() => effect.remove(), 800);
   };
 })();

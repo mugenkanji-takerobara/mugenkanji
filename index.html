@@ -520,6 +520,9 @@ body.game-open{overflow:hidden;overscroll-behavior:none}
 body.title-open{overflow:hidden;overscroll-behavior:none}
 @supports(height:100svh){#title-screen{height:100svh}}
 @media(max-height:660px){.title-btn{min-height:48px;padding:8px 7px}.title-btn-wrap{gap:6px}}
+
+#story-screen .story-brand-title{display:inline-block;font-weight:800;letter-spacing:.05em}
+#story-screen .story-brand-subtitle{display:inline-block;font-size:.88em;font-weight:600;white-space:nowrap}
 </style>
 </meta></head>
 <body>
@@ -553,7 +556,7 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <button aria-label="タイトルへ戻る" class="icon-btn back-button" type="button">◀</button>
 <h1>使いかた</h1><span></span>
 </header>
-<iframe class="manual-frame" id="manual-frame" src="manual.html?v=1.0.3" title="きぼうかんじ 使いかた"></iframe>
+<iframe class="manual-frame" id="manual-frame" src="manual.html?v=1.0.5" title="きぼうかんじ 使いかた"></iframe>
 </div>
 </section>
 <section class="screen" id="toyama-screen">
@@ -635,10 +638,10 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <article class="story-page"><img alt="" class="story-img" data-src-candidates="lastlast.png" decoding="async" loading="lazy"/><p class="story-text">四季はめぐり、景色は移ろう。それでもこの浜は、いにしえの記憶を静かに抱いている。</p></article>
 <article class="story-page"><img alt="" class="story-img" data-src-candidates="lastlastlastlast.png" decoding="async" loading="lazy"/><p class="story-text">静かな浜辺に波の音だけがひびき、遠い日々の気配がそっと胸によみがえる。</p></article>
 <article class="story-page"><img alt="" class="story-img" data-src-candidates="future2.jpg" decoding="async" loading="lazy"/><p class="story-text">立山連峰から日本海まで、無限に重ね合わされた未来の景色。これから観測するあなたたちの心が、希望の数え唄をつむいで現実へと収束させていくのでしょう。</p></article>
-<article class="story-page"><img alt="" class="story-img" data-src-candidates="futureV.jpg" decoding="async" loading="lazy"/><p class="story-text">つづく私たちの日本に</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="futureV.jpg" decoding="async" loading="lazy"/><p class="story-text">続く私たちの日本</p></article>
 <button class="next-era-button" id="next-era-button" type="button">
       そして波音の記憶が共鳴の時代へ
-    </button><p class="story-footer">KIBOUKANJI — Every Character Carries Hope —<br/>Produced by Team Shiob</p>
+    </button><p class="story-footer"><span class="story-brand-title">KIBOUKANJI</span><br/><span class="story-brand-subtitle">— Every Character Carries Hope —</span><br/>Produced by Team shiob</p>
 </main>
 </div>
 </section>
@@ -670,7 +673,7 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <div class="teaser-video-shell">
 <h2 id="teaser-title">続編「未来の雨晴海岸」予告</h2>
 <video aria-label="続編 未来の雨晴海岸 予告動画" class="teaser-video" controls="" id="teaser-video" playsinline="" poster="future_teaser_poster.jpg" preload="metadata">
-<source src="future_teaser.mp4?v=1.0.3" type="video/mp4"/>
+<source src="future_teaser.mp4?v=1.0.5" type="video/mp4"/>
           お使いのブラウザでは動画を再生できません。
         </video>
 <p aria-live="polite" class="teaser-status" id="teaser-status"></p>
@@ -683,10 +686,10 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <button aria-label="閉じる" class="icon-btn photo-close" id="photo-close" type="button">×</button>
 <img alt="" id="photo-modal-image" src=""/>
 </div>
-<script src="game-core.js?v=1.0.3"></script>
-<script src="game-board.js?v=1.0.3"></script>
-<script src="game-draw.js?v=1.0.3"></script>
-<script src="game-audio.js?v=1.0.3"></script>
-<script src="game-ui.js?v=1.0.3"></script>
+<script src="game-core.js?v=1.0.5"></script>
+<script src="game-board.js?v=1.0.5"></script>
+<script src="game-draw.js?v=1.0.5"></script>
+<script src="game-audio.js?v=1.0.5"></script>
+<script src="game-ui.js?v=1.0.5"></script>
 </body>
 </html>
