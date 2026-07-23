@@ -108,11 +108,68 @@ h3{font-size:clamp(22px,6vw,29px)}
   justify-content:flex-start;
   padding-top:clamp(52px,12vw,88px);
 }
-.cover-title{margin:0 0 12px;text-align:left;font-family:"Yu Mincho","Hiragino Mincho ProN","HGS明朝E","MS PMincho",serif}
-.cover-title span{display:block;font-family:inherit;font-weight:600}
-.cover-title-main{font-size:clamp(29px,7.4vw,39px);letter-spacing:.08em;line-height:1.35}
-.cover-title-sub{margin-top:7px;font-size:clamp(22px,5.8vw,30px);letter-spacing:.06em;line-height:1.45}
-.cover-title-copy{margin-top:5px;font-size:clamp(15px,4vw,19px);line-height:1.7}
+.cover-title{
+  margin:0 0 12px;
+  text-align:left;
+  font-family:"Arial Black","Yu Gothic UI","Yu Gothic","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+}
+.cover-title>span{display:block;font-family:inherit;font-weight:900}
+.cover-title-main{
+  font-size:clamp(29px,7.4vw,39px);
+  letter-spacing:.045em;
+  line-height:1.35;
+}
+.cover-title-sub{
+  margin-top:7px;
+  font-size:clamp(22px,5.8vw,30px);
+  letter-spacing:.035em;
+  line-height:1.45;
+}
+.cover-title-copy{
+  margin-top:7px;
+  font-size:clamp(15px,4vw,19px);
+  line-height:1.65;
+  letter-spacing:.01em;
+}
+.decorated-kana{
+  position:relative;
+  display:inline-block;
+  padding-right:.08em;
+}
+.decorated-kana .kana-mark{
+  position:absolute;
+  z-index:2;
+  left:68%;
+  top:-.08em;
+  display:inline-flex;
+  align-items:center;
+  gap:.02em;
+  width:max-content;
+  font-family:"Arial Black","Yu Gothic UI",sans-serif;
+  font-size:.27em;
+  line-height:1;
+  letter-spacing:-.08em;
+  transform:rotate(-7deg);
+}
+.decorated-kana .music-mark{color:#357bb5}
+.decorated-kana .heart-mark{
+  top:-.02em;
+  left:66%;
+  color:#e94f82;
+  font-size:.22em;
+  transform:rotate(-5deg);
+}
+.sr-only{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
 .cover-description{margin:12px 0 0;font-size:clamp(14px,3.7vw,18px);line-height:1.6;white-space:nowrap;letter-spacing:-.01em}
 .cover-images{
   display:grid;
@@ -415,7 +472,19 @@ h3{font-size:clamp(22px,6vw,29px)}
 .release{margin:38px 0 0;font-size:clamp(21px,5.4vw,28px);line-height:1.8}
 .credit-name{margin-top:34px;font-size:clamp(21px,5.4vw,28px);line-height:2.25}
 .credit-label{margin:0 0 30px;font-family:Georgia,"Yu Mincho",serif;font-size:clamp(16px,4vw,19px);letter-spacing:.18em}
-.last-brand{margin-top:50px;font-size:clamp(25px,6vw,34px);letter-spacing:.10em}
+.last-brand{
+  margin-top:44px;
+  font-size:clamp(20px,5vw,28px);
+  line-height:1.65;
+  letter-spacing:.04em;
+}
+.copyright-line{
+  margin:42px 0 0;
+  font-family:Georgia,"Yu Mincho","Hiragino Mincho ProN",serif;
+  font-size:clamp(14px,3.7vw,18px);
+  line-height:1.7;
+  letter-spacing:.025em;
+}
 
 
 /* 最終調整 */
@@ -508,9 +577,12 @@ h3{font-size:clamp(22px,6vw,29px)}
 
 <section id="hyoshi" class="page spring hero">
   <div class="cover-title">
-    <span class="cover-title-main">きぼうかんじ</span>
+    <span class="cover-title-main" aria-label="きぼうかんじ">
+      <span class="sr-only">きぼうかんじ</span>
+      <span aria-hidden="true">き</span><span class="decorated-kana" aria-hidden="true">ほ<span class="kana-mark music-mark">♫</span></span><span aria-hidden="true">うかん</span><span class="decorated-kana" aria-hidden="true">し<span class="kana-mark heart-mark">♥♥</span></span>
+    </span>
     <span class="cover-title-sub">とやまの無限漢字</span>
-    <span class="cover-title-copy">～立山連峰から富山湾まで　希望の数え唄～</span>
+    <span class="cover-title-copy">～立山連峰から富山湾まで、希望の数え唄～</span>
   </div>
 
   <h1>使いかた</h1>
@@ -551,7 +623,7 @@ h3{font-size:clamp(22px,6vw,29px)}
     <img src="photo01-01.jpg" alt="祭りの紹介画像1">
     <img src="photo03-01.jpg" alt="祭りの紹介画像2">
     <img src="photo02-01.jpg" alt="祭りの紹介画像3">
-    <img src="photo01-03.jpg" alt="祭りの紹介画像4">
+    <img src="o3.jpg" alt="越中おわら風の盆の踊り">
   </div>
 
   <div class="message-box">
@@ -659,13 +731,14 @@ h3{font-size:clamp(22px,6vw,29px)}
 </section>
 
 <section class="page credit-autumn cinema-page">
-  <p class="credit-label">BGM・効果音</p>
-  <div class="credit-name">Team Shiob<br><br>オリジナル音源</div>
+  <p class="credit-label">音響</p>
+  <div class="credit-name">BGM・効果音<br><br>Team Shiob<br><br>（オールオリジナル音源）</div>
 </section>
 
 <section class="page credit-winter cinema-page">
-  <p class="produced-line">PRODUCED BY&nbsp;&nbsp;Team shiob</p>
-  <div class="last-brand">KIBOUKANJI</div>
+  <p class="produced-line">PRODUCED BY Team Shiob</p>
+  <div class="last-brand">KIBOUKANJI — Every Character Carries Hope —</div>
+  <p class="copyright-line">© 2026 Team Shiob All Rights Reserved.</p>
 </section>
 
 </main>

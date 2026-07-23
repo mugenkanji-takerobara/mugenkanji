@@ -4,8 +4,8 @@
 
 ## 使用音源
 
-- `retroparty.mp3` — 通常ゲームBGM
-- `retropark.mp3` — 特の符「代」「岳」の発動中BGM
+- `retropark.mp3` — 通常ゲームBGM
+- `retroparty.mp3` — 特の符「代」「岳」の発動中BGM
 - `warayatakashi.mp3` — 雨晴海岸伝説の波音
 - `shamisen_intro.mp3` — 物語開始時の三味線
 - `se_match.mp3` — 漢字消去
@@ -16,4 +16,4 @@
 
 続編予告の映像と音声は、`future_teaser.mp4`に収録しています。
 
-BGM・効果音：Team Shiob オリジナル音源
+BGM・効果音：Team Shiob（オールオリジナル音源）

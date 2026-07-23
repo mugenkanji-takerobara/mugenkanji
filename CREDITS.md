@@ -8,7 +8,7 @@
 
 ## BGM・効果音
 
-**Team Shiob オリジナル音源**
+**Team Shiob（オールオリジナル音源）**
 
 ## 続編予告動画
 
@@ -16,7 +16,7 @@
 
 ## 制作
 
-**Produced by Team shiob**
+**PRODUCED BY Team Shiob**
 
 ## 補足
 

@@ -1,6 +1,8 @@
-きぼうかんじ　公開版 Ver.1.0.1　必要素材一覧
+きぼうかんじ　公開版 Ver.1.0.3　必要素材一覧
 
-次の音声・動画は、このパッケージに同梱済みです。
+次の素材は、この更新パッケージに同梱済みです。
+o3.jpg
+lasta.png
 retroparty.mp3
 retropark.mp3
 warayatakashi.mp3
@@ -10,9 +12,8 @@ future_teaser_poster.jpg
 効果音5個
 富山城背景9枚
 
-写真・物語画像・説明書画像は、
-01_素材を取り込む.batでKIBOUKANJI_VER1_TESTから取り込みます。
-
+その他の写真・物語画像・説明書画像は、
+既に動作確認済みの公開用フォルダにあるものを使用します。
 
 【タイトル】
 title-kiboukanji.png
@@ -54,7 +55,6 @@ lastl1.png
 lastl2.png
 last3.png
 lastlast4.png
-last5.png
 ama3.png
 lastl6.png
 lastlastlastlast.png
@@ -69,7 +69,6 @@ u4.jpg
 photo01-01.jpg
 photo03-01.jpg
 photo02-01.jpg
-photo01-03.jpg
 i4.jpg
 g.jpg
 i5.jpg

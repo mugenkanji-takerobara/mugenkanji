@@ -26,15 +26,15 @@ code{background:#fff;padding:2px 5px}
   <div class="name">続編予告動画：future_teaser.mp4</div>
   <div id="video-status" class="status">確認中…</div>
   <video id="video-check" controls playsinline preload="metadata" poster="future_teaser_poster.jpg">
-    <source src="future_teaser.mp4?v=1.0.1" type="video/mp4">
+    <source src="future_teaser.mp4?v=1.0.3" type="video/mp4">
   </video>
 </div>
 <p>失敗する場合は、ファイル名の末尾に <code>(1)</code> が付いていないか、<code>.mp3.mp3</code>になっていないか確認してください。</p>
 </main>
 <script>
 const files=[
-  ['通常BGM','retroparty.mp3'],
-  ['特の符「代・岳」BGM','retropark.mp3'],
+  ['通常BGM','retropark.mp3'],
+  ['特の符「代・岳」BGM','retroparty.mp3'],
   ['雨晴海岸の波音','warayatakashi.mp3'],
   ['三味線導入','shamisen_intro.mp3'],
   ['漢字消去','se_match.mp3'],
@@ -51,7 +51,7 @@ files.forEach(([label,file])=>{
   list.appendChild(card);
   const status=card.querySelector('.status');
   const button=card.querySelector('button');
-  const audio=new Audio(`${file}?v=1.0.1`);
+  const audio=new Audio(`${file}?v=1.0.3`);
   audio.preload='metadata';
   audio.addEventListener('loadedmetadata',()=>{
     const sec=Number.isFinite(audio.duration)?audio.duration.toFixed(2):'?';

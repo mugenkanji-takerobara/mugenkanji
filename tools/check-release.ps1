@@ -23,7 +23,9 @@ $RequiredCore = @(
     "shamisen_intro.mp3",
     "future_teaser.mp4",
     "future_teaser_poster.jpg",
-    "AUDIO_NOTICE.md"
+    "AUDIO_NOTICE.md",
+    "o3.jpg",
+    "lasta.png"
 )
 
 1..9 | ForEach-Object {

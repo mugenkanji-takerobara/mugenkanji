@@ -1,6 +1,6 @@
 {
-  "version": "1.0.1",
-  "note": "BGM・効果音・物語音・続編予告動画・富山城背景9枚は、公開パッケージに同梱済みです。",
+  "version": "1.0.3",
+  "note": "BGM・効果音・物語音・続編予告動画・富山城背景9枚・o3.jpg・lasta.pngは公開パッケージに同梱済みです。",
   "assets": [
     {
       "target": "title-kiboukanji.png",
@@ -222,13 +222,6 @@
       "category": "雨晴海岸物語"
     },
     {
-      "target": "last5.png",
-      "candidates": [
-        "last5.png"
-      ],
-      "category": "雨晴海岸物語"
-    },
-    {
       "target": "ama3.png",
       "candidates": [
         "ama3.png"
@@ -309,13 +302,6 @@
       "target": "photo02-01.jpg",
       "candidates": [
         "photo02-01.jpg"
-      ],
-      "category": "使いかた"
-    },
-    {
-      "target": "photo01-03.jpg",
-      "candidates": [
-        "photo01-03.jpg"
       ],
       "category": "使いかた"
     },
