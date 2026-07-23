@@ -121,13 +121,13 @@
 
   app.音声初期化 = function () {
     音声.BGM.通常 = 音声作成(
-      ["retroparty.mp3"],
-      { loop: true, volume: .20 }
-    );
-    音声.BGM.ボーナス = 音声作成(
-      ["retropark.mp3"],
-      { loop: true, volume: .22 }
-    );
+  ["retropark.mp3"],
+  { loop: true, volume: .20 }
+);
+音声.BGM.ボーナス = 音声作成(
+  ["retroparty.mp3"],
+  { loop: true, volume: .22 }
+);
     音声.BGM.波音 = 音声作成(
       ["warayatakashi.mp3"],
       { loop: true, volume: .12 }
