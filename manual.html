@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#564942">
+<title>きぼうかんじ　使いかた</title>
+<style>
+:root{
+  --ink:#302824;
+  --soft:#62564f;
+  --paper:#fffaf1;
+  --gold:#b88a39;
+  --silver:#666c72;
+  --line:rgba(78,62,51,.18);
+  --shadow:0 18px 46px rgba(43,34,29,.15);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  color:var(--ink);
+  background:#d7d0c7;
+  font-family:"Yu Mincho","Hiragino Mincho ProN","HGS明朝E","MS PMincho",serif;
+  font-size:18px;
+  line-height:1.9;
+  -webkit-text-size-adjust:100%;
+}
+a{color:inherit}
+img{display:block;max-width:100%;height:auto}
+button{font:inherit}
+
+.manual{
+  width:min(100%,560px);
+  margin:0 auto;
+  box-shadow:var(--shadow);
+}
+.page{
+  position:relative;
+  min-height:100svh;
+  padding:clamp(32px,8vw,64px) clamp(22px,6vw,44px) 58px;
+  overflow:hidden;
+  border-bottom:1px solid rgba(255,255,255,.78);
+}
+.page::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.17),transparent 38%,rgba(255,255,255,.08)),
+    repeating-linear-gradient(0deg,rgba(90,71,56,.018) 0 1px,transparent 1px 5px);
+}
+.page>*{position:relative;z-index:1}
+
+.spring{background:linear-gradient(160deg,#fff9f4 0%,#f6e7e4 58%,#eadfd4 100%)}
+.washi{background:linear-gradient(155deg,#fbf4e5 0%,#eee0c9 100%)}
+.toyama{background:linear-gradient(155deg,#e7f1ee 0%,#d7e5df 48%,#efe2d2 100%)}
+.okinawa{background:linear-gradient(160deg,#e7fbfb 0%,#c9e9ec 46%,#f7ead3 100%)}
+.autumn{background:linear-gradient(155deg,#f6ead7 0%,#ddc5a8 58%,#b79376 100%)}
+.night{background:linear-gradient(160deg,#344653 0%,#1d2d37 65%,#101a20 100%);color:#f8f4ed}
+.credits{background:linear-gradient(160deg,#f8f3ea 0%,#e4ddd2 100%)}
+.credit-spring{background:linear-gradient(160deg,#fffdfa 0%,#f2ebe3 100%)}
+.credit-summer{background:linear-gradient(160deg,#eef8f2 0%,#dcebdd 100%)}
+.credit-autumn{background:linear-gradient(160deg,#f7ead9 0%,#d8bea0 100%)}
+.credit-winter{background:linear-gradient(160deg,#eaf1f4 0%,#cad7dd 100%)}
+
+.kicker{
+  margin:0 0 10px;
+  color:#806d61;
+  font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:.12em;
+}
+.night .kicker{color:#cfdbdf}
+h1,h2,h3{margin:0;font-weight:600;line-height:1.45;letter-spacing:.045em}
+h1{font-size:clamp(36px,10vw,54px)}
+h2{font-size:clamp(29px,8vw,42px)}
+h3{font-size:clamp(22px,6vw,29px)}
+.lead{
+  margin:18px 0 0;
+  font-size:clamp(20px,5.2vw,25px);
+  line-height:1.8;
+}
+.copy{
+  margin:18px 0 0;
+  font-size:clamp(18px,4.6vw,21px);
+  line-height:1.95;
+}
+.note{
+  margin:15px 0 0;
+  font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+  font-size:17px;
+  line-height:1.75;
+  color:var(--soft);
+}
+.night .note{color:#d9e2e5}
+.rule{
+  width:82px;height:2px;
+  margin:23px 0;
+  background:linear-gradient(90deg,var(--gold),transparent);
+}
+
+.hero{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  padding-top:clamp(52px,12vw,88px);
+}
+.cover-title{margin:0 0 12px;text-align:left;font-family:"Yu Mincho","Hiragino Mincho ProN","HGS明朝E","MS PMincho",serif}
+.cover-title span{display:block;font-family:inherit;font-weight:600}
+.cover-title-main{font-size:clamp(29px,7.4vw,39px);letter-spacing:.08em;line-height:1.35}
+.cover-title-sub{margin-top:7px;font-size:clamp(22px,5.8vw,30px);letter-spacing:.06em;line-height:1.45}
+.cover-title-copy{margin-top:5px;font-size:clamp(15px,4vw,19px);line-height:1.7}
+.cover-description{margin:12px 0 0;font-size:clamp(14px,3.7vw,18px);line-height:1.6;white-space:nowrap;letter-spacing:-.01em}
+.cover-images{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin:34px 0 10px;
+}
+.cover-images img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:3px;
+  box-shadow:0 6px 16px rgba(50,40,35,.12);
+}
+.wide-image{
+  width:100%;
+  aspect-ratio:16/9;
+  margin:12px 0 0;
+  object-fit:cover;
+  border-radius:3px;
+  box-shadow:0 10px 25px rgba(50,40,35,.14);
+}
+.triptych{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin:27px 0 0;
+}
+.triptych img{
+  width:100%;
+  aspect-ratio:3/4;
+  object-fit:cover;
+  border-radius:3px;
+}
+.quad{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:25px;
+}
+.quad img{
+  width:100%;
+  aspect-ratio:4/3;
+  object-fit:cover;
+  border-radius:3px;
+}
+.media-missing{
+  display:grid!important;
+  place-items:center;
+  min-height:130px;
+  padding:14px;
+  background:rgba(255,255,255,.60);
+  color:#75675f;
+  border:1px dashed rgba(85,70,60,.34);
+  font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+  font-size:15px;
+  text-align:center;
+}
+
+.toc{
+  list-style:none;
+  margin:28px 0 0;
+  padding:0;
+  border-top:1px solid var(--line);
+}
+.toc li{border-bottom:1px solid var(--line)}
+.toc a{
+  display:grid;
+  grid-template-columns:44px 1fr;
+  gap:8px;
+  align-items:center;
+  min-height:68px;
+  text-decoration:none;
+  font-size:20px;
+}
+.toc-number{
+  color:var(--gold);
+  font-family:Georgia,serif;
+  font-size:19px;
+}
+
+.message-box{
+  margin:28px 0 0;
+  padding:24px 21px;
+  border:1px solid rgba(110,85,59,.21);
+  background:rgba(255,255,255,.58);
+  box-shadow:0 9px 24px rgba(70,50,35,.07);
+}
+.message-box strong{
+  display:block;
+  margin-bottom:8px;
+  font-size:24px;
+  font-weight:600;
+}
+
+.control-grid{
+  display:grid;
+  gap:13px;
+  margin:27px 0 0;
+}
+.control{
+  display:grid;
+  grid-template-columns:60px 1fr;
+  gap:16px;
+  align-items:center;
+  padding:18px;
+  border:1px solid rgba(65,75,80,.16);
+  background:rgba(255,255,255,.64);
+}
+.control-icon{
+  display:grid;
+  place-items:center;
+  width:56px;height:56px;
+  border-radius:999px;
+  background:#465d67;
+  color:white;
+  font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic",sans-serif;
+  font-size:28px;
+  font-weight:800;
+}
+.control strong{display:block;font-size:22px}
+.control span{display:block;font-size:18px;line-height:1.65}
+
+.score-chart{
+  width:100%;
+  margin-top:27px;
+  padding:18px 8px 7px;
+  background:rgba(255,255,255,.50);
+  border:1px solid rgba(88,68,53,.16);
+}
+.score-chart text{
+  font-family:"Yu Mincho","Hiragino Mincho ProN",serif;
+  fill:#57483f;
+  font-size:18px;
+}
+
+.bonus-list{
+  display:grid;
+  gap:17px;
+  margin-top:27px;
+}
+.bonus-card{
+  padding:22px;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.11);
+}
+.bonus-head{
+  display:flex;
+  align-items:center;
+  gap:17px;
+  margin-bottom:12px;
+}
+.bonus-kanji{
+  display:grid;
+  place-items:center;
+  width:68px;height:68px;
+  flex:0 0 auto;
+  border:3px solid #c8a45b;
+  border-radius:50%;
+  background:rgba(255,255,255,.94);
+  color:#252525;
+  font-size:36px;
+  font-weight:700;
+}
+.silver-sample{
+  display:inline-block;
+  margin-top:13px;
+  padding:8px 14px;
+  border:4px solid var(--silver);
+  background:#f4f4f2;
+  color:#222;
+  font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic",sans-serif;
+  font-size:17px;
+  font-weight:800;
+}
+.stock{
+  margin-top:20px;
+  padding:17px 19px;
+  border-left:5px solid #d6b86c;
+  background:rgba(255,255,255,.13);
+  font-size:19px;
+}
+
+.sns-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-top:28px;
+}
+.sns-card{
+  padding:18px 10px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,.30);
+  background:rgba(255,255,255,.11);
+}
+.sns-card img{
+  width:136px;
+  max-width:100%;
+  aspect-ratio:1/1;
+  margin:0 auto 14px;
+  object-fit:contain;
+  background:white;
+}
+.sns-card strong{display:block;font-size:20px}
+.sns-card span{
+  display:block;
+  margin-top:5px;
+  font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+  font-size:16px;
+  overflow-wrap:anywhere;
+}
+
+.credit-block{
+  margin-top:28px;
+  padding:23px;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.credit-block h3{margin:0 0 12px;font-size:23px}
+.credit-block p{margin:6px 0;font-size:19px}
+.credit-block+.credit-block{margin-top:20px}
+
+.top-link{
+  position:fixed;
+  z-index:20;
+  right:max(12px,env(safe-area-inset-right));
+  bottom:max(12px,env(safe-area-inset-bottom));
+  display:grid;
+  place-items:center;
+  min-width:58px;height:48px;padding:0 12px;
+  border:1px solid rgba(255,255,255,.7);
+  border-radius:999px;
+  background:rgba(44,38,34,.78);
+  color:white;
+  text-decoration:none;
+  font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic",sans-serif;
+  font-size:15px;
+  box-shadow:0 6px 18px rgba(0,0,0,.2);
+  backdrop-filter:blur(6px);
+}
+
+@media (max-width:390px){
+  .cover-description,.one-line-rule{font-size:14px;letter-spacing:-.02em}
+}
+@media (min-width:700px){
+  body{padding:28px 0}
+  .page{min-height:880px}
+}
+
+.cover-square-wrap{width:100%;margin:24px auto 0;display:grid;place-items:center}
+.cover-square{width:min(100%,460px);aspect-ratio:1/1;object-fit:contain;background:rgba(255,255,255,.52);border-radius:3px;box-shadow:0 10px 25px rgba(50,40,35,.14)}
+.one-line-rule{
+  margin:14px 0 0;
+  font-size:clamp(15px,3.9vw,18px);
+  line-height:1.65;
+  white-space:nowrap;
+}
+.festival-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:24px;
+}
+.festival-grid img{
+  width:100%;
+  height:auto;
+  object-fit:contain;
+  border-radius:3px;
+  background:rgba(255,255,255,.46);
+  box-shadow:0 7px 18px rgba(50,40,35,.10);
+}
+.next-guide{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:16px 0 14px;
+}
+.next-guide div{
+  padding:14px 12px;
+  border:1px solid rgba(98,76,58,.18);
+  background:rgba(255,255,255,.58);
+  text-align:center;
+}
+.next-guide strong{
+  display:block;
+  font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+  font-size:20px;
+}
+.next-guide span{
+  display:block;
+  margin-top:4px;
+  font-size:16px;
+  line-height:1.55;
+}
+
+
+.cinema-page{min-height:100svh;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.cinema-small{margin:0 0 20px;font-family:Georgia,"Yu Mincho",serif;font-size:clamp(15px,3.8vw,18px);letter-spacing:.18em}
+.cinema-title{font-size:clamp(31px,8vw,44px);line-height:1.55}
+.release{margin:38px 0 0;font-size:clamp(21px,5.4vw,28px);line-height:1.8}
+.credit-name{margin-top:34px;font-size:clamp(21px,5.4vw,28px);line-height:2.25}
+.credit-label{margin:0 0 30px;font-family:Georgia,"Yu Mincho",serif;font-size:clamp(16px,4vw,19px);letter-spacing:.18em}
+.last-brand{margin-top:50px;font-size:clamp(25px,6vw,34px);letter-spacing:.10em}
+
+
+/* 最終調整 */
+.glyph-heading{line-height:1.55}
+.glyph-heading span{display:block}
+.glyph-main{white-space:nowrap;font-size:clamp(22px,5.7vw,31px);letter-spacing:.015em}
+.glyph-sub{margin-top:6px;font-size:clamp(25px,6.7vw,36px)}
+.heading-note{display:inline-block;margin-top:3px;font-size:.58em;letter-spacing:.03em}
+.sns-bright{background:linear-gradient(160deg,#eef9fb 0%,#dceff4 46%,#f3edf7 100%);color:#2f2926}
+.sns-bright .kicker{color:#667b84}
+.sns-bright .rule{background:linear-gradient(90deg,#6fa3b5,transparent)}
+.sns-bright .sns-card{border-color:rgba(65,92,104,.20);background:rgba(255,255,255,.68);box-shadow:0 8px 22px rgba(52,84,97,.08)}
+.sns-bright .note{color:#53666f}
+.produced-line{margin:0;font-family:Georgia,"Yu Mincho","Hiragino Mincho ProN",serif;font-size:clamp(19px,4.8vw,26px);letter-spacing:.08em;line-height:1.7}
+
+
+
+/* 公開版 Ver.1.0 読みやすさ調整 */
+.manual p,
+.manual li,
+.manual .message-box,
+.manual .stock,
+.manual .control span,
+.manual .next-guide span,
+.manual .sns-card span,
+.manual .credit-name{
+  font-weight:700;
+}
+.manual .lead{
+  font-size:clamp(22px,5.8vw,28px);
+  font-weight:700;
+  line-height:1.9;
+}
+.manual .copy{
+  font-size:clamp(20px,5.1vw,24px);
+  font-weight:700;
+  line-height:2.05;
+}
+.manual .one-line-rule{
+  font-size:clamp(17px,4.25vw,20px);
+  font-weight:700;
+  line-height:1.8;
+}
+.manual .note{
+  font-size:clamp(18px,4.6vw,21px);
+  font-weight:700;
+  line-height:1.9;
+}
+.manual .message-box,
+.manual .stock{
+  font-size:clamp(19px,4.9vw,23px);
+  line-height:1.95;
+}
+.manual .message-box strong,
+.manual .stock strong{
+  font-weight:700;
+}
+.manual .control strong{
+  font-size:clamp(23px,5.8vw,28px);
+  font-weight:700;
+}
+.manual .control span{
+  font-size:clamp(19px,4.9vw,23px);
+  line-height:1.85;
+}
+.manual .toc a{
+  font-size:clamp(21px,5.3vw,25px);
+  font-weight:700;
+}
+.manual .kicker{
+  font-size:clamp(16px,4.1vw,18px);
+  font-weight:800;
+}
+.manual .bonus-card h3,
+.manual .sns-card strong{
+  font-weight:700;
+}
+@media (max-width:390px){
+  .manual .one-line-rule{
+    white-space:normal;
+  }
+}
+
+</style>
+</head>
+<body>
+<a class="top-link" href="#mokuji" aria-label="目次へ戻る">目次</a>
+
+<main class="manual">
+
+<section id="hyoshi" class="page spring hero">
+  <div class="cover-title">
+    <span class="cover-title-main">きぼうかんじ</span>
+    <span class="cover-title-sub">とやまの無限漢字</span>
+    <span class="cover-title-copy">～立山連峰から富山湾まで　希望の数え唄～</span>
+  </div>
+
+  <h1>使いかた</h1>
+  <div class="rule"></div>
+  <p class="cover-description">漢字をそろえ、富山の景色をめぐる落ち物パズルです。</p>
+
+  <div class="cover-images">
+    <img src="u1.jpg" alt="使いかたの紹介画像1">
+    <img src="u2.jpg" alt="使いかたの紹介画像2">
+    <img src="u3.jpg" alt="使いかたの紹介画像3">
+  </div>
+  <div class="cover-square-wrap"><img class="cover-square" src="u4.jpg" alt="きぼうかんじの紹介画像"></div>
+</section>
+
+<section id="mokuji" class="page washi">
+  <h2>目次</h2>
+  <div class="rule"></div>
+  <ol class="toc">
+    <li><a href="#mokuteki"><span class="toc-number">01</span><span>ゲームの目的</span></a></li>
+    <li><a href="#glyph"><span class="toc-number">02</span><span>漢字と富山</span></a></li>
+    <li><a href="#sousa"><span class="toc-number">03</span><span>基本操作</span></a></li>
+    <li><a href="#kiriban"><span class="toc-number">04</span><span>キリ番</span></a></li>
+    <li><a href="#bonus"><span class="toc-number">05</span><span>ボーナス漢字</span></a></li>
+    <li><a href="#sns"><span class="toc-number">06</span><span>繋がる輪</span></a></li>
+    <li><a href="#release"><span class="toc-number">07</span><span>公開・制作</span></a></li>
+  </ol>
+</section>
+
+<section id="mokuteki" class="page spring">
+  <p class="kicker">01　ゲームの目的</p>
+  <h2>希望をつなぐ</h2>
+  <div class="rule"></div>
+
+  <p class="one-line-rule">縦か横に、同じ漢字を三つそろえると消えます。</p>
+  <p class="copy">漢字を消して得点を重ね、富山城の景色が移り変わる様子をお楽しみください。</p>
+
+  <div class="festival-grid">
+    <img src="photo01-01.jpg" alt="祭りの紹介画像1">
+    <img src="photo03-01.jpg" alt="祭りの紹介画像2">
+    <img src="photo02-01.jpg" alt="祭りの紹介画像3">
+    <img src="photo01-03.jpg" alt="祭りの紹介画像4">
+  </div>
+
+  <div class="message-box">
+    <strong>勝利の鍵</strong>
+    <div class="next-guide">
+      <div><strong>NEXT1</strong><span>次に落ちる漢字</span></div>
+      <div><strong>NEXT2</strong><span>その次に落ちる漢字</span></div>
+    </div>
+    次に落ちてくる漢字を見ながら、置く場所を考えます。連続して消すと、より高い得点につながります。
+  </div>
+</section>
+
+<section id="glyph" class="page toyama">
+  <p class="kicker">02　漢字と富山</p>
+  <h2 class="glyph-heading">
+    <span class="glyph-main">GLYPHS（グリフ）＝漢字</span>
+    <span class="glyph-sub">静かに浮かび上がる。</span>
+  </h2>
+  <div class="rule"></div>
+  <p class="copy">高岡銅器の錫、井波彫刻、越中和紙、組子細工、ガラス工芸。まるで、伝統工芸の手仕事と重厚感が、一文字一文字の漢字に刻まれたようだ。</p>
+
+  <div class="triptych">
+    <img src="i4.jpg" alt="富山の文化を伝える画像1">
+    <img src="g.jpg" alt="富山の文化を伝える画像2">
+    <img src="i5.jpg" alt="富山の文化を伝える画像3">
+  </div>
+</section>
+
+<section id="sousa" class="page okinawa">
+  <p class="kicker">03　基本操作</p>
+  <h2>操作のしかた</h2>
+  <div class="rule"></div>
+
+  <div class="control-grid">
+    <div class="control"><div class="control-icon">↔</div><div><strong>左右へ動かす</strong><span>落下中の漢字を、左または右へ移動します。</span></div></div>
+    <div class="control"><div class="control-icon">↓</div><div><strong>下へ動かす</strong><span>漢字を急降下させます。落とした高さに応じて得点が加わります。</span></div></div>
+    <div class="control"><div class="control-icon">Ⅱ</div><div><strong>一時停止</strong><span>ゲームを止めます。「再開」を押すと続きから遊べます。</span></div></div>
+    <div class="control"><div class="control-icon">◀</div><div><strong>タイトルへ戻る</strong><span>ゲームを終えて、最初の画面へ戻ります。</span></div></div>
+  </div>
+</section>
+
+<section id="kiriban" class="page autumn">
+  <p class="kicker">04　得点と景色</p>
+  <h2>キリ番<br><span class="heading-note">（キリの良いスコア）</span></h2>
+  <div class="rule"></div>
+  <p class="lead">100点ごとの区切りで、背景の景色が変わります。</p>
+  <p class="copy">得点を重ねるたびに、富山城の写真が次の景色へ切り替わります。富山の穏やかな風景を楽しみながら、さらに高い得点を目指してください。</p>
+
+  <svg viewBox="0 0 400 190" class="score-chart" aria-label="100点ごとに背景が変わる図">
+    <path d="M45 145 L145 110 L245 75 L350 38 L350 145 L45 145 Z" fill="rgba(138,120,111,.07)"/>
+    <polyline points="45,145 145,110 245,75 350,38" fill="none" stroke="#8d7467" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="145" cy="110" r="6" fill="#725c50"/><circle cx="245" cy="75" r="6" fill="#725c50"/><circle cx="350" cy="38" r="6" fill="#725c50"/>
+    <text x="130" y="142">100点</text><text x="230" y="108">200点</text><text x="318" y="72">300点</text>
+  </svg>
+
+  <div class="message-box"><strong>急降下の得点</strong>高い位置から落とすほど高得点です。落とした距離に応じて、10点から90点まで段階的に加わります。</div>
+</section>
+
+<section id="bonus" class="page night">
+  <p class="kicker">05　特別な力</p>
+  <h2>ボーナス漢字</h2>
+  <div class="rule"></div>
+  <p class="lead">同じ漢字を三つそろえると、特別な力がこめられた「特の符」が手に入ります。</p>
+
+  <div class="bonus-list">
+
+    <article class="bonus-card">
+      <div class="bonus-head"><div class="bonus-kanji">代</div><h3>二つを入れ替え</h3></div>
+      <p class="copy">一つ目と二つ目の漢字を選び、選んだ内容を画面に表示します。確認してから位置を入れ替えます。</p>
+    </article>
+
+
+    <article class="bonus-card">
+      <div class="bonus-head"><div class="bonus-kanji">岳</div><h3>一種類を消去</h3></div>
+      <p class="copy">消したい漢字を一つ選ぶと、盤面にある同じ漢字をまとめて消します。落下後に漢字がそろえば、連鎖が始まります。</p>
+    </article>
+  </div>
+
+  <div class="stock"><strong>特の符</strong><br>「代」または「岳」がそろうと、「発動しますか？」と表示されます。<br>［使う］で今すぐ発動し、［ためておく］で符をのこして、あとから使えます。</div>
+</section>
+
+<section id="sns" class="page sns-bright">
+  <p class="kicker">06　公式SNS</p>
+  <h2>繋がる輪</h2>
+  <div class="rule"></div>
+  <p class="lead">ハイスコアの感動などを、SNSで伝えてみませんか。</p>
+  <p class="copy">ハイスコアの投稿、お気に入りのプレイ画面の保存、バグ報告、お問い合わせに利用できます。</p>
+
+  <div class="sns-grid">
+    <div class="sns-card"><img src="X.png" alt="公式XのQRコード"><strong>公式X</strong><span>@kiboukanji429</span></div>
+    <div class="sns-card"><img src="innstaunnamed.png" alt="公式InstagramのQRコード"><strong>公式Instagram</strong><span>@26kibou4kanji29</span></div>
+  </div>
+  <p class="note">URLまたはQRコードから、スマートフォンのブラウザで遊べます。ダウンロードや料金は必要ありません。</p>
+</section>
+
+<section id="release" class="page credit-spring cinema-page">
+  <p class="cinema-small">FEEL THE HOPE INSIDE</p>
+  <h2 class="cinema-title">希望を感じよう</h2>
+  <p class="release">2026年4月29日<br>OFFICIAL RELEASE</p>
+</section>
+
+<section class="page credit-summer cinema-page">
+  <p class="credit-label">PHOTO CREDITS</p>
+  <div class="credit-name">魚津市企画広報室<br><br>魚津市教育委員会<br><br>富山市観光協会</div>
+</section>
+
+<section class="page credit-autumn cinema-page">
+  <p class="credit-label">BGM・効果音</p>
+  <div class="credit-name">Team Shiob<br><br>オリジナル音源</div>
+</section>
+
+<section class="page credit-winter cinema-page">
+  <p class="produced-line">PRODUCED BY&nbsp;&nbsp;Team shiob</p>
+  <div class="last-brand">KIBOUKANJI</div>
+</section>
+
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  document.querySelectorAll("img").forEach(image => {
+    image.addEventListener("error", () => {
+      const name = image.getAttribute("src") || "画像";
+      const box = document.createElement("div");
+      box.className = "media-missing";
+      box.textContent = `画像を確認してください：${name}`;
+      image.replaceWith(box);
+    }, { once: true });
+  });
+})();
+</script>
+</body>
+</html>

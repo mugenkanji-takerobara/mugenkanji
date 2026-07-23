@@ -1,1309 +1,692 @@
 <!DOCTYPE html>
-<html lang="ja">
 
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<meta content="富山の風景と漢字を楽しむ、スマートフォン向け落ち物パズルゲーム。" name="description"/>
+<meta content="#87b8c7" name="theme-color">
 <title>きぼうかんじ</title>
-
 <style>
-#title-screen {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-  background: #000;
+:root{
+  --paper:#f8f4ed;
+  --ink:#3f3834;
+  --muted:#756b65;
+  --gold:#d4a857;
+  --gold-deep:#9e701d;
+  --silver:#4b5563;
+  --silver-light:#d7dde5;
+  --sky:#87b8c7;
+  --shadow:0 10px 30px rgba(42,48,55,.16);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;color:var(--ink);background:#dfeff3}
+button,a{font:inherit}
+button{touch-action:manipulation}
+img{max-width:100%;height:auto}
+.hidden{display:none!important}
+.screen{display:none;min-height:100dvh}
+.screen.active{display:block}
+
+/* タイトル画面 */
+#title-screen{position:relative;width:100%;height:100vh;height:100svh;min-height:0;overflow:hidden;background:#dfeff3}
+.title-bg-image{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center center;z-index:0;background:#dfeff3}
+.title-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:12vh;color:#fff;text-align:center;z-index:0;background:linear-gradient(160deg,#142536,#7eb5c6 58%,#d7c18a)}
+.title-fallback strong{font-size:clamp(38px,10vw,70px);letter-spacing:.08em}
+.title-fallback span{margin-top:10px;font-size:15px;letter-spacing:.1em}
+#title-screen.image-ready .title-fallback{display:none}
+#title-screen::after{display:none}
+.title-btn-wrap{position:absolute;z-index:2;right:max(8px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));width:clamp(108px,26vw,168px);display:flex;flex-direction:column;gap:8px}
+.title-btn{min-height:56px;padding:12px 9px;border:1px solid rgba(255,255,255,.88);border-radius:13px;background:linear-gradient(180deg,rgba(255,224,120,.97),rgba(201,145,35,.97));color:#fff;font-weight:800;font-size:clamp(15px,4vw,19px);letter-spacing:.03em;box-shadow:0 5px 0 rgba(95,62,9,.22),0 10px 24px rgba(0,0,0,.18)}
+.title-btn:active{transform:translateY(2px);box-shadow:0 3px 0 rgba(95,62,9,.22)}
+
+/* 共通画面 */
+.page-shell{width:min(100%,520px);min-height:100dvh;margin:0 auto;background:var(--paper);box-shadow:var(--shadow)}
+.page-head{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:48px 1fr 48px;align-items:center;min-height:58px;padding:6px 8px;background:rgba(248,244,237,.95);backdrop-filter:blur(9px);border-bottom:1px solid rgba(90,75,65,.10)}
+.page-head h1{margin:0;text-align:center;font-size:17px;font-weight:700;letter-spacing:.04em}
+.icon-btn{width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.86);color:#574d47;font-size:20px;font-weight:800;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.content{padding:18px 16px 40px}
+
+/* ゲーム */
+#game-screen{background:linear-gradient(#91cbd8,#d8edf0)}
+.game-shell{width:min(100%,420px);min-height:100dvh;margin:0 auto;display:flex;flex-direction:column;align-items:center;padding:8px 8px 20px}
+.game-toolbar{width:100%;display:flex;justify-content:space-between;align-items:center;min-height:52px}
+.game-toolbar .icon-btn{background:rgba(255,255,255,.84)}
+.pause-btn{min-width:104px;min-height:44px;padding:8px 14px;border:0;border-radius:22px;background:rgba(255,255,255,.88);color:#42616b;font-weight:800;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+#game-canvas{display:block;width:min(100%,360px);height:auto;aspect-ratio:360/640;border:7px solid rgba(255,255,255,.95);border-radius:18px;background:#8dc9d8;box-shadow:0 12px 30px rgba(38,85,101,.22);touch-action:none}
+.game-help{margin:9px 0 0;font-size:12px;color:#42616b;text-align:center}
+#restartBtn{position:fixed;z-index:50;left:50%;top:auto;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);min-width:148px;min-height:42px;padding:8px 16px;border:0;border-radius:12px;background:linear-gradient(#ffde72,#c88f20);color:#fff;font-weight:900;font-size:15px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+
+/* ボーナス確認 */
+.bonus-confirm-modal{position:fixed;z-index:1200;inset:0;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(8,13,18,.76)}
+.bonus-confirm-modal.open{display:flex}
+.bonus-confirm-box{width:min(100%,360px);padding:22px 18px;border:1px solid rgba(255,255,255,.75);border-radius:18px;background:linear-gradient(180deg,#f8fafc,#d8dde4);box-shadow:0 18px 48px rgba(0,0,0,.34);text-align:center}
+.bonus-confirm-box h2{margin:0 0 12px;font-size:19px;color:#29313a}
+.bonus-confirm-box p{margin:0 0 16px;font-size:15px;line-height:1.8;color:#404955}
+.bonus-selection-preview{display:flex;justify-content:center;gap:12px;min-height:52px;margin:8px 0 18px}
+.bonus-chip{display:inline-flex;align-items:center;justify-content:center;min-width:64px;height:48px;padding:0 12px;border:3px solid var(--silver-light);border-radius:24px;background:var(--silver);color:#fff;font-size:20px;font-weight:900;box-shadow:0 4px 12px rgba(34,42,52,.22)}
+.bonus-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bonus-action{min-height:48px;border:0;border-radius:12px;font-weight:800}
+.bonus-action.primary{background:linear-gradient(#f3d276,#c59129);color:#fff}
+.bonus-action.secondary{background:#fff;color:#4b5563;border:1px solid #b8c0ca}
+
+/* 説明書 */
+.manual-shell{background:#ece8e1}
+.manual-slides{padding:0}
+.manual-slide{position:relative;min-height:calc(100dvh - 58px);padding:28px 22px 96px;display:flex;flex-direction:column;overflow:hidden;border-bottom:1px solid rgba(60,50,45,.12)}
+.manual-slide .eyebrow{font-size:11px;letter-spacing:.2em;font-weight:700;opacity:.72;text-align:center;margin-bottom:12px}
+.manual-slide h2{margin:0 0 14px;text-align:center;font-size:clamp(26px,7vw,38px);line-height:1.35;letter-spacing:.05em;font-weight:650}
+.manual-slide .lead{margin:0 auto;max-width:420px;text-align:center;font-size:14px;line-height:1.95}
+.manual-body{flex:1;display:flex;flex-direction:column;justify-content:center;margin-top:18px}
+.manual-slide-footer{position:absolute;left:0;right:0;bottom:0;padding:16px 18px 18px;text-align:center;border-top:1px solid rgba(80,70,65,.10);font-size:10px;line-height:1.7;letter-spacing:.02em;background:rgba(255,255,255,.18)}
+.manual-slide-footer strong{font-size:11px}
+.manual-welcome{background:linear-gradient(#e2f1f8,#f6fbfd);color:#165d86}
+.manual-blue{background:linear-gradient(#eaf7fc,#f7fbfd);color:#176897}
+.manual-black{background:#050505;color:#fff}
+.manual-pink{background:linear-gradient(#fae5ec,#f8eef2);color:#8d205c}
+.manual-green{background:linear-gradient(#277d34,#36883f);color:#fff}
+.manual-teal{background:linear-gradient(#3d7780,#76a5a8);color:#fff}
+.manual-sand{background:linear-gradient(#5d3518,#b28720);color:#fff}
+.manual-autumn{background:linear-gradient(#55361d,#b48920);color:#fff}
+.manual-yellow{background:linear-gradient(#f7b914,#ffd83f);color:#573b23}
+.manual-white{background:#fff;color:#1b1b1b}
+.manual-credits{background:linear-gradient(#5c1780,#db3d15);color:#fff}
+.manual-photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}
+.manual-photo-grid img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.manual-photo-wide{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin:8px 0 16px;box-shadow:0 7px 20px rgba(0,0,0,.13)}
+.manual-culture-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.manual-culture-grid img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px}
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.how-tile{padding:15px 12px;border-radius:14px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);line-height:1.65}
+.how-tile strong{display:block;margin-bottom:6px;font-size:15px}
+.record-panel{padding:20px;border:1px solid rgba(255,255,255,.32);border-radius:16px;background:rgba(255,255,255,.12);text-align:center}
+.record-panel strong{display:block;font-size:28px;margin-bottom:10px}
+.score-graph{width:100%;max-width:400px;margin:12px auto 0;display:block}
+.graph-label{font-size:14px;fill:currentColor}
+.bonus-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.bonus-card{padding:20px 12px;border-radius:16px;background:rgba(255,255,255,.20);border:1px solid rgba(255,255,255,.36);text-align:center}
+.bonus-kanji{font-size:52px;font-weight:900}
+.bonus-desc{margin-top:8px;font-size:14px;line-height:1.7}
+.sns-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sns-box{padding:10px;text-align:center}
+.qr-img{display:block;width:100%;aspect-ratio:1/1;object-fit:contain;background:#fff;border:5px solid #503a31}
+.sns-label{margin:10px 0 3px;font-size:16px;font-weight:800}
+.sns-desc{margin:0;font-size:12px;overflow-wrap:anywhere}
+.credits-block{text-align:center;font-size:13px;line-height:2}
+.credits-block h3{margin:18px 0 4px;font-size:14px;letter-spacing:.12em}
+.asset-warning{margin:8px 0;padding:9px 10px;border-radius:8px;background:rgba(128,35,35,.10);color:#8b2b2b;font-size:11px;line-height:1.5;text-align:center}
+
+/* 観光一覧 */
+.section-heading{margin:24px 0 12px;padding:9px 12px;border-radius:10px;background:linear-gradient(90deg,rgba(214,190,172,.42),rgba(247,241,234,.8));color:#71635d;font-size:14px;font-weight:700;letter-spacing:.08em}
+.section-heading:first-child{margin-top:4px}
+.spot{margin:0 0 15px;padding:15px;border-radius:15px;background:rgba(255,255,255,.78);border:1px solid rgba(120,104,94,.10);box-shadow:0 5px 16px rgba(74,64,57,.06)}
+.spot h2{margin:0 0 8px;font-size:17px;line-height:1.5}
+.spot-img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;margin:7px 0 9px;border-radius:11px;background:#e9e5df}
+.spot-img.zoomable{cursor:zoom-in}
+.addr{margin:0;color:var(--muted);font-size:13px;line-height:1.65}
+.story-btn{display:block;width:100%;min-height:46px;margin-top:12px;border:0;border-radius:11px;background:linear-gradient(#f1d879,#c99931);color:#fff;font-weight:800}
+.next-era-button{display:block;width:100%;margin:12px auto 0;padding:15px 14px;border:2px solid #c79a3d;border-radius:14px;background:#d4a857;color:#26374c;font-size:16px;font-weight:900;line-height:1.5;box-shadow:0 7px 18px rgba(0,0,0,.12);text-decoration:none;text-align:center}
+
+/* 雨晴海岸物語 */
+#story-screen{background:#000}
+#story-screen .page-shell{background:#000;color:#fff}
+#story-screen .page-head{background:rgba(0,0,0,.92);border-bottom-color:rgba(255,255,255,.12)}
+#story-screen .page-head h1{color:#fff}
+#story-screen .icon-btn{background:rgba(255,255,255,.13);color:#fff}
+.story-page{padding:0 0 28px;margin-bottom:28px;border-bottom:1px solid rgba(255,255,255,.13)}
+.story-img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;object-position:center;border-radius:8px;box-shadow:0 9px 24px rgba(0,0,0,.34);background:#161616}
+.story-text{margin:15px 5px 0;font-size:15px;line-height:2;text-align:center;color:#fff;text-shadow:0 2px 5px rgba(0,0,0,.8)}
+.story-footer{text-align:center;color:#c8c8c8;font-size:11px;line-height:1.8}
+
+/* 写真拡大 */
+.photo-modal{position:fixed;z-index:1100;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(10,12,14,.92)}
+.photo-modal.open{display:flex}
+.photo-modal img{max-width:100%;max-height:88dvh;border-radius:10px;box-shadow:0 16px 40px rgba(0,0,0,.45)}
+.photo-close{position:fixed;top:max(12px,env(safe-area-inset-top));right:12px;color:#fff;background:rgba(255,255,255,.18)}
+
+@media (min-width:700px){.title-btn-wrap{right:5vw;width:180px}}
+
+
+/* 公開版Ver1.0 最終実装 */
+.manual-frame{
+  display:block;
+  width:100%;
+  height:calc(100dvh - 58px);
+  border:0;
+  background:#d7d1c9;
+}
+.tokunofu-panel{
+  width:min(100%,360px);
+  min-height:44px;
+  margin:0 0 7px;
+  padding:6px 8px;
+  display:grid;
+  grid-template-columns:auto 1fr 1fr;
+  gap:7px;
+  align-items:center;
+  border:1px solid rgba(255,255,255,.78);
+  border-radius:12px;
+  background:rgba(255,255,255,.78);
+  box-shadow:0 4px 14px rgba(38,85,101,.12);
+}
+.tokunofu-label{
+  padding:0 4px;
+  color:#3c5762;
+  font-weight:900;
+  font-size:13px;
+  white-space:nowrap;
+}
+.tokunofu-button{
+  min-height:32px;
+  border:1px solid rgba(115,88,42,.28);
+  border-radius:999px;
+  background:linear-gradient(#fff8dc,#e7c36b);
+  color:#473719;
+  font-weight:900;
+}
+.tokunofu-button:disabled{
+  opacity:.46;
+  filter:grayscale(.65);
+}
+.tokunofu-modal{
+  position:fixed;
+  z-index:1250;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(8,13,18,.78);
+}
+.tokunofu-modal.open{display:flex}
+.tokunofu-box{
+  width:min(100%,360px);
+  padding:25px 18px 20px;
+  border:2px solid rgba(244,214,126,.86);
+  border-radius:20px;
+  background:linear-gradient(180deg,#fffaf0,#e9dcc3);
+  box-shadow:0 20px 55px rgba(0,0,0,.38);
+  text-align:center;
+}
+.tokunofu-symbol{
+  display:grid;
+  place-items:center;
+  width:86px;
+  height:86px;
+  margin:0 auto 13px;
+  border:5px solid #d1a441;
+  border-radius:50%;
+  background:#fff;
+  color:#111;
+  font-size:46px;
+  font-weight:900;
+  box-shadow:0 0 0 8px rgba(223,184,82,.16);
+}
+.tokunofu-box h2{margin:0 0 10px;font-size:21px}
+.tokunofu-box p{margin:0 0 18px;font-size:15px;line-height:1.8}
+.tokunofu-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.bonus-flash{
+  position:fixed;
+  z-index:1300;
+  inset:0;
+  display:none;
+  place-items:center;
+  pointer-events:none;
+  background:radial-gradient(circle,rgba(255,234,157,.08),rgba(0,0,0,.52));
+}
+.bonus-flash.show{display:grid;animation:bonusFlashFade .9s ease both}
+.bonus-flash-ring{
+  position:absolute;
+  width:170px;
+  height:170px;
+  border:7px solid rgba(245,206,93,.88);
+  border-radius:50%;
+  animation:bonusRing .85s ease-out both;
+}
+.bonus-flash-kanji{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:112px;
+  height:112px;
+  border:6px solid #e4b84c;
+  border-radius:50%;
+  background:#fff;
+  color:#111;
+  font-size:64px;
+  font-weight:900;
+  box-shadow:0 12px 35px rgba(0,0,0,.34);
+  animation:bonusKanji .7s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes bonusRing{
+  from{transform:scale(.4);opacity:1}
+  to{transform:scale(1.65);opacity:0}
+}
+@keyframes bonusKanji{
+  0%{transform:scale(.25) rotate(-12deg);opacity:0}
+  55%{transform:scale(1.18) rotate(3deg);opacity:1}
+  100%{transform:scale(1);opacity:1}
+}
+@keyframes bonusFlashFade{
+  0%{opacity:0}
+  18%{opacity:1}
+  82%{opacity:1}
+  100%{opacity:0}
+}
+.toyama-jump{
+  position:sticky;
+  top:58px;
+  z-index:15;
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:10px 4px 12px;
+  margin:0 0 13px;
+  background:linear-gradient(180deg,rgba(248,244,237,.98),rgba(248,244,237,.88));
+  scrollbar-width:none;
+}
+.toyama-jump::-webkit-scrollbar{display:none}
+.toyama-jump a{
+  flex:0 0 auto;
+  padding:8px 11px;
+  border:1px solid rgba(124,102,88,.19);
+  border-radius:999px;
+  background:#fff;
+  color:#62544c;
+  font-size:12px;
+  font-weight:800;
+  text-decoration:none;
+}
+.section-heading{scroll-margin-top:126px}
+.spot.has-photo{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 106px;
+  grid-template-areas:
+    "title photo"
+    "address photo"
+    "action action";
+  column-gap:12px;
+  align-items:start;
+  min-height:108px;
+}
+.spot.has-photo h2{grid-area:title;margin:0 0 5px}
+.spot.has-photo .addr{grid-area:address}
+.spot.has-photo .spot-img{
+  grid-area:photo;
+  width:106px;
+  height:82px;
+  aspect-ratio:auto;
+  margin:0;
+  object-fit:cover;
+  border-radius:10px;
+}
+.spot.has-photo .story-btn{grid-area:action}
+.spot:not(.has-photo){min-height:88px}
+.story-text{
+  font-family:"Yu Mincho","Hiragino Mincho ProN","HGS明朝E","MS PMincho",serif;
+  font-size:clamp(17px,4.5vw,20px);
+  line-height:2.05;
+  text-align:left;
+}
+.next-era-button{
+  border-color:#efcf7a;
+  background:linear-gradient(180deg,#e3b950,#b88326);
+  color:#17243a;
+}
+.teaser-modal{
+  position:fixed;
+  z-index:1400;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));
+  background:rgba(2,6,10,.97);
+}
+.teaser-modal.open{display:flex}
+body.teaser-open{overflow:hidden}
+.teaser-video-shell{
+  width:min(100%,980px);
+  max-height:calc(100svh - 24px);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:12px;
+  border:1px solid rgba(235,208,126,.52);
+  border-radius:16px;
+  background:#05080b;
+  color:#fff;
+  box-shadow:0 22px 60px rgba(0,0,0,.55);
+}
+.teaser-video-shell h2{
+  margin:0;
+  font-family:"Yu Mincho","Hiragino Mincho ProN","HGS明朝E","MS PMincho",serif;
+  font-size:clamp(18px,4.8vw,25px);
+  text-align:center;
+}
+.teaser-video{
+  display:block;
+  width:100%;
+  max-height:min(72svh,620px);
+  aspect-ratio:16/9;
+  border-radius:10px;
+  background:#000;
+  object-fit:contain;
+}
+.teaser-status{
+  min-height:1.4em;
+  margin:0;
+  color:#f5dda0;
+  font-size:14px;
+  line-height:1.5;
+  text-align:center;
+}
+.teaser-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.teaser-action{
+  min-height:46px;
+  border:1px solid rgba(255,255,255,.48);
+  border-radius:12px;
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  font-weight:900;
+}
+.teaser-action.primary{
+  border-color:#e5bd58;
+  background:linear-gradient(180deg,#d7ae49,#9d681b);
+}
+.teaser-action[hidden]{display:none}
+@media (max-width:520px){
+  .teaser-video-shell{padding:9px;gap:8px}
+  .teaser-actions{grid-template-columns:1fr}
+  .teaser-video{max-height:66svh}
+}
+@media (max-width:360px){
+  .tokunofu-panel{grid-template-columns:auto 1fr 1fr}
+  .spot.has-photo{grid-template-columns:minmax(0,1fr) 92px}
+  .spot.has-photo .spot-img{width:92px;height:72px}
 }
 
-<div class="hero-bg">
-  <img id="title-image" src="title-kiboukanji.png" style="width:100%; height:auto;">
 
-</div>
-
-.title-bg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+/* 公開版Ver1.0 RC2 読みやすさ調整 */
+#story-screen .story-text{
+  margin:18px 8px 0;
+  font-family:"Yu Mincho","Hiragino Mincho ProN","HGS明朝E","MS PMincho",serif;
+  font-size:clamp(20px,5.4vw,24px);
+  font-weight:700;
+  line-height:2.08;
+  letter-spacing:.025em;
+  text-align:left;
+  color:#fff;
+  text-shadow:0 2px 6px rgba(0,0,0,.88);
+}
+#story-screen .story-footer{
+  font-size:clamp(16px,4.2vw,19px);
+  font-weight:700;
+  line-height:1.95;
+}
+#story-screen .teaser-card p,
+#story-screen .teaser-card strong{
+  font-size:clamp(18px,4.8vw,21px);
+  font-weight:700;
 }
 
-.title-buttons {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+
+
+/* 公開版 Ver1.0 RC3：スマートフォンのゲーム画面を一画面に収める */
+:root{--game-viewport-height:100dvh}
+body.game-open{overflow:hidden;overscroll-behavior:none}
+#game-screen.active{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:var(--game-viewport-height,100dvh);
+  min-height:0;
+  overflow:hidden;
+  overscroll-behavior:none;
+}
+#game-screen .game-shell{
+  width:min(100%,420px);
+  height:var(--game-viewport-height,100dvh);
+  min-height:0;
+  padding:max(3px,env(safe-area-inset-top)) 6px max(3px,env(safe-area-inset-bottom));
+  gap:3px;
+  overflow:hidden;
+}
+#game-screen .game-toolbar{
+  flex:0 0 42px;
+  width:100%;
+  min-height:42px;
+  height:42px;
+}
+#game-screen .game-toolbar .icon-btn{
+  width:38px;
+  height:38px;
+  font-size:18px;
+}
+#game-screen .pause-btn{
+  min-width:96px;
+  min-height:38px;
+  height:38px;
+  padding:5px 12px;
+}
+#game-screen .tokunofu-panel{
+  flex:0 0 38px;
+  width:min(100%,360px);
+  min-height:38px;
+  height:38px;
+  margin:0;
+  padding:3px 6px;
+  gap:5px;
+  border-radius:10px;
+}
+#game-screen .tokunofu-label{font-size:12px}
+#game-screen .tokunofu-button{
+  min-height:28px;
+  height:28px;
+  padding:2px 8px;
+  font-size:13px;
+}
+#game-screen #game-canvas{
+  flex:0 0 auto;
+  width:360px;
+  height:640px;
+  max-width:none;
+  border-width:5px;
+  border-radius:14px;
+  box-shadow:0 7px 20px rgba(38,85,101,.20);
+}
+#game-screen .game-help{
+  flex:0 0 auto;
+  margin:1px 0 0;
+  min-height:14px;
+  font-size:10px;
+  line-height:1.35;
+  white-space:nowrap;
+}
+@media (max-height:680px){
+  #game-screen .game-help{display:none}
 }
 
-.title-buttons button {
-  font-size: 1.2rem;
-  padding: 10px 18px;
-  border-radius: 8px;
-}
 
-body {
-  margin: 0;
-  padding: 0;
-  background: #fdfaf3;
-  font-family: "Hiragino Sans", sans-serif;
-}
-
-/* 画面共通 */
-.screen {
-  display: none;
-  width: 100%;
-}
-
-.screen.active {
-  display: block;
-}
-
-/* ボタン */
-button {
-  font-size: 1.4rem;
-  padding: 14px 24px;
-  margin: 12px;
-  border-radius: 12px;
-  border: none;
-  background: #ffdd66;
-  box-shadow: 0 4px 0 #c9a74e;
-}
-
-/* 説明書オーバーレイ */
-#manualOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  justify-content: center;
-  align-items: center;
-}
-
-#manualOverlay.active {
-  display: flex;
-}
-
-.manual-box {
-  width: 90%;
-  max-width: 480px;
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-}
-#manualOverlay { pointer-events: none; }
-#manualOverlay.active { pointer-events: auto; }
-
-#manualOverlay {
-  display: none;
-  pointer-events: none;
-}
-
-#manualOverlay.active {
-  display: flex;
-  pointer-events: auto;
-} 
-/* 透明レイヤー対策（重要） */
-.screen {
-  pointer-events: none;
-}
-.screen.active {
-  pointer-events: auto;
-}
-
-.story-img {
-  width: 100%;
-  aspect-ratio: 2 / 1;
-  object-fit: cover;
-  display: block;
-  margin: 0 auto 10px;
-  border-radius: 6px;
-}
-.story-text {
-  text-align: center;
-  font-size: 0.95rem;
-  line-height: 1.7;
-  margin: 6px auto 4px;
-  width: 92%;
-  color: #ffffff;
-  font-family: "Noto Sans JP", "Yu Gothic", sans-serif;
-  letter-spacing: 0.02em;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-}
-
-/* 物語コンテンツの幅をスマホ向けに制限 */
-.story-page {
-  width: 92%;
-  max-width: 480px;
-  margin: 0 auto;
-}
-
-.story-page {
-  background: #000000 !important;
-}
-.story-page {
-  display: flex;
-  flex-direction: column;
-}
-.screen {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-}
-.screen.active { z-index: 2; }
-/* 見出し装飾（既出） */
-.group-heading { position:relative; font-size:1.15rem; font-weight:900; color:#fff; padding:14px 18px; margin:18px 0 8px; border-radius:12px; background:linear-gradient(90deg, rgba(255,215,120,0.06), rgba(255,255,255,0.02)); letter-spacing:0.06em; text-shadow:0 2px 8px rgba(0,0,0,0.6); display:flex; align-items:center; gap:12px; }
-.group-heading small { display:block; font-size:0.72rem; opacity:0.85; margin-left:6px; color:#f6f0e6; }
-
-/* spot card */
-.spot { background: rgba(0,0,0,0.55); border-radius:12px; padding:12px; margin:12px 0; }
-.spot h3 { font-size:1.25rem; font-weight:800; color:#fff; margin-bottom:6px; }
-.spot .addr { font-size:0.95rem; color:#e8e8e8; opacity:0.95; }
-.spot-img { width:100%; border-radius:10px; margin:8px 0; display:block; object-fit:cover; }
-
-/* detail */
-.detail-gallery { width:100%; max-width:520px; margin:0 auto 18px; }
-.detail-img { width:100%; border-radius:14px; margin-bottom:12px; display:block; object-fit:cover; }
-.detail-title { font-size:1.6rem; font-weight:900; letter-spacing:0.02em; color:#fff; margin-bottom:8px; }
-.detail-text { font-size:1.08rem; line-height:1.8; color:#f3efe8; }
-
-/* transient controls */
-.controls { position: fixed; top: 18px; right: 18px; display:flex; gap:8px; z-index:9999; opacity:0; pointer-events:none; transition:opacity .28s ease; }
-.controls.visible { opacity:1; pointer-events:auto; }
-.ctrl-btn { background: linear-gradient(180deg,#ffd86b,#d4a017); color:#3b2300; border:2px solid #b88710; padding:8px 12px; border-radius:10px; font-weight:800; box-shadow:0 4px 0 #b38b2e; }
-
-/* small screens tweak */
-@media (max-width:420px){
-  .detail-title { font-size:1.3rem; }
-  .spot h3 { font-size:1.05rem; }
-}
-.story-btn {
-  width: 100%;
-  padding: 10px 14px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  border-radius: 10px;
-  background: #ffd86b;
-  box-shadow: 0 4px 0 #b38b2e;
-  margin: 6px 0 10px;
-}
-
-/* タイトル画面のボタン共通スタイル（見た目をゴールド、文字白） */
-#title-screen .title-btn,
-.screen .gold-btn {
-  background: linear-gradient(#ffd54a,#d4a017);
-  color: #fff;
-  font-weight: 700;
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 3px 0 rgba(0,0,0,0.15);
-  cursor: pointer;
-  /* サイズは現状維持するため幅は auto に */
-  width: auto;
-  padding: 10px 16px;
-}
-
-/* 右寄せラッパー（タイトル内のボタン群を右寄せ） */
-#title-screen .title-btn-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-}
-
-/* とやまの観光一覧内の説明/写真/物語ボタンもゴールドに */
-.toyama-list .action-btn,
-.detail-screen .action-btn {
-  background: linear-gradient(#ffd54a,#d4a017);
-  color: #fff;
-  font-weight: 700;
-  border-radius: 6px;
-  padding: 8px 12px;
-}
-
-/* 背景画像（女島など）が隠れないように z-index を調整 */
-.detail-gallery, .hero-bg {
-  position: relative;
-  z-index: 0;
-}
-.detail-img, .hero-bg img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* ボタンを確実に押せるように pointer-events を有効化 */
-button, .btn {
-  pointer-events: auto;
-}
-
-/* 言語切替（右上）を非表示にする */
-#langToggle, #lang-en, #lang-ja {
-  display: none !important;
-}
-
-/* 小さな調整：押したときの見た目 */
-.title-btn:active, .gold-btn:active, .action-btn:active {
-  transform: translateY(1px);
-  box-shadow: 0 2px 0 rgba(0,0,0,0.12);
-}
-<style>
-/* タイトル画面：右端に縦並びで中央寄せ */
-#title-screen { position: relative; overflow: visible; }
-#title-screen .title-btn-wrap {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-end;
-  z-index: 2; /* 背景より上、全画面オーバーレイより下にしたければ 1 に調整 */
-}
-
-/* ゴールドボタン（既存サイズ維持、文字白） */
-.title-btn, .gold-btn, .action-btn {
-  background: linear-gradient(#ffd54a,#d4a017);
-  color: #fff !important;
-  font-weight: 700;
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 3px 0 rgba(0,0,0,0.15);
-  padding: 10px 16px;
-  cursor: pointer;
-  width: auto;
-  pointer-events: auto;
-}
-
-/* 背景画像領域を確保 */
-.hero-bg, .detail-gallery { position: relative; z-index: 0; }
-.hero-bg img, .detail-img { display:block; width:100%; height:auto; object-fit:cover; }
-
-/* 透明オーバーレイがボタンを奪っている場合の保険 */
-.overlay, .modal-backdrop, .blocker {
-  pointer-events: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-}
-
-/* 言語切替を完全に隠す（必要なら） */
-#langToggle, #lang-en, #lang-ja, #btnEN, #btnJP { display:none !important; }
-
-/* 軽微な押下エフェクト */
-.title-btn:active { transform: translateY(1px); box-shadow: 0 2px 0 rgba(0,0,0,0.12); }
-
+/* RC4: タイトル画像は切り取らず、ブラウザの上下バー内に全体表示 */
+body.title-open{overflow:hidden;overscroll-behavior:none}
+@supports(height:100svh){#title-screen{height:100svh}}
+@media(max-height:660px){.title-btn{min-height:48px;padding:8px 7px}.title-btn-wrap{gap:6px}}
 </style>
-</head>
-
+</meta></head>
 <body>
-
-<!-- transient controls: 右上に時々出る（言語切替・グローバル戻る） -->
-<div id="transientControls" class="controls" aria-hidden="true">
-  <button id="langToggle" class="ctrl-btn" aria-label="Language toggle">EN</button>
-  <button id="globalBack" class="ctrl-btn" aria-label="Global back">戻る</button>
+<section aria-label="タイトル画面" class="screen active" id="title-screen">
+<div class="title-fallback"><strong>KIBOUKANJI</strong><span>希望を届ける、漢字パズル。</span></div>
+<img alt="きぼうかんじ タイトル背景" class="title-bg-image" data-src-candidates="title-kiboukanji.png|きぼうかんじTOP.png|(仮) TOP1.png" decoding="async" id="title-bg-image"/>
+<div class="title-btn-wrap">
+<button class="title-btn" id="start-button" type="button">パズル</button>
+<button class="title-btn" id="manual-button" type="button">使いかた</button>
+<button class="title-btn" id="toyama-button" type="button">とやま</button>
 </div>
-
-<div id="title-screen" class="screen active">
-  <div class="title-btn-wrap">
-    <button id="start-button" class="title-btn">ｹﾞｰﾑｽﾀｰﾄ</button>
-    <button id="manual-button" onclick="showHowto()">使いかた</button>
-　　<button id="toyama-button" onclick="showToyama()">とやま</button>
-
-  </div>
+</section>
+<section class="screen" id="game-screen">
+<div class="game-shell">
+<div class="game-toolbar">
+<button aria-label="タイトルへ戻る" class="icon-btn back-button" type="button">◀</button>
+<button aria-label="一時停止" class="pause-btn" id="pause-button" type="button">一時停止</button>
 </div>
-
-<div class="slide-card" id="game-screen" style="min-height:100vh; position:relative;">
-
-  <canvas id="game-canvas" style="width:100%; height:600px;"></canvas>
-
-  <!-- ★ REPLAY ボタン（押せるように絶対配置） -->
-  <button id="restartBtn" class="hidden"
-    style="
-      position:absolute;
-      top:300px;
-      left:130px;
-      z-index:9999;
-      padding:10px 20px;
-      font-size:18px;
-    ">
-    REPLAY
-  </button>
-
+<div aria-label="ためた特の符" class="tokunofu-panel" id="tokunofu-panel">
+<span class="tokunofu-label">特の符</span>
+<button class="tokunofu-button" data-tokunofu="代" disabled="" id="tokunofu-dai" type="button">代 × 0</button>
+<button class="tokunofu-button" data-tokunofu="岳" disabled="" id="tokunofu-gaku" type="button">岳 × 0</button>
+</div><canvas aria-label="きぼうかんじゲーム" height="640" id="game-canvas" width="360"></canvas>
+<p class="game-help">左右へ動かす　下へ動かすと高さに応じて急降下＋10～90</p>
+<button class="hidden" id="restartBtn" type="button">もう一度あそぶ</button>
 </div>
-<!-- とやま画面 -->
-<div id="toyamaScreen" class="screen">
-  <h2>とやま</h2>
-  <div class="spot-list">
-  <div class="group-heading">⛰️ 山と霊峰 <small data-en="Mountains & Sacred Peaks"></small></div>
-
-  <div class="spot">
-    <h3 data-en="Kurobe Gorge Railway">黒部峡谷鉄道（トロッコ電車）</h3>
-    <p class="addr" data-en="Kurobe-gun, Kurobe Gorge Entrance 11">富山県黒部市黒部峡谷口11</p>
-  </div>
-
-  <div class="spot">
-    <h3 data-en="Ainokura Gassho Village">相倉合掌造り集落</h3>
-    <p class="addr" data-en="Ainokura, Nanto">富山県南砺市相倉</p>
-  </div>
-
-  <div class="spot" id="shomyoSpotBtn">
-    <h3 data-en="Shomyo Falls">称名滝</h3>
-    <p class="addr" data-en="Ashikuraji, Tateyama">富山県中新川郡立山町芦峅寺</p>
-  </div>
-
-  <div class="spot special" id="tateyamaMuseumBtn">
-  <h3 data-en="Tateyama Museum (Mandara Yuen)">立山博物館（まんだら遊苑）</h3>
-  <button class="story-btn" id="tateyamaMoreBtn">説明を見る</button>
-  <p class="addr" data-en="Ashikuraji, Tateyama">富山県中新川郡立山町芦峅寺</p>
+</section>
+<section class="screen" id="manual-screen">
+<div class="page-shell manual-shell">
+<header class="page-head">
+<button aria-label="タイトルへ戻る" class="icon-btn back-button" type="button">◀</button>
+<h1>使いかた</h1><span></span>
+</header>
+<iframe class="manual-frame" id="manual-frame" src="manual.html?v=1.0.1" title="きぼうかんじ 使いかた"></iframe>
 </div>
-
-  <div class="group-heading">🏺 歴史と職人 <small data-en="History & Crafts"></small></div>
-
-  <div class="spot">
-    <h3 data-en="Inami Townscape">井波の町並み（八日町通り）</h3>
-    <p class="addr" data-en="Inami, Nanto">富山県南砺市井波</p>
-  </div>
-
- <div class="spot" id="rekiminSpotBtn">
-  <h3 data-en="Folk History Museum">歴史民俗博物館</h3>
-  <img src="uuu.JPG" class="spot-img" alt="">
-  <p class="addr" data-en="Ogawadera, Uozu">富山県魚津市小川寺字天神山1070</p>
+</section>
+<section class="screen" id="toyama-screen">
+<div class="page-shell">
+<header class="page-head">
+<button aria-label="タイトルへ戻る" class="icon-btn back-button" type="button">◀</button>
+<h1>富山県の魅力をご紹介します</h1><span></span>
+</header>
+<main class="content"><nav aria-label="観光地の目次" class="toyama-jump">
+<a href="#toyama-mountain">山と霊峰</a>
+<a href="#toyama-history">歴史と職人</a>
+<a href="#toyama-sea">日本海と街道</a>
+<a href="#toyama-nature">自然と学び</a>
+<a href="#toyama-city">駅近と水辺</a>
+</nav>
+<div class="section-heading" id="toyama-mountain">⛰ 山と霊峰</div>
+<article class="spot"><h2>黒部峡谷鉄道（トロッコ電車）</h2><p class="addr">富山県黒部市黒部峡谷口11</p></article>
+<article class="spot"><h2>相倉合掌造り集落</h2><p class="addr">富山県南砺市相倉</p></article>
+<article class="spot"><h2>称名滝</h2><p class="addr">富山県中新川郡立山町芦峅寺</p></article>
+<article class="spot"><h2>立山博物館（まんだら遊苑）</h2><p class="addr">富山県中新川郡立山町芦峅寺93-1</p></article>
+<div class="section-heading" id="toyama-history">🏺 歴史と職人</div>
+<article class="spot"><h2>井波の町並み（八日町通り）</h2><p class="addr">富山県南砺市井波</p></article>
+<article class="spot has-photo"><h2>歴史民俗博物館</h2><img alt="歴史民俗博物館" class="spot-img" data-src-candidates="uuu.JPG" decoding="async" loading="lazy"/><p class="addr">富山県魚津市小川寺字天神山1070</p></article>
+<article class="spot has-photo"><h2>郷土博物館（富山城）</h2><img alt="郷土博物館（富山城）" class="spot-img zoomable" data-src-candidates="t1.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市本丸1-62（富山城址公園内）</p></article>
+<article class="spot"><h2>氷見市潮風ギャラリー 藤子不二雄Ⓐアートコレクション</h2><p class="addr">富山県氷見市中央町3-4</p></article>
+<article class="spot has-photo"><h2>八尾おわら資料館</h2><img alt="八尾おわら資料館" class="spot-img zoomable" data-src-candidates="o16.jpg" decoding="async" loading="lazy"/><p class="addr">富山市八尾町東町2105番地1</p></article>
+<div class="section-heading" id="toyama-sea">🌊 日本海と街道</div>
+<article class="spot has-photo" id="amaharashi-spot">
+<h2>雨晴海岸</h2>
+<img alt="雨晴海岸" class="spot-img cinematic" data-src-candidates="lastlast.png" decoding="async" loading="lazy"/>
+<p class="addr">富山県高岡市太田雨晴</p>
+<button class="story-btn" id="story-button" type="button">物語を見る</button>
+</article>
+<article class="spot"><h2>ほたるいかミュージアム</h2><p class="addr">富山県滑川市中川原410</p></article>
+<article class="spot"><h2>海王丸パーク</h2><p class="addr">富山県射水市海王町8</p></article>
+<article class="spot has-photo"><h2>岩瀬の町並み</h2><img alt="岩瀬の町並み" class="spot-img zoomable" data-src-candidates="i1.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市岩瀬大町</p></article>
+<div class="section-heading" id="toyama-nature">🌿 丘の自然と知の空間</div>
+<article class="spot"><h2>ファミリーパーク</h2><p class="addr">富山県富山市古沢277</p></article>
+<article class="spot"><h2>富山市民俗民芸村</h2><p class="addr">富山県富山市安養坊1118-1</p></article>
+<article class="spot has-photo"><h2>富山市科学博物館</h2><img alt="富山市科学博物館" class="spot-img" data-src-candidates="sci.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市西中野町1-8-31</p></article>
+<article class="spot has-photo"><h2>ミラージュランド</h2><img alt="ミラージュランド" class="spot-img zoomable" data-src-candidates="m2.jpg" decoding="async" loading="lazy"/><p class="addr">富山県魚津市三ケ1390</p></article>
+<div class="section-heading" id="toyama-city">🏞 富山駅近から水辺</div>
+<article class="spot has-photo"><h2>富山県美術館</h2><img alt="富山県美術館" class="spot-img" data-src-candidates="art.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市木場町3-20</p></article>
+<article class="spot has-photo"><h2>富岩運河環水公園</h2><img alt="富岩運河環水公園" class="spot-img" data-src-candidates="c.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市湊入船町5</p></article>
+<article class="spot has-photo"><h2>池田屋安兵衛商店</h2><img alt="池田屋安兵衛商店" class="spot-img" data-src-candidates="k.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市堤町通り1-3-5</p></article>
+<article class="spot has-photo"><h2>富山市役所展望塔</h2><img alt="富山市役所展望塔" class="spot-img" data-src-candidates="city.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市新桜町7-38</p></article>
+</main>
 </div>
-
-  <div class="spot" id="toyamajoSpotBtn">
-  <h3 data-en="Toyama Castle Museum">郷土博物館（富山城）</h3>
-  <img src="t1.jpg" class="spot-img" alt="">
-  <button class="story-btn" id="toyamajoMoreBtn">写真を見る</button>
-  <p class="addr" data-en="Honmaru 1-62, Toyama (Toyama Castle Park)">富山県富山市本丸1-62（富山城址公園内）</p>
+</section>
+<section class="screen" id="story-screen">
+<div class="page-shell">
+<header class="page-head">
+<button aria-label="とやまへ戻る" class="icon-btn story-back-button" type="button">◀</button>
+<h1>雨晴海岸きぼうかんじ伝説</h1><span></span>
+</header>
+<main class="content">
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="ushiwaka_moon.png" decoding="async" loading="lazy"/><p class="story-text">今から800年前、京都にひとりの子が生まれる。名は牛若丸。のちの、源 義経だ。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="ushiwaka_smile.png" decoding="async" loading="lazy"/><p class="story-text">あきらめそうになる時や逃げ出したくなりそうでも、「よし、やってみよう！」と立ち向かおうというような、希望が肝心（きぼうかんじ）のこころざしを宿していた。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="ushiwaka_sword.png" decoding="async" loading="lazy"/><p class="story-text">山の寺で修行を重ね、剣の修行に励む日々。心の奥に静かな強さを秘める義経。彼はまだ、自らの過酷な運命を知らない。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="ushiwaka_bow.png" decoding="async" loading="lazy"/><p class="story-text">その影はやがて、未来へ続く道を歩きはじめる。激動の歴史の幕が上がろうとしていた。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="y1.png" decoding="async" loading="lazy"/><p class="story-text">月日は流れ義経は歴史の表舞台へと躍り出る。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="y3.png" decoding="async" loading="lazy"/><p class="story-text">激流うずまく壇ノ浦の合戦。義経は敵の矢をかいくぐり八艘飛びの奇策で平家を圧倒する。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="y2.png" decoding="async" loading="lazy"/><p class="story-text">平家の滅亡後、追われる身となった義経は、良質な馬の産地で、蝦夷地との交易拠点でもある平泉を目指した。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="north.png" decoding="async" loading="lazy"/><p class="story-text">平泉の奥州藤原氏には、義経の信頼する仲間も保護する力があった。平泉を目指す道中に北陸の地へと逃れる。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="north2.png" decoding="async" loading="lazy"/><p class="story-text">互いを信じ抜き、険しい旅を続ける義経の一行。途中、富山県高岡市の雨晴海岸へとたどり着く。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="b1.png" decoding="async" loading="lazy"/><p class="story-text">突然の激しいにわか雨。弁慶は義経の一行を守るため、怪力で巨大な岩を持ち上げた。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="b2.png" decoding="async" loading="lazy"/><p class="story-text">持ち上げられた岩の陰で身を寄せ合い、静かに雨が止むのを待ったという。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="b3.png" decoding="async" loading="lazy"/><p class="story-text">雨宿りをしながら日本海を見つめる義経。どれほどの窮地に立たされようとも、未来への希望の感情（きぼうかんじ）を捨てさることなく、前へ進むことを心に誓う。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="b4.png" decoding="async" loading="lazy"/><p class="story-text">やがて雲の切れ間から光が差し込み、空は晴れ渡った。義経の一行は再び平泉への歩みを進める。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="ama1.png" decoding="async" loading="lazy"/><p class="story-text">これこそが、雨晴（あまはらし）と呼ばれる地名の由来となった伝説の瞬間なのだ。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="ama2.png" decoding="async" loading="lazy"/><p class="story-text">歴史を駆け抜けた義経一行の軌跡は、現在もこの浜の記憶として、静かに息づいている。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="lastl1.png" decoding="async" loading="lazy"/><p class="story-text">春<br/>海風に花びらが舞い、白き峰にはまだ雪が残る。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="lastl2.png" decoding="async" loading="lazy"/><p class="story-text">初夏<br/>山々の雪解け水が流れ、海は澄んだ青を開く。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="last3.png" decoding="async" loading="lazy"/><p class="story-text">夏<br/>波間に白い光が燃え、入道雲が空へ立ちのぼる。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="lastlast4.png" decoding="async" loading="lazy"/><p class="story-text">秋<br/>夕暮れが浜を染め、山影がくっきりと深まる。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="last5.png" decoding="async" loading="lazy"/><p class="story-text">晩秋<br/>海から霧が立ちのぼり、峰々は淡い紅に染まる。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="ama3.png" decoding="async" loading="lazy"/><p class="story-text">冬<br/>雪が浜を覆い、世界は静寂に包まれる。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="lastl6.png" decoding="async" loading="lazy"/><p class="story-text">厳冬<br/>海から湯気のような気嵐が立ち、現代は氷霜の中を電車が走る。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="lastlast.png" decoding="async" loading="lazy"/><p class="story-text">四季はめぐり、景色は移ろう。それでもこの浜は、いにしえの記憶を静かに抱いている。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="lastlastlastlast.png" decoding="async" loading="lazy"/><p class="story-text">静かな浜辺に波の音だけがひびき、遠い日々の気配がそっと胸によみがえる。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="future2.jpg" decoding="async" loading="lazy"/><p class="story-text">立山連峰から日本海まで、無限に重ね合わされた未来の景色。これから観測するあなたたちの心が、希望の数え唄をつむいで現実へと収束させていくのでしょう。</p></article>
+<article class="story-page"><img alt="" class="story-img" data-src-candidates="futureV.jpg" decoding="async" loading="lazy"/><p class="story-text">おしまい</p></article>
+<button class="next-era-button" id="next-era-button" type="button">
+      そして波音の記憶が共鳴の時代へ
+    </button><p class="story-footer">KIBOUKANJI — Every Character Carries Hope —<br/>Produced by Team shiob</p>
+</main>
 </div>
-
-  <div class="spot">
-    <h3 data-en="Himi Shiokaze Gallery (Fujiko Fujio A Art Collection)">氷見市潮風ギャラリー 藤子不二雄Ⓐアートコレクション</h3>
-    <p class="addr" data-en="3-4 Chuomachi, Himi">富山県氷見市中央町3-4</p>
- </div>
-
-  <div class="spot" id="yaoSpotBtn">
-  <h3 data-en="Yatsuo Owara Museum">八尾おわら資料館</h3>
-  <img src="o16.jpg" class="spot-img" alt="">
-  <button class="story-btn" id="yaoMoreBtn">八尾の写真を見る</button>
-  <p class="addr" data-en="Yatsuo, Toyama">富山県富山市八尾町上新町289</p>
+</section>
+<div aria-labelledby="tokunofu-title" aria-modal="true" class="tokunofu-modal" id="tokunofu-modal" role="dialog">
+<div class="tokunofu-box">
+<div class="tokunofu-symbol" id="tokunofu-symbol">代</div>
+<h2 id="tokunofu-title">代を発動しますか？</h2>
+<p id="tokunofu-message">特の符を今使うか、ためておくか選んでください。</p>
+<div class="tokunofu-actions">
+<button class="bonus-action secondary" id="tokunofu-store" type="button">ためておく</button>
+<button class="bonus-action primary" id="tokunofu-use" type="button">使う</button>
 </div>
-
-  <div class="group-heading">🌊 日本海と街道 <small data-en="Sea & Old Routes"></small></div>
-
-  <div class="spot special" id="amaharashiSpot">
-  <h3 data-en="Amaharashi Coast">雨晴海岸</h3>
-  <img src="lastlast.png" class="spot-img" alt="">
-
-  <!-- 物語モードへ行くボタン（ここに移動） -->
- <button id="amaharashiStoryBtn" onclick="showAmahara()">物語を見る</button>
-
-  <p class="addr" data-en="Ota Amaharashi, Takaoka">富山県高岡市太田雨晴</p>
 </div>
-
-  <div class="spot">
-    <h3 data-en="Hotaruika Museum">ほたるいかミュージアム</h3>
-    <p class="addr" data-en="Namerikawa">富山県滑川市中川原410</p>
-  </div>
-
-  <div class="spot">
-    <h3 data-en="Kaiwomaru Park">海王丸パーク</h3>
-    <p class="addr" data-en="Imizu">富山県射水市海王町8</p>
-  </div>
-
- <div class="spot" id="iwaseSpotBtn">
-  <h3 data-en="Iwase Townscape">岩瀬の町並み</h3>
-  <img src="i1.jpg" class="spot-img" alt="">
-  <button class="story-btn" id="iwaseMoreBtn">岩瀬の写真を見る</button>
-  <p class="addr" data-en="Iwase, Toyama">富山県富山市岩瀬大町</p>
+</div><div aria-hidden="true" class="bonus-flash" id="bonus-flash">
+<div class="bonus-flash-ring"></div>
+<div class="bonus-flash-kanji" id="bonus-flash-kanji">代</div>
+</div><div aria-labelledby="bonus-confirm-title" aria-modal="true" class="bonus-confirm-modal" id="bonus-confirm-modal" role="dialog">
+<div class="bonus-confirm-box">
+<h2 id="bonus-confirm-title">ボーナス確認</h2>
+<p id="bonus-confirm-message"></p>
+<div class="bonus-selection-preview" id="bonus-selection-preview"></div>
+<div class="bonus-confirm-actions">
+<button class="bonus-action secondary" id="bonus-confirm-no" type="button">選び直す</button>
+<button class="bonus-action primary" id="bonus-confirm-yes" type="button">決定する</button>
 </div>
-
-  <div class="group-heading">🌿 丘の自然と知の空間 <small data-en="Hills & Knowledge"></small></div>
-
-  <div class="spot">
-    <h3 data-en="Family Park">ファミリーパーク</h3>
-    <p class="addr" data-en="Furusawa, Toyama">富山県富山市古沢277</p>
-  </div>
-
-  <div class="spot">
-    <h3 data-en="Folk Craft Village">富山市民俗民芸村</h3>
-    <p class="addr" data-en="Anyobo, Toyama">富山県富山市安養坊1118-1</p>
-  </div>
-
-  <div class="spot" id="sciSpotBtn">
-    <h3 data-en="Toyama Science Museum">富山市科学博物館</h3>
-    <img src="sci.jpg" class="spot-img" alt="">
-    <p class="addr" data-en="Nishinakano, Toyama">富山県富山市西中野町1-8-31</p>
-  </div>
-
-  <div class="spot" id="mirageSpotBtn">
-    <h3 data-en="Mirage Land">ミラージュランド</h3>
-    <img src="m2.jpg" class="spot-img" alt="">
-    <p class="addr" data-en="Uozu">富山県魚津市三ケ1390</p>
-  </div>
-
-  <div class="group-heading">🏞️ 富山駅近から水辺 <small data-en="Near Station & Waterfront"></small></div>
-
-  <div class="spot" id="tadSpotBtn">
-    <h3 data-en="Toyama Prefectural Museum of Art and Design">富山県美術館</h3>
-    <img src="art.jpg" class="spot-img" alt="">
-    <p class="addr" data-en="Kibamachi 3-20, Toyama">富山県富山市木場町3-20</p>
-  </div>
-
-  <div class="spot" id="kansuiSpotBtn">
-    <h3 data-en="Fugan Unga Kansui Park">富岩運河環水公園</h3>
-    <img src="c.jpg" class="spot-img" alt="">
-    <p class="addr" data-en="Minato Irifunecho 5, Toyama">富山県富山市湊入船町5</p>
-  </div>
-
-  <div class="spot" id="ikedayaSpotBtn">
-    <h3 data-en="Ikedaya Yasubei Shop">池田屋安兵衛商店</h3>
-    <img src="k.jpg" class="spot-img" alt="">
-    <p class="addr" data-en="Ichibancho 1-5, Toyama">富山県富山市一番町1-5</p>
-  </div>
-
-  <div class="spot special" id="cityHallBtn">
-    <h3 data-en="Toyama City Hall Observatory">富山市役所展望塔</h3>
-    <img src="city.jpg" class="spot-img" alt="">
-    <p class="addr" data-en="Shinsakuramachi 7-38, Toyama">富山県富山市新桜町7-38</p>
-
-  <button id="toyama-amaharashi" onclick="showAmahara()">雨晴海岸</button>
-
-   <!-- ★ここに追加する（toyamaScreen の直後） -->
-
-<div id="iwaseMoreScreen" class="hidden">
-  <div class="screen-inner">
-    <div class="detail-gallery">
-      <img src="i2.jpg" class="detail-img">
-      <img src="i3.jpg" class="detail-img">
-      <img src="i4.jpg" class="detail-img">
-      <img src="i5.jpg" class="detail-img">
-      <img src="i6.jpg" class="detail-img">
-    </div>
-  </div>
 </div>
-
-<div id="yaoMoreScreen" class="hidden">
-  <div class="screen-inner">
-    <div class="detail-gallery">
-      <img src="o8.jpg" class="detail-img">
-      <img src="o3.jpg" class="detail-img">
-    </div>
-  </div>
 </div>
-
-<div id="mirageMoreScreen" class="hidden">
-  <div class="screen-inner">
-    <div class="detail-gallery">
-      <img src="m6.JPG" class="detail-img">
-      <img src="m3.JPG" class="detail-img">
-      <img src="m1.jpg" class="detail-img">
-      <img src="m5.JPG" class="detail-img">
-      <img src="m4.JPG" class="detail-img">
-    </div>
-  </div>
+<div aria-labelledby="teaser-title" aria-modal="true" class="teaser-modal" id="teaser-modal" role="dialog">
+<div class="teaser-video-shell">
+<h2 id="teaser-title">続編「未来の雨晴海岸」予告</h2>
+<video aria-label="続編 未来の雨晴海岸 予告動画" class="teaser-video" controls="" id="teaser-video" playsinline="" poster="future_teaser_poster.jpg" preload="metadata">
+<source src="future_teaser.mp4?v=1.0.1" type="video/mp4"/>
+          お使いのブラウザでは動画を再生できません。
+        </video>
+<p aria-live="polite" class="teaser-status" id="teaser-status"></p>
+<div class="teaser-actions">
+<button class="teaser-action" hidden="" id="teaser-replay" type="button">もう一度見る</button>
+<button class="teaser-action primary" id="teaser-close" type="button">物語へ戻る</button>
 </div>
-
-<div id="toyamajoMoreScreen" class="hidden">
-  <div class="screen-inner">
-    <div class="detail-gallery">
-      <img src="t10s.jpg" class="detail-img">
-      <img src="t21.jpg" class="detail-img">
-      <img src="t3.jpg" class="detail-img">
-      <img src="t10a.jpg" class="detail-img">
-      <img src="t9t9.jpg" class="detail-img">
-    </div>
-  </div>
 </div>
-
-  <button id="back-to-game">戻る</button>
+</div><div aria-label="写真を拡大表示" aria-modal="true" class="photo-modal" id="photo-modal" role="dialog">
+<button aria-label="閉じる" class="icon-btn photo-close" id="photo-close" type="button">×</button>
+<img alt="" id="photo-modal-image" src=""/>
 </div>
-  </div>
-</div>
-<!-- 物語画面 -->
-<div id="storyScreen" class="screen">
-
-  <div class="story-lang-switch">
-    <button id="lang-ja">日本語</button>
-    <button id="lang-en">EN</button>
-  </div>
-
-<h2>雨晴海岸きぼうかんじ伝説</h2>
-<div class="story-page">
-  <img src="ushiwaka_moon.png" class="story-img">
-  <p class="story-text story-ja">今から800年前、京都にひとりの子が生まれる。名は牛若丸。のちの、源 義経だ。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="ushiwaka_smile.png" class="story-img">
-  <p class="story-text story-ja">あきらめそうになる時や逃げ出したくなりそうでも、「よし、やってみよう！」と立ち向かおうというような、希望が肝心（きぼうかんじ）の<br>こころざしを宿していた。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="ushiwaka_sword.png" class="story-img">
-  <p class="story-text story-ja">山の寺で修行を重ね、剣の修行に励む日々。心の奥に静かな強さを秘める義経。<br>彼はまだ、自らの過酷な運命を知らない。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="ushiwaka_bow.png" class="story-img">
-  <p class="story-text story-ja">その影はやがて、未来へ続く道を歩きはじめる。激動の歴史の幕が上がろうとしていた。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="y1.png" class="story-img">
-  <p class="story-text story-ja">月日は流れ義経は歴史の表舞台へと躍り出る。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="y3.png" class="story-img">
-  <p class="story-text story-ja">激流うずまく壇ノ浦の合戦。<br>義経は敵の矢をかいくぐり<br>八艘飛びの奇策で平家を圧倒する。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="y2.png" class="story-img">
-  <p class="story-text story-ja">平家の滅亡後、追われる身となった義経は、良質な馬の産地で、蝦夷地との交易拠点でもある平泉を目指した。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="north.png" class="story-img">
-  <p class="story-text story-ja">平泉の奥州藤原氏には、義経の信頼する仲間も保護する力があった。平泉を目指す道中に北陸の地へと逃れる。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="north2.png" class="story-img">
-  <p class="story-text story-ja">互いを信じ抜き、険しい旅を続ける義経の一行。途中、富山県高岡市の雨晴海岸へとたどり着く。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="b1.png" class="story-img">
-  <p class="story-text story-ja">突然の激しいにわか雨。弁慶は義経の一行を守るため、怪力で巨大な岩を持ち上げた。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="b2.png" class="story-img">
-  <p class="story-text story-ja">持ち上げられた岩の陰で身を寄せ合い、静かに雨が止むのを待ったという。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="b3.png" class="story-img">
-  <p class="story-text story-ja">雨宿りをしながら日本海を見つめる義経。<br>どれほどの窮地に立たされようとも、未来への希望の感情（きぼうかんじ）を捨てさることなく、前へ進むことを心に誓う。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="b4.png" class="story-img">
-  <p class="story-text story-ja">やがて雲の切れ間から光が差し込み、空は晴れ渡った。<br>義経の一行は再び平泉への歩みを進める。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="ama1.png" class="story-img">
-  <p class="story-text story-ja">これこそが、雨晴（あまはらし）と呼ばれる地名の由来となった伝説の瞬間なのだ。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="ama2.png" class="story-img">
-  <p class="story-text story-ja">歴史を駆け抜けた義経一行の軌跡は、現在もこの浜の記憶として、静かに息づいている。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="lastl1.png" class="story-img">
-  <p class="story-text story-ja">春<br><br>海風に花びらが舞い<br>白き峰にはまだ雪が残る。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="lastl2.png" class="story-img">
-  <p class="story-text story-ja">初夏<br><br>山々の雪解け水が流れ<br>海は澄んだ青を開く。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="last3.png" class="story-img">
-  <p class="story-text story-ja">夏<br><br>波間に白い光が燃え<br>入道雲が空へ立ちのぼる。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="lastlast4.png" class="story-img">
-  <p class="story-text story-ja">秋<br><br>夕暮れが浜を染め<br>山影がくっきりと深まる。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="last5.png" class="story-img">
-  <p class="story-text story-ja">晩秋<br><br>海から霧が立ちのぼり<br>峰々は淡い紅に染まる。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="ama3.png" class="story-img">
-  <p class="story-text story-ja">冬<br><br>雪が浜を覆い<br>世界は静寂に包まれる。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="lastl6.png" class="story-img">
-  <p class="story-text story-ja">厳冬<br><br>海から湯気のような気嵐が立ち<br>現代は氷霜の中を電車が走る。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="lastlast.png" class="story-img">
-  <p class="story-text story-ja">四季はめぐり<br>景色は移ろう<br>それでもこの浜は<br>いにしえの記憶を静かに抱いている。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="lastlastlastlast.png" class="story-img">
-  <p class="story-text story-ja">静かな浜辺に<br>波の音だけがひびき<br>遠い日々の気配が<br>そっと胸によみがえる。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="future2.jpg" class="story-img">
-  <p class="story-text story-ja">立山連峰から日本海まで、無限に重ね合わされた未来の景色。<br>これから観測するあなたたちの心が、希望の数え唄をつむいで<br>現実へと収束させていくのでしょう。<br><br></p>
-  <p class="story-text story-en" style="display:none;">(English)</p>
-</div>
-
-<div class="story-page">
-  <img src="futureV.jpg" class="story-img">
-  <p class="story-text story-ja">おしまい<br><br></p>
-  <p class="story-text story-en" style="display:none;">Fin</p>
-</div>
-
-<p class="story-footer">
-  Access the game via URL or QR code and play directly<br>
-  in your smartphone browser. No downloads or payments required.
-</p>
-
-<div class="tagline-combined">
-  <span>KIBOUKANJI</span><br> — Every Character Carries Hope —<br>
-  Produced by Team shiob
-</div>
-<style>
-#next-era-button {
-  background-color: #D4A857; /* 通常の金色 */
-  color: #4FB7E8;           /* 通常の水色 */
-  border: 2px solid #E8C98A;
-  padding: 14px 28px;
-  font-size: 1.2rem;
-  border-radius: 12px;
-  cursor: pointer;
-  width: 90%;               /* スマホ縦画面で中央に大きく */
-  max-width: 420px;         /* 横に伸びすぎない */
-  margin: 20px auto;        /* 中央配置 */
-  display: block;
-  transition: all 0.25s ease; /* ふわっと浮くアニメーション */
-}
-
-/* ホバー（PC）＋ タッチ（スマホ） */
-#next-era-button:hover,
-#next-era-button:active {
-  background-color: #E6C46A; /* 明るい金色 */
-  color: #BEE8FF;            /* 白寄りの水色 */
-  border-color: #F3DFA0;     /* 光の金色 */
-  transform: translateY(-4px); /* ふわっと浮く */
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* 浮いた影 */
-}
-</style>
-<button id="next-era-button">そして波音の記憶が共鳴の時代へ</button>
-
-<button id="story-back">戻る</button>
-</div> <!-- storyScreen の閉じタグ -->
-
-
-<!-- 説明書 -->
-<div id="manualOverlay" class="hidden screen">
-  <!-- スライド1 -->
- <div class="slide-9-16 kimono-spring-1 slide-card">
-  <div class="text-top-area">
-    <div class="english-sub-title" data-en="Welcome to KIBOUKANJI">Welcome to KIBOUKANJI</div>
-
-    <h2 class="main-headline"
-        style="font-size:28px; font-family:'Poppins'; letter-spacing:0.05em; margin-bottom:8px;"
-        data-en="KIBOUKANJI">
-      KIBOUKANJI
-    </h2>
-
-    <p class="sub-paragraph" style="font-size:12px; margin-top:6px;"
-       data-en="A Kanji puzzle that brings hope to you.">
-      希望を届ける漢字パズル。
-    </p>
-
-    <p class="english-translation"
-       data-en="A Kanji puzzle that brings hope to you.">
-      A Kanji puzzle that brings hope to you.
-    </p>
-  </div>
-
-  <!-- u1 / u2 / u3 横並び（小さめ・美しい比率） -->
-  <div class="manual-image-row">
-    <img src="u1.jpg" alt="u1" class="manual-thumb">
-    <img src="u2.jpg" alt="u2" class="manual-thumb">
-    <img src="u3.jpg" alt="u3" class="manual-thumb">
-  </div>
-
-  <!-- u4 大きめ画像（フッター直前） -->
-  <div class="manual-image-full">
-    <img src="u4.jpg" alt="u4" class="manual-fullimg">
-  </div>
-
-  <div class="footer-fixed-area">
-    <span class="app-store-notice"
-          data-en="Access the game via URL or QR code and play directly in your smartphone browser. No downloads or payments required.">
-      Access the game via URL or QR code and play directly<br>
-      in your smartphone browser. No downloads or payments required.
-    </span>
-
-    <div class="tagline-combined">
-      <span>KIBOUKANJI</span> — Every Character Carries Hope —
-    </div>
-  </div>
-</div>
-  <!-- スライド2 -->
- <div class="slide-9-16 kimono-spring-2 slide-card">
-  <div class="text-top-area">
-    <div class="english-sub-title" data-en="The Genesis of Glyphs">The Genesis of Glyphs</div>
-
-    <h2 class="main-headline" data-en="The Beginning of Kanji Puzzle">
-      漢字パズルの始まり
-    </h2>
-
-    <p class="sub-paragraph" data-en="GLYPHS emerge quietly as Kanji.">
-      GLYPHS（グリフ）＝ 漢字として、<br>静かに浮かび上がる。
-    </p>
-
-    <p class="english-translation"
-       data-en="The characters gently emerge before you as beautiful glyphs.">
-      The characters gently emerge before you as beautiful glyphs.
-    </p>
-  </div>
-
-  <!-- t2 / t8 / i5 を美しく横並び配置 -->
-  <div class="manual-image-row">
-    <img src="t2.jpg" alt="t2" class="manual-thumb">
-    <img src="t8.jpg" alt="t8" class="manual-thumb">
-    <img src="i5.jpg" alt="i5" class="manual-thumb">
-  </div>
-
-  <div class="footer-fixed-area">
-    <span class="app-store-notice"
-          data-en="Access the game via URL or QR code and play directly in your smartphone browser. No downloads or payments required.">
-      Access the game via URL or QR code and play directly<br>
-      in your smartphone browser. No downloads or payments required.
-    </span>
-
-    <div class="tagline-combined">
-      <span>KIBOUKANJI</span> — Every Character Carries Hope —
-    </div>
-  </div>
-</div>
-  <!-- スライド3 -->
-  <div class="slide-9-16 kimono-spring-3 slide-card">
-  <div class="text-top-area">
-    <div class="english-sub-title" data-en="The Heritage of Toyama">The Heritage of Toyama</div>
-
-    <h2 class="main-headline" style="font-size:18px;"
-        data-en="Toyama's History and Kanji United">
-      富山県の歩んできた歴史と<br>漢字がひとつになる
-    </h2>
-
-    <p class="sub-paragraph" style="margin-top:10px;"
-       data-en="Takaoka copperware, Inami woodcarving, Etchu Washi, Kumiko woodwork, and glass art.">
-      高岡銅器の錫・井波彫刻・越中和紙・組子細工・ガラス工芸。<br>
-      まるで、伝統工芸の手仕事と重厚感が<br>
-      一文字一文字の漢字に刻まれたようだ。
-    </p>
-
-    <p class="english-translation"
-       data-en="Takaoka copperware, Inami woodcarving, traditional Etchu Washi paper, Kumiko woodwork, and glass art. The meticulous handwork and dignity of traditional crafts are carved into every single character.">
-      Takaoka copperware, Inami woodcarving, traditional Etchu Washi paper, Kumiko woodwork, and glass art.  
-      The meticulous handwork and dignity of traditional crafts are carved into every single character.
-    </p>
-  </div>
-
-  <!-- g.jpg を美しく大きめに配置 -->
-  <div class="free-creative-space">
-    <div class="manual-image-full">
-      <img src="g.jpg" alt="g" class="manual-fullimg">
-    </div>
-  </div>
-
-  <div class="footer-fixed-area">
-    <span class="app-store-notice"
-          data-en="Access the game via URL or QR code and play directly in your smartphone browser. No downloads or payments required.">
-      Access the game via URL or QR code and play directly<br>
-      in your smartphone browser. No downloads or payments required.
-    </span>
-
-    <div class="tagline-combined">
-      <span>KIBOUKANJI</span> — Every Character Carries Hope —
-    </div>
-  </div>
-</div>
-　 <!-- スライド4-->
-  <div class="slide-9-16 kimono-summer-1 slide-card">
-  <div class="text-top-area">
-    <div class="english-sub-title" data-en="The Art of Connection">The Art of Connection</div>
-
-    <h2 class="main-headline" data-en="Key to Victory">
-      勝利の鍵
-    </h2>
-
-    <p class="sub-paragraph"
-       data-en="Gracefully connecting characters is the key to overcoming every challenge.">
-      文字を繋ぎ合わせること。<br>
-      それこそがスコアを積み重ねる鍵となる。
-    </p>
-
-    <p class="english-translation"
-       data-en="Gracefully connecting characters is the key to overcoming every challenge.">
-      Gracefully connecting characters is the key to overcoming every challenge.
-    </p>
-  </div>
-
-  <!-- 指定4枚の画像を美しく配置 -->
-  <div class="free-creative-space">
-    <div class="manual-image-row">
-      <img src="photo01-01.jpg" alt="photo01-01" class="manual-thumb">
-      <img src="photo03-01.jpg" alt="photo03-01" class="manual-thumb">
-      <img src="photo02-01.jpg" alt="photo02-01" class="manual-thumb">
-      <img src="photo01-03.jpg" alt="photo01-03" class="manual-thumb">
-    </div>
-  </div>
-
-  <div class="footer-fixed-area">
-    <span class="app-store-notice"
-          data-en="Access the game via URL or QR code and play directly in your smartphone browser. No downloads or payments required.">
-      Access the game via URL or QR code and play directly<br>
-      in your smartphone browser. No downloads or payments required.
-    </span>
-
-    <div class="tagline-combined">
-      <span>KIBOUKANJI</span> — Every Character Carries Hope —
-    </div>
-  </div>
-</div>
-  <!-- スライド5 -->
-  <div class="slide-9-16 kimono-omega kimono-okinawa slide-card">
-  <div class="text-top-area">
-    <div class="english-sub-title" data-en="Core Gameplay & Controls">Core Gameplay & Controls</div>
-
-    <h2 class="main-headline" data-en="How to Play">
-      きぼうかんじ 遊びかた
-    </h2>
-
-    <p class="sub-paragraph"
-       data-en="Match three identical Kanji vertically or horizontally to clear them and aim for the ultimate high score.">
-      同じ漢字を縦または横に3つ揃えて消し、<br>
-      最高得点を目指しましょう。
-    </p>
-
-    <p class="english-translation"
-       data-en="Match three identical Kanji vertically or horizontally to clear them and aim for the ultimate high score.">
-      Match three identical Kanji vertically or horizontally to clear them and aim for the ultimate high score.
-    </p>
-  </div>
-
-  <div class="free-creative-space">
-    <div class="how-to-grid">
-
-      <!-- 左右スワイプ -->
-      <div class="how-to-tile">
-        <div>
-          <span class="tile-icon">↔️</span>
-          <p class="tile-label">左右スワイプ</p>
-        </div>
-        <div>
-          <p class="tile-text">漢字を左右に移動。</p>
-          <p class="tile-english">Swipe left or right.</p>
-        </div>
-      </div>
-
-      <!-- 下スワイプ -->
-      <div class="how-to-tile">
-        <div>
-          <span class="tile-icon">⬇️</span>
-          <p class="tile-label">下スワイプ</p>
-        </div>
-        <div>
-          <p class="tile-text">素早く落としたら<br>スコア加算。</p>
-          <p class="tile-english">Drop fast for bonus.</p>
-        </div>
-      </div>
-
-      <!-- 一時停止 -->
-      <div class="how-to-tile">
-        <div>
-          <span class="tile-icon">⏸️</span>
-          <p class="tile-label">一時停止</p>
-        </div>
-        <div>
-          <p class="tile-text">ゲームを中断。</p>
-          <p class="tile-english">Pause the game.</p>
-        </div>
-      </div>
-
-      <!-- メインへ戻る -->
-      <div class="how-to-tile">
-        <div>
-          <span class="tile-icon" style="font-size:18px; line-height:1.2;">⌂</span>
-          <p class="tile-label">メイン</p>
-        </div>
-        <div>
-          <p class="tile-text">タイトル画面に<br>もどる。</p>
-          <p class="tile-english">Return to title.</p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="footer-fixed-area">
-    <span class="app-store-notice"
-          data-en="Access the game via URL or QR code and play directly in your smartphone browser. No downloads or payments required.">
-      Access the game via URL or QR code and play directly<br>
-      in your smartphone browser. No downloads or payments required.
-    </span>
-
-    <div class="tagline-combined">
-      <span>KIBOUKANJI</span> — Every Character Carries Hope —
-    </div>
-  </div>
-</div>
-  <!-- スライド6 -->
-  <div class="slide-9-16 kimono-okinawa slide-card">
-  <div class="text-top-area">
-    <div class="english-sub-title" data-en="Game Modes & System">Game Modes & System</div>
-
-    <h2 class="main-headline" data-en="Modes & Records">
-      難易モードと記録
-    </h2>
-
-    <p class="sub-paragraph"
-       data-en="Choose the perfect mode for your skill level and keep track of your personal best scores.">
-      プレイスタイルに合わせたモード選択と、<br>
-      自己ベストを保存するシステム。
-    </p>
-
-    <p class="english-translation"
-       data-en="Choose the perfect mode for your skill level and keep track of your personal best scores.">
-      Choose the perfect mode for your skill level and keep track of your personal best scores.
-    </p>
-  </div>
-
-  <div class="free-creative-space">
-    <div class="info-layout-stack">
-
-      <!-- 難易度モード -->
-      <div class="info-bar">
-        <span class="info-tag" data-en="DIFFICULTY MODES">DIFFICULTY MODES</span>
-
-        <h3 class="info-title-ja" data-en="Easy / Hard">
-          やさしい / むずかしい
-        </h3>
-
-        <p class="info-desc-ja">
-          ・やさしい：落下がゆっくり。<br>
-          ・むずかしい：落下が速く、NEXT2 も使用する。
-        </p>
-
-        <p class="info-desc-en"
-           data-en="- Easy: Slower speed / Hard: Faster speed with NEXT2.">
-          - Easy: Slower speed / Hard: Faster speed with NEXT2.
-        </p>
-      </div>
-
-      <!-- スコア記録 -->
-      <div class="info-bar">
-        <span class="info-tag" data-en="SCORE RECORDS">SCORE RECORDS</span>
-
-        <h3 class="info-title-ja" data-en="Auto Save System">
-          自動保存システム
-        </h3>
-
-        <p class="info-desc-ja">
-          得点上位3つを自動で保存。リセットで記録を消去。
-        </p>
-
-        <p class="info-desc-en"
-           data-en="Automatically saves your top 3 scores.">
-          Automatically saves your top 3 scores.
-        </p>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="footer-fixed-area">
-    <span class="app-store-notice"
-          data-en="Access the game via URL or QR code and play directly in your smartphone browser. No downloads or payments required.">
-      Access the game via URL or QR code and play directly<br>
-      in your smartphone browser. No downloads or payments required.
-    </span>
-
-    <div class="tagline-combined">
-      <span>KIBOUKANJI</span> — Every Character Carries Hope —
-    </div>
-  </div>
-</div>
-  <!-- スライド7 -->
-  <div class="slide-9-16 kimono-autumn slide-card">
-  <div class="text-top-area">
-    <div class="english-sub-title" data-en="The Ascent of Journey">The Ascent of Journey</div>
-
-    <h2 class="main-headline" data-en="Milestone">
-      キリ番
-    </h2>
-
-    <p class="sub-paragraph"
-       data-en="The background changes every 100 points, deepening your challenge. The serene imagery of Toyama Prefecture quickens your heartbeat.">
-      100点ごとの節目で背景が移ろう。<br>
-      富山県の落ち着いた背景イメージが<br>
-      さらなるハイスコアへの鼓動となる。
-    </p>
-
-    <p class="english-translation"
-       data-en="The background changes every 100 points, deepening your challenge. The serene imagery of Toyama Prefecture quickens your heartbeat.">
-      The background changes every 100 points, deepening your challenge.  
-      The serene imagery of Toyama Prefecture quickens your heartbeat.
-    </p>
-  </div>
-
-  <div class="free-creative-space">
-    <svg viewBox="0 0 400 180" class="score-graph" aria-hidden="true">
-      <path d="M 50 140 L 150 105 L 250 70 L 350 35 L 350 140 L 50 140 Z"
-            fill="rgba(138, 120, 111, 0.04)" />
-      <polyline points="50,140 150,105 250,70 350,35"
-                fill="none" stroke="#aa9a92" stroke-width="1.5" stroke-linecap="round" />
-      <circle cx="150" cy="105" r="4" fill="#8a786f" />
-      <circle cx="250" cy="70" r="4" fill="#8a786f" />
-      <circle cx="350" cy="35" r="4" fill="#8a786f" />
-      <text x="150" y="128" class="graph-label">100</text>
-      <text x="250" y="93" class="graph-label">200</text>
-      <text x="350" y="58" class="graph-label">300</text>
-    </svg>
-  </div>
-
-  <div class="footer-fixed-area">
-    <span class="app-store-notice"
-          data-en="Access the game via URL or QR code and play directly in your smartphone browser. No downloads or payments required.">
-      Access the game via URL or QR code and play directly<br>
-      in your smartphone browser. No downloads or payments required.
-    </span>
-
-    <div class="tagline-combined">
-      <span>KIBOUKANJI</span> — Every Character Carries Hope —
-    </div>
-  </div>
-</div>
-  <!-- スライド8 -->
-  <div class="slide-9-16 kimono-summer-2 slide-card">
-  <div class="text-top-area">
-    <div class="english-sub-title" data-en="The Power of Bonus">The Power of Bonus</div>
-
-    <h2 class="main-headline" data-en="Bonus Kanji">
-      ボーナス漢字
-    </h2>
-
-    <p class="sub-paragraph"
-       data-en="Match three of the same Kanji to unleash a special power.">
-      同じ漢字を３つ揃えれば、特別な力が解き放たれる。
-    </p>
-
-    <p class="english-translation"
-       data-en="Match three of the same Kanji to unleash a special power.">
-      Match three of the same Kanji to unleash a special power.
-    </p>
-  </div>
-
-  <div class="free-creative-space">
-    <div class="bonus-grid">
-
-      <!-- 代：位置の入れ替え -->
-      <div class="bonus-card">
-        <div class="bonus-kanji">代</div>
-        <div class="bonus-desc">入れ替え</div>
-      </div>
-
-      <!-- 岳：指定漢字の消去 -->
-      <div class="bonus-card">
-        <div class="bonus-kanji">岳</div>
-        <div class="bonus-desc">消去</div>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="footer-fixed-area">
-    <span class="app-store-notice"
-          data-en="Access the game via URL or QR code and play directly in your smartphone browser. No downloads or payments required.">
-      Access the game via URL or QR code and play directly<br>
-      in your smartphone browser. No downloads or payments required.
-    </span>
-
-    <div class="tagline-combined">
-      <span>KIBOUKANJI</span> — Every Character Carries Hope —
-    </div>
-  </div>
-</div>
-   <!-- スライド9 -->
- <div class="slide-9-16 kimono-winter-1 slide-card">
-  <div class="text-top-area">
-    <div class="english-sub-title" data-en="Community & Social">Community & Social</div>
-
-    <h2 class="main-headline" data-en="Circle of Connection">
-      繋がる輪
-    </h2>
-
-    <p class="sub-paragraph"
-       data-en="Why not share the ultimate excitement of your new high score with everyone on social media?">
-      ハイスコアの感動などを<br>
-      SNSで伝えてみませんか。
-    </p>
-
-    <p class="english-translation"
-       data-en="Why not share the ultimate excitement of your new high score with everyone on social media?">
-      Why not share the ultimate excitement of your new high score with everyone on social media?
-    </p>
-  </div>
-
-  <div class="free-creative-space">
-    <div class="qr-placeholder-container">
-
-      <!-- X公式QR -->
-      <div class="sns-box">
-        <img src="X.png" alt="X QR" class="qr-img">
-        <p class="sns-label" data-en="Official X">公式X</p>
-        <p class="sns-desc" data-en="Post your high score">@kiboukanji429</p>
-      </div>
-
-      <!-- Instagram公式QR -->
-      <div class="sns-box">
-        <img src="innstaunnamed.png" alt="Instagram QR" class="qr-img">
-        <p class="sns-label" data-en="Official Instagram">公式Instagram</p>
-        <p class="sns-desc" data-en="Bug reports & info">@26kibou4kanji29</p>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="footer-fixed-area">
-    <span class="app-store-notice"
-          data-en="Access the game via URL or QR code and play directly in your smartphone browser. No downloads or payments required.">
-      Access the game via URL or QR code and play directly<br>
-      in your smartphone browser. No downloads or payments required.
-    </span>
-
-    <div class="tagline-combined">
-      <span>KIBOUKANJI</span> — Every Character Carries Hope —
-    </div>
-  </div>
-</div>
- <!-- スライド10 -->
-<div class="slide-9-16 kimono-winter-2 slide-card">
-  <div class="text-top-area">
-    <div class="english-sub-title" data-en="Feel the hope inside">Feel the hope inside</div>
-
-    <h2 class="main-headline" style="font-size:22px; margin-bottom:6px;"
-        data-en="Feel the Hope">
-      希望を感じよう
-    </h2>
-
-    <p class="sub-paragraph" data-en="2026 April 29 / Official Release">
-      2026年4月29日 OFFICIAL RELEASE
-    </p>
-  </div>
-
-  <div class="free-creative-space">
-    <!-- このページは画像なしの静かな余白デザイン -->
-  </div>
-
-  <div class="footer-fixed-area">
-    <span class="app-store-notice"
-          data-en="Access the game via URL or QR code and play directly in your smartphone browser. No downloads or payments required.">
-      Access the game via URL or QR code and play directly<br>
-      in your smartphone browser. No downloads or payments required.
-    </span>
-
-    <div class="tagline-combined">
-      <span>KIBOUKANJI</span> — Every Character Carries Hope —
-    </div>
-  </div>
-</div>
-
-
-<!-- スライド11 -->
-<div class="slide-9-16 kimono-credits slide-card">
-  <div class="free-creative-space">
-    <div class="credits-block" 
-         style="text-align:center; width:100%; font-family:'Noto Sans JP';
-                font-size:10.5px; color:#6a605b; line-height:2;">
-
-      <p style="margin-bottom:12px; font-weight:400; color:#3a3532;">
-        [ Photo Credits ]
-      </p>
-
-      <p>魚津市企画広報室</p>
-      <p>魚津市教育委員会</p>
-      <p>富山市観光協会</p>
-
-      <p style="margin:16px 0 4px; font-weight:400; color:#3a3532;">
-        [ BGM Credits ]
-      </p>
-
-      <p>甘茶の音楽工房</p>
-      <p>ドーヴァシンドローム</p>
-
-      <p style="margin-top:12px; font-family:'Poppins'; font-size:10px; color:#8a807a;">
-        Produced by Team shiob
-      </p>
-
-    </div>
-  </div>
-
-  <div class="footer-fixed-area">
-    <span class="app-store-notice"
-          data-en="Access the game via URL or QR code and play directly in your smartphone browser. No downloads or payments required.">
-      Access the game via URL or QR code and play directly<br>
-      in your smartphone browser. No downloads or payments required.
-    </span>
-
-    <div class="tagline-combined">
-      <span>KIBOUKANJI</span> — Every Character Carries Hope —
-    </div>
-  </div>
-</div>
-
-
-<!-- ここから下は必ずスライド外に置く -->
-<script src="./game.js"></script>
-<script src="toyama-kiboukanji-j2.local.js"></script>
-<script>
-(function(){
-  /* あなたの UI 調整スクリプト（そのまま） */
-})();
-</script>
-
+<script src="game-core.js?v=1.0.1"></script>
+<script src="game-board.js?v=1.0.1"></script>
+<script src="game-draw.js?v=1.0.1"></script>
+<script src="game-audio.js?v=1.0.1"></script>
+<script src="game-ui.js?v=1.0.1"></script>
 </body>
 </html>
