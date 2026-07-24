@@ -120,16 +120,20 @@ h3{font-size:clamp(22px,6vw,29px)}
   line-height:1.35;
 }
 .cover-title-sub{
-  margin-top:7px;
-  font-size:clamp(22px,5.8vw,30px);
-  letter-spacing:.035em;
-  line-height:1.45;
+  margin-top:8px;
+  font-family:"Yu Mincho","Hiragino Mincho ProN","HGS明朝E","MS PMincho",serif;
+  font-size:clamp(21px,5.4vw,28px);
+  font-weight:600;
+  letter-spacing:.04em;
+  line-height:1.5;
 }
 .cover-title-copy{
-  margin-top:7px;
-  font-size:clamp(15px,4vw,19px);
-  line-height:1.65;
-  letter-spacing:.01em;
+  margin-top:6px;
+  font-family:"Yu Mincho","Hiragino Mincho ProN","HGS明朝E","MS PMincho",serif;
+  font-size:clamp(18px,4.7vw,22px);
+  font-weight:600;
+  line-height:1.7;
+  letter-spacing:.03em;
 }
 .decorated-kana{
   position:relative;
@@ -152,11 +156,11 @@ h3{font-size:clamp(22px,6vw,29px)}
   transform:rotate(-7deg);
 }
 .decorated-kana .music-mark{
-  top:-.01em;
-  left:88%;
+  top:-.10em;
+  left:96%;
   color:#357bb5;
-  font-size:.22em;
-  letter-spacing:-.20em;
+  font-size:.28em;
+  letter-spacing:-.14em;
   transform:rotate(-4deg);
 }
 .decorated-kana .heart-mark{
@@ -459,8 +463,10 @@ h3{font-size:clamp(22px,6vw,29px)}
 }
 .festival-grid img{
   width:100%;
-  height:auto;
-  object-fit:contain;
+  height:100%;
+  aspect-ratio:4/3;
+  object-fit:cover;
+  object-position:center;
   border-radius:3px;
   background:rgba(255,255,255,.46);
   box-shadow:0 7px 18px rgba(50,40,35,.10);
@@ -609,7 +615,7 @@ h3{font-size:clamp(22px,6vw,29px)}
   <div class="cover-title">
     <span class="cover-title-main" aria-label="きぼうかんじ">
       <span class="sr-only">きぼうかんじ</span>
-      <span aria-hidden="true">き</span><span class="decorated-kana" aria-hidden="true">ほ<span class="kana-mark music-mark">♩♩</span></span><span aria-hidden="true">うかん</span><span class="decorated-kana" aria-hidden="true">し<span class="kana-mark heart-mark">♥♥</span></span>
+      <span aria-hidden="true">き</span><span class="decorated-kana" aria-hidden="true">ほ<span class="kana-mark music-mark">♪♪</span></span><span aria-hidden="true">うかん</span><span class="decorated-kana" aria-hidden="true">し<span class="kana-mark heart-mark">♥♥</span></span>
     </span>
     <span class="cover-title-sub">とやまの無限漢字</span>
     <span class="cover-title-copy">～立山連峰から富山湾まで、希望の数え唄～</span>
@@ -669,7 +675,7 @@ h3{font-size:clamp(22px,6vw,29px)}
 <section id="glyph" class="page toyama">
   <p class="kicker">02　漢字と富山</p>
   <h2 class="glyph-heading">
-    <span class="glyph-main">GLYPHS（グリフ）＝漢字</span>
+    <span class="glyph-main">GLYPH（グリフ）＝漢字</span>
     <span class="glyph-sub">静かに浮かび上がる。</span>
   </h2>
   <div class="rule"></div>

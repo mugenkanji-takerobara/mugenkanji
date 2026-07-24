@@ -3,98 +3,70 @@
 
   const app = window.KibouKanji = window.KibouKanji || {};
 
-  app.季節取得 = function (得点) {
-    return ["spring", "summer", "autumn", "winter"][Math.floor(得点 / 200) % 4];
-  };
+  
+app.城背景一覧 = [
+  "toyama-castle-01-sakura.jpg",
+  "toyama-castle-02-tulip.jpg",
+  "toyama-castle-03-green.jpg",
+  "toyama-castle-04-blue.jpg",
+  "toyama-castle-05-cloud.jpg",
+  "toyama-castle-06-detail.jpg",
+  "toyama-castle-07-city.jpg",
+  "toyama-castle-08-autumn.jpg",
+  "toyama-castle-09-night.jpg"
+];
 
-  app.背景描画 = function () {
-    const ctx = app.状態.ctx;
-    if (!ctx) return;
+app.城背景番号取得 = function (得点) {
+  return Math.max(0, Math.min(app.城背景一覧.length - 1, Math.floor(得点 / 100)));
+};
 
-    const 季節 = app.季節取得(app.状態.得点);
-    const sky = ctx.createLinearGradient(0, 0, 0, 140);
-    sky.addColorStop(0, "#87CEEB");
-    sky.addColorStop(1, "#E0FFFF");
-    ctx.fillStyle = sky;
-    ctx.fillRect(0, 0, 360, 140);
+app.城背景画像取得 = function (番号) {
+  app.画像 = app.画像 || {};
+  app.画像.城背景 = app.画像.城背景 || [];
+  if (!app.画像.城背景[番号]) {
+    const 画像 = new Image();
+    画像.src = app.城背景一覧[番号];
+    app.画像.城背景[番号] = 画像;
+  }
+  return app.画像.城背景[番号];
+};
 
-    if (季節 === "spring") {
-      ctx.fillStyle = "#F0F8FF";
-      ctx.fillRect(0, 120, 360, 40);
-      ctx.fillStyle = "#87CEFA";
-      ctx.fillRect(0, 140, 360, 30);
-      ctx.fillStyle = "#228B22";
-      ctx.fillRect(0, 170, 360, 20);
-      ctx.fillStyle = "#FFC0CB";
-      for (let i = 0; i < 8; i++) {
-        ctx.beginPath();
-        ctx.arc(20 + i * 40, 130, 8, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    } else if (季節 === "summer") {
-      ctx.fillStyle = "#2E8B57";
-      ctx.beginPath();
-      ctx.moveTo(0, 120);
-      ctx.lineTo(40, 80);
-      ctx.lineTo(90, 110);
-      ctx.lineTo(150, 70);
-      ctx.lineTo(210, 105);
-      ctx.lineTo(270, 75);
-      ctx.lineTo(330, 110);
-      ctx.lineTo(360, 90);
-      ctx.lineTo(360, 140);
-      ctx.lineTo(0, 140);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = "#228B22";
-      ctx.fillRect(0, 140, 360, 20);
-    } else if (季節 === "autumn") {
-      ctx.fillStyle = "#8B4513";
-      ctx.fillRect(0, 120, 360, 40);
-      const 色 = ["#FF8C00", "#FF4500", "#FFD700"];
-      for (let i = 0; i < 9; i++) {
-        ctx.fillStyle = 色[i % 3];
-        ctx.beginPath();
-        ctx.arc(20 + i * 40, 120, 10, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    } else {
-      ctx.fillStyle = "#F8F8FF";
-      ctx.beginPath();
-      ctx.moveTo(0, 130);
-      ctx.lineTo(40, 90);
-      ctx.lineTo(90, 120);
-      ctx.lineTo(150, 80);
-      ctx.lineTo(210, 115);
-      ctx.lineTo(270, 85);
-      ctx.lineTo(330, 120);
-      ctx.lineTo(360, 100);
-      ctx.lineTo(360, 140);
-      ctx.lineTo(0, 140);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = "#00BFFF";
-      ctx.fillRect(0, 140, 360, 40);
-      ctx.fillStyle = "#FFFFFF";
-      [[60,160,10,6],[120,162,12,5],[190,162,16,6]].forEach(([x,y,rx,ry]) => {
-        ctx.beginPath();
-        ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
-        ctx.fill();
-      });
-    }
+app.背景描画 = function () {
+  const ctx = app.状態.ctx;
+  if (!ctx) return;
 
-    const { 盤面左, 盤面上, 列数, 行数, マス寸法 } = app.設定;
-    ctx.fillStyle = "#F0F8FF";
-    ctx.fillRect(盤面左 - 4, 盤面上 - 4, 列数 * マス寸法 + 8, 行数 * マス寸法 + 8);
+  const 番号 = app.城背景番号取得(app.状態.得点);
+  const 背景画像 = app.城背景画像取得(番号);
 
-    const sea = ctx.createLinearGradient(0, 盤面上 + 行数 * マス寸法 + 10, 0, 640);
-    sea.addColorStop(0, "#00BFFF");
-    sea.addColorStop(1, "#1E90FF");
-    ctx.fillStyle = sea;
-    ctx.fillRect(0, 盤面上 + 行数 * マス寸法 + 10, 360, 640);
-  };
+  ctx.fillStyle = "#203040";
+  ctx.fillRect(0, 0, 360, 640);
 
-  app.格子描画 = function () {
+  if (背景画像 && 背景画像.complete) {
+    const canvasW = 360;
+    const canvasH = 640;
+    const imgW = 背景画像.naturalWidth || canvasW;
+    const imgH = 背景画像.naturalHeight || canvasH;
+    const scale = Math.max(canvasW / imgW, canvasH / imgH);
+    const drawW = imgW * scale;
+    const drawH = imgH * scale;
+    const dx = (canvasW - drawW) / 2;
+    const dy = (canvasH - drawH) / 2;
+    ctx.drawImage(背景画像, dx, dy, drawW, drawH);
+  }
+
+  ctx.fillStyle = "rgba(255,255,255,.18)";
+  ctx.fillRect(0, 0, 360, 640);
+  ctx.fillStyle = "rgba(20,32,42,.18)";
+  ctx.fillRect(0, 0, 360, 110);
+
+  const { 盤面左, 盤面上, 列数, 行数, マス寸法 } = app.設定;
+  ctx.fillStyle = "rgba(250,252,255,.78)";
+  ctx.fillRect(盤面左 - 5, 盤面上 - 5, 列数 * マス寸法 + 10, 行数 * マス寸法 + 10);
+  ctx.fillStyle = "rgba(255,255,255,.42)";
+  ctx.fillRect(盤面左, 盤面上, 列数 * マス寸法, 行数 * マス寸法);
+};
+
+app.格子描画 = function () {
     const ctx = app.状態.ctx;
     const { 盤面左, 盤面上, 列数, 行数, マス寸法 } = app.設定;
     ctx.strokeStyle = "rgba(0,0,0,.15)";
@@ -224,72 +196,68 @@
     ctx.restore();
   };
 
-  app.順位描画 = function () {
-    const ctx = app.状態.ctx;
-    const 順位 = app.得点読込();
+  
+app.順位描画 = function () {
+  const ctx = app.状態.ctx;
+  const 順位 = app.得点読込();
 
-    ctx.save();
-    ctx.fillStyle = "rgba(0,0,0,.82)";
-    ctx.fillRect(18, 142, 324, 468);
-    ctx.strokeStyle = "#E5BE55";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(26, 150, 308, 452);
+  ctx.save();
+  ctx.fillStyle = "rgba(0,0,0,.88)";
+  ctx.fillRect(8, 36, 344, 594);
+  ctx.strokeStyle = "#E5BE55";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(14, 42, 332, 582);
 
-    ctx.fillStyle = "#fff";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.font = "bold 23px sans-serif";
-    ctx.fillText("きぼうかんじ", 180, 178);
-    ctx.font = "13px sans-serif";
-    ctx.fillText("とやまの無限漢字", 180, 204);
-    ctx.fillText("立山連峰から富山湾まで、希望の数え唄", 180, 224);
+  ctx.fillStyle = "#fff";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "bold 28px sans-serif";
+  ctx.fillText("KIBOUKANJI", 180, 84);
 
-    ctx.fillStyle = "#FFD75A";
-    ctx.font = "bold 17px monospace";
-    ctx.fillText("TOP 3", 180, 254);
+  ctx.fillStyle = "#FFD75A";
+  ctx.font = "bold 20px monospace";
+  ctx.fillText("TOP 3", 180, 122);
 
-    ctx.textAlign = "left";
-    ctx.fillStyle = "#fff";
-    ctx.font = "bold 16px monospace";
-    for (let i = 0; i < 3; i++) {
-      const item = 順位[i];
-      const score = item ? String(item.score).padStart(7, "0") : "-------";
-      const date = item ? item.date : "--------";
-      ctx.fillText(`${i + 1}   ${score}   ${date}`, 72, 286 + i * 28);
-    }
+  ctx.textAlign = "left";
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 22px monospace";
+  for (let i = 0; i < 3; i++) {
+    const item = 順位[i];
+    const score = item ? String(item.score).padStart(7, "0") : "-------";
+    const date = item ? item.date : "--------";
+    ctx.fillText(`${i + 1}   ${score}   ${date}`, 38, 168 + i * 44);
+  }
 
-    // ランキング直下の保存案内
-    ctx.fillStyle = "rgba(255,255,255,.09)";
-    ctx.fillRect(38, 374, 284, 210);
-    ctx.strokeStyle = "rgba(255,255,255,.35)";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(38.5, 374.5, 283, 209);
+  ctx.fillStyle = "rgba(255,255,255,.09)";
+  ctx.fillRect(24, 318, 312, 280);
+  ctx.strokeStyle = "rgba(255,255,255,.35)";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(24.5, 318.5, 311, 279);
 
-    ctx.fillStyle = "#FFD75A";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-    ctx.font = "bold 13px sans-serif";
-    ctx.fillText("ランキングについて", 50, 387);
+  ctx.fillStyle = "#FFD75A";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+  ctx.font = "bold 17px sans-serif";
+  ctx.fillText("ランキングについて", 38, 334);
 
-    ctx.fillStyle = "#fff";
-    ctx.font = "10px sans-serif";
-    const 案内 = [
-      "スコアは、この端末で現在使用しているブラウザに",
-      "保存されます。",
-      "Safari、Chrome、Google、Samsung Internet、",
-      "Microsoft Edge、Brave、Firefox、Operaなど、",
-      "異なるブラウザ間ではランキングを共有できません。",
-      "別のスマートフォン、タブレット、パソコンなどへ",
-      "端末を変更した場合も、ランキングは引き継がれません。",
-      "履歴やサイトデータを削除した場合、または",
-      "プライベートブラウズやシークレットモードでは、",
-      "記録が保存されない、または消えることがあります。"
-    ];
-    案内.forEach((行, i) => ctx.fillText(行, 50, 414 + i * 16));
-    ctx.restore();
-  };
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 14px sans-serif";
+  const 案内 = [
+    "スコアは、この端末の現在のブラウザに保存されます。",
+    "Safari、Chrome、Samsung Internet、Microsoft Edge、",
+    "Brave、Firefox、Opera など、別のブラウザとは",
+    "ランキングを共有できません。",
+    "別のスマートフォン、タブレット、パソコンへ",
+    "端末を変えた場合も、記録は引き継がれません。",
+    "履歴やサイトデータを削除した場合、または",
+    "プライベートブラウズやシークレットモードでは、",
+    "記録が保存されない、または消えることがあります。"
+  ];
+  案内.forEach((行, i) => ctx.fillText(行, 38, 366 + i * 24));
+  ctx.restore();
+};
 
-  app.重ね表示描画 = function () {
+app.重ね表示描画 = function () {
     const ctx = app.状態.ctx;
     const 状態 = app.状態;
 
