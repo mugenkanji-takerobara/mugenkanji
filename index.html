@@ -4,9 +4,23 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
-<meta content="富山の風景と漢字を楽しむ、スマートフォン向け落ち物パズルゲーム。" name="description"/>
-<meta content="#87b8c7" name="theme-color">
-<title>きぼうかんじ</title>
+<meta content="ダウンロード不要・完全無料。GLYPH（漢字）と富山城の景色が重なる落ち物パズルで観光案内や雨晴海岸伝説を搭載。公式X・Instagramも無料。" name="description"/>
+<meta content="#87b8c7" name="theme-color"/>
+<link href="https://mugenkanji-takerobara.github.io/toyama-kiboukanji-/" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="ja_JP" property="og:locale"/>
+<meta content="スマホで遊べる無料パズルゲーム「きぼうかんじ」" property="og:title"/>
+<meta content="ダウンロード不要・完全無料。GLYPH（漢字）と富山城の景色が重なる落ち物パズルで観光案内や雨晴海岸伝説を搭載。公式X・Instagramも無料。" property="og:description"/>
+<meta content="https://mugenkanji-takerobara.github.io/toyama-kiboukanji-/" property="og:url"/>
+<meta content="https://mugenkanji-takerobara.github.io/toyama-kiboukanji-/og-kiboukanji.jpg" property="og:image"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+<meta content="富山城と春の花を背景にした、きぼうかんじのゲーム紹介画像" property="og:image:alt"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="スマホで遊べる無料パズルゲーム「きぼうかんじ」" name="twitter:title"/>
+<meta content="ダウンロード不要・完全無料。GLYPH（漢字）と富山城の景色が重なる落ち物パズルで観光案内や雨晴海岸伝説を搭載。公式X・Instagramも無料。" name="twitter:description"/>
+<meta content="https://mugenkanji-takerobara.github.io/toyama-kiboukanji-/og-kiboukanji.jpg" name="twitter:image"/>
+<title>きぼうかんじ｜スマホで遊べる無料パズルゲーム</title>
 <style>
 :root{
   --paper:#f8f4ed;
@@ -523,8 +537,178 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 
 #story-screen .story-brand-title{display:inline-block;font-weight:800;letter-spacing:.05em}
 #story-screen .story-brand-subtitle{display:inline-block;font-size:.88em;font-weight:600;white-space:nowrap}
+
+/* Ver.1.0.8 ランキング画像・コンボ・技名演出 */
+.ranking-actions{
+  position:fixed;
+  z-index:65;
+  left:50%;
+  bottom:max(10px,env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  width:min(calc(100% - 26px),336px);
+}
+.ranking-actions[hidden]{display:none}
+.ranking-action{
+  min-height:40px;
+  padding:7px 10px;
+  border:1px solid rgba(226,193,107,.88);
+  border-radius:10px;
+  background:#071526;
+  color:#fff;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.04em;
+  box-shadow:0 5px 18px rgba(0,0,0,.28);
+}
+#restartBtn{bottom:max(58px,calc(env(safe-area-inset-bottom) + 58px))}
+.score-toast{
+  position:fixed;
+  z-index:9999;
+  left:50%;
+  top:28%;
+  max-width:calc(100vw - 30px);
+  padding:11px 17px;
+  transform:translate(-50%,-50%) scale(.86);
+  border:2px solid rgba(255,255,255,.90);
+  border-radius:999px;
+  background:linear-gradient(180deg,rgba(255,225,104,.98),rgba(195,125,16,.98));
+  color:#fff;
+  box-shadow:0 10px 26px rgba(0,0,0,.28);
+  font-weight:900;
+  font-size:clamp(15px,4.4vw,21px);
+  letter-spacing:.03em;
+  text-align:center;
+  opacity:0;
+  transition:opacity .15s ease,transform .18s ease;
+  pointer-events:none;
+}
+.score-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.combo-effect{
+  position:fixed;
+  z-index:1400;
+  left:50%;
+  top:19%;
+  width:min(calc(100vw - 24px),410px);
+  padding:12px 14px 14px;
+  transform:translate(-50%,-50%) scale(.62);
+  border:2px solid rgba(255,255,255,.88);
+  border-radius:16px;
+  background:linear-gradient(180deg,rgba(7,21,38,.96),rgba(26,50,67,.94));
+  color:#fff;
+  box-shadow:0 15px 38px rgba(0,0,0,.34);
+  text-align:center;
+  opacity:0;
+  transition:opacity .16s ease,transform .24s cubic-bezier(.18,.86,.24,1);
+  pointer-events:none;
+}
+.combo-effect.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.combo-count,.combo-reading,.combo-kanji,.combo-score{display:block}
+.combo-count{
+  color:#f0d27c;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+.combo-reading{
+  margin-top:5px;
+  font-size:clamp(10px,3vw,13px);
+  font-weight:800;
+  letter-spacing:.13em;
+}
+.combo-kanji{
+  margin-top:2px;
+  font-family:"Yu Mincho","Hiragino Mincho ProN","Noto Serif CJK JP",serif;
+  font-size:clamp(30px,9vw,48px);
+  line-height:1.18;
+  letter-spacing:.05em;
+  color:#fff8dc;
+  text-shadow:0 2px 0 #6f5016,0 5px 15px rgba(235,193,88,.46);
+}
+.combo-score{margin-top:4px;color:#f0d27c;font-weight:900}
+.combo-2{background:linear-gradient(180deg,rgba(20,72,81,.97),rgba(8,35,51,.96))}
+.combo-3{background:linear-gradient(180deg,rgba(66,42,83,.97),rgba(16,29,49,.96))}
+.combo-4{background:linear-gradient(180deg,rgba(83,51,18,.97),rgba(7,21,38,.97))}
+.bonus-flash{
+  display:none;
+  grid-template-rows:auto auto auto;
+  align-content:center;
+  justify-items:center;
+  gap:7px;
+  padding:24px;
+  background:rgba(4,14,26,.78);
+}
+.bonus-flash.show{display:grid;animation:techniqueFade 1.38s ease both}
+.bonus-flash::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:.78;
+  background:radial-gradient(circle at center,rgba(255,255,255,.26),transparent 58%);
+}
+.bonus-flash[data-technique="dai"]::before{
+  background:
+    radial-gradient(circle at center,rgba(255,233,153,.42),transparent 52%),
+    linear-gradient(115deg,rgba(70,189,208,.28),rgba(230,184,69,.30));
+}
+.bonus-flash[data-technique="gaku"]::before{
+  background:
+    radial-gradient(circle at center,rgba(255,255,255,.30),transparent 50%),
+    linear-gradient(145deg,rgba(239,243,244,.18),rgba(16,38,65,.50),rgba(96,91,84,.36));
+}
+.bonus-flash-reading,
+.bonus-flash-kanji,
+.bonus-flash-subtitle{position:relative;z-index:1}
+.bonus-flash-reading{
+  color:#fff;
+  font-size:clamp(11px,3.5vw,15px);
+  font-weight:800;
+  letter-spacing:.18em;
+  text-shadow:0 2px 8px rgba(0,0,0,.55);
+}
+.bonus-flash-kanji{
+  width:auto;
+  height:auto;
+  margin:0;
+  padding:5px 14px 8px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#fffaf0;
+  font-family:"Yu Mincho","Hiragino Mincho ProN","Noto Serif CJK JP",serif;
+  font-size:clamp(49px,15vw,78px);
+  line-height:1.08;
+  letter-spacing:.06em;
+  white-space:nowrap;
+  text-shadow:0 3px 0 rgba(77,55,17,.82),0 8px 25px rgba(0,0,0,.50);
+  box-shadow:none;
+  animation:techniqueKanji 1.05s cubic-bezier(.18,.86,.24,1) both;
+}
+.bonus-flash-subtitle{
+  color:#fff;
+  font-size:clamp(17px,5vw,23px);
+  font-weight:800;
+  letter-spacing:.08em;
+  text-shadow:0 2px 9px rgba(0,0,0,.62);
+}
+@keyframes techniqueKanji{
+  0%{opacity:0;transform:scale(.35)}
+  45%{opacity:1;transform:scale(1.12)}
+  100%{opacity:1;transform:scale(1)}
+}
+@keyframes techniqueFade{
+  0%{opacity:0}
+  13%{opacity:1}
+  78%{opacity:1}
+  100%{opacity:0}
+}
+.bonus-confirm-box h2{font-size:clamp(16px,4.6vw,19px);line-height:1.55}
 </style>
-</meta></head>
+</head>
 <body>
 <section aria-label="タイトル画面" class="screen active" id="title-screen">
 <div class="title-fallback"><strong>KIBOUKANJI</strong><span>希望を届ける、漢字パズル。</span></div>
@@ -546,7 +730,11 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <button class="tokunofu-button" data-tokunofu="代" disabled="" id="tokunofu-dai" type="button">代 × 0</button>
 <button class="tokunofu-button" data-tokunofu="岳" disabled="" id="tokunofu-gaku" type="button">岳 × 0</button>
 </div><canvas aria-label="きぼうかんじゲーム" height="640" id="game-canvas" width="360"></canvas>
-<p class="game-help">左右へ動かす　下へ動かすと高さに応じて急降下＋10～90</p>
+<p class="game-help">漢字錠を左右へスワイプ　下へスワイプで急降下＋10～90</p>
+<div class="ranking-actions" hidden id="ranking-actions">
+<button class="ranking-action" id="ranking-copy" type="button">COPY IMAGE</button>
+<button class="ranking-action" id="ranking-save" type="button">SAVE IMAGE</button>
+</div>
 <button class="hidden" id="restartBtn" type="button">もう一度あそぶ</button>
 </div>
 </section>
@@ -556,7 +744,7 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <button aria-label="タイトルへ戻る" class="icon-btn back-button" type="button">◀</button>
 <h1>使いかた</h1><span></span>
 </header>
-<iframe class="manual-frame" id="manual-frame" src="manual.html?v=1.0.6" title="きぼうかんじ 使いかた"></iframe>
+<iframe class="manual-frame" id="manual-frame" src="manual.html?v=1.0.8" title="きぼうかんじ 使いかた"></iframe>
 </div>
 </section>
 <section class="screen" id="toyama-screen">
@@ -648,16 +836,17 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <div aria-labelledby="tokunofu-title" aria-modal="true" class="tokunofu-modal" id="tokunofu-modal" role="dialog">
 <div class="tokunofu-box">
 <div class="tokunofu-symbol" id="tokunofu-symbol">代</div>
-<h2 id="tokunofu-title">代を発動しますか？</h2>
-<p id="tokunofu-message">特の符を今使うか、ためておくか選んでください。</p>
+<h2 id="tokunofu-title">代の特の符</h2>
+<p id="tokunofu-message">今使うか、「特の符」をためてあとから使うか選んでください。</p>
 <div class="tokunofu-actions">
 <button class="bonus-action secondary" id="tokunofu-store" type="button">ためておく</button>
 <button class="bonus-action primary" id="tokunofu-use" type="button">使う</button>
 </div>
 </div>
 </div><div aria-hidden="true" class="bonus-flash" id="bonus-flash">
-<div class="bonus-flash-ring"></div>
-<div class="bonus-flash-kanji" id="bonus-flash-kanji">代</div>
+<div class="bonus-flash-reading" id="bonus-flash-reading">タイシンセングウ</div>
+<div class="bonus-flash-kanji" id="bonus-flash-kanji">代身遷宮</div>
+<div class="bonus-flash-subtitle" id="bonus-flash-subtitle">うつり、めぐる。</div>
 </div><div aria-labelledby="bonus-confirm-title" aria-modal="true" class="bonus-confirm-modal" id="bonus-confirm-modal" role="dialog">
 <div class="bonus-confirm-box">
 <h2 id="bonus-confirm-title">ボーナス確認</h2>
@@ -673,7 +862,7 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <div class="teaser-video-shell">
 <h2 id="teaser-title">続編「未来の雨晴海岸」予告</h2>
 <video aria-label="続編 未来の雨晴海岸 予告動画" class="teaser-video" controls="" id="teaser-video" playsinline="" poster="future_teaser_poster.jpg" preload="metadata">
-<source src="future_teaser.mp4?v=1.0.6" type="video/mp4"/>
+<source src="future_teaser.mp4?v=1.0.8" type="video/mp4"/>
           お使いのブラウザでは動画を再生できません。
         </video>
 <p aria-live="polite" class="teaser-status" id="teaser-status"></p>
@@ -686,10 +875,10 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <button aria-label="閉じる" class="icon-btn photo-close" id="photo-close" type="button">×</button>
 <img alt="" id="photo-modal-image" src=""/>
 </div>
-<script src="game-core.js?v=1.0.6"></script>
-<script src="game-board.js?v=1.0.6"></script>
-<script src="game-draw.js?v=1.0.6"></script>
-<script src="game-audio.js?v=1.0.6"></script>
-<script src="game-ui.js?v=1.0.6"></script>
+<script src="game-core.js?v=1.0.8"></script>
+<script src="game-board.js?v=1.0.8"></script>
+<script src="game-draw.js?v=1.0.8"></script>
+<script src="game-audio.js?v=1.0.8"></script>
+<script src="game-ui.js?v=1.0.8"></script>
 </body>
 </html>

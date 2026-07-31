@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#564942">
-<title>きぼうかんじ　使いかた</title>
+<title>きぼうかんじ　使いかた｜漢字錠とGLYPH</title>
 <style>
 :root{
   --ink:#302824;
@@ -157,7 +157,7 @@ h3{font-size:clamp(22px,6vw,29px)}
 }
 .decorated-kana .music-mark{
   top:-.10em;
-  left:96%;
+  left:82%;
   color:#357bb5;
   font-size:.28em;
   letter-spacing:-.14em;
@@ -165,7 +165,7 @@ h3{font-size:clamp(22px,6vw,29px)}
 }
 .decorated-kana .heart-mark{
   top:-.02em;
-  left:66%;
+  left:56%;
   color:#e94f82;
   font-size:.22em;
   transform:rotate(-5deg);
@@ -181,7 +181,7 @@ h3{font-size:clamp(22px,6vw,29px)}
   white-space:nowrap!important;
   border:0!important;
 }
-.cover-description{margin:12px 0 0;font-size:clamp(14px,3.7vw,18px);line-height:1.6;white-space:nowrap;letter-spacing:-.01em}
+.cover-description{margin:12px 0 0;font-size:clamp(14px,3.7vw,18px);line-height:1.6;white-space:normal;letter-spacing:-.01em}
 .cover-images{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -604,6 +604,160 @@ h3{font-size:clamp(22px,6vw,29px)}
 .last-brand-title,.last-brand-subtitle{display:block}
 .last-brand-title{font-weight:800;letter-spacing:.05em}
 .last-brand-subtitle{margin-top:.35em;font-size:.82em;font-weight:600;white-space:nowrap}
+
+/* Ver.1.0.8 漢字錠とGLYPH・四季のオキナワンモダン */
+.spring{
+  background:
+    radial-gradient(circle at 88% 8%,rgba(255,219,150,.50),transparent 25%),
+    linear-gradient(158deg,#f7fcff 0%,#d8f1f3 34%,#f8e9e2 70%,#fff6dd 100%);
+}
+.hero{padding-bottom:72px}
+.cover-description{font-size:clamp(16px,4.2vw,20px);line-height:1.75}
+.cover-free-note{
+  margin:10px 0 0;
+  padding:11px 13px;
+  border-left:4px solid #5ea7b8;
+  background:rgba(255,255,255,.58);
+  color:#405d67;
+  font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+  font-size:clamp(14px,3.7vw,17px);
+  font-weight:700;
+  line-height:1.75;
+}
+.cover-images{margin-top:22px}
+.world-intro{
+  display:grid;
+  gap:14px;
+  margin-top:25px;
+}
+.intro-panel{
+  padding:20px 18px;
+  border:1px solid rgba(38,100,116,.18);
+  background:rgba(255,255,255,.68);
+  box-shadow:0 8px 22px rgba(35,79,91,.08);
+}
+.intro-panel:nth-child(2){border-color:rgba(216,120,99,.20)}
+.intro-panel:nth-child(3){border-color:rgba(190,146,45,.22)}
+.intro-title{
+  margin:0 0 10px;
+  color:#245f72;
+  font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+  font-size:clamp(20px,5.3vw,26px);
+  font-weight:900;
+  letter-spacing:.04em;
+}
+.intro-panel p{
+  margin:0;
+  font-size:clamp(17px,4.5vw,21px);
+  line-height:1.95;
+}
+.term{font-weight:800;color:#174f65}
+.onomato{
+  display:inline-block;
+  margin:.05em .12em;
+  color:#bd664e;
+  font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+  font-size:1.08em;
+  font-weight:900;
+  letter-spacing:.05em;
+}
+.onomato.blue{color:#2b819d}
+.onomato.gold{color:#a87820}
+.definition-pair{
+  display:grid;
+  gap:12px;
+  margin:24px 0 0;
+}
+.definition-card{
+  padding:18px;
+  border:1px solid rgba(50,90,94,.18);
+  background:rgba(255,255,255,.58);
+}
+.definition-card strong{
+  display:block;
+  margin-bottom:5px;
+  color:#205b6b;
+  font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+  font-size:clamp(20px,5vw,25px);
+}
+.combo-explainer{
+  margin-top:27px;
+  padding:22px 18px;
+  border:1px solid rgba(85,61,41,.18);
+  background:rgba(255,255,255,.46);
+}
+.combo-explainer h3{font-size:clamp(23px,6vw,30px)}
+.combo-levels{display:grid;gap:11px;margin-top:20px}
+.combo-level{
+  padding:15px 13px;
+  border:1px solid rgba(255,255,255,.42);
+  background:rgba(32,28,25,.14);
+  text-align:center;
+}
+.combo-count{
+  display:block;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+.manual-reading{
+  display:block;
+  margin-top:5px;
+  font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+  font-size:clamp(12px,3.2vw,15px);
+  font-weight:800;
+  letter-spacing:.12em;
+}
+.manual-kanji{
+  display:block;
+  margin-top:1px;
+  font-family:"Yu Mincho","Hiragino Mincho ProN","Noto Serif CJK JP",serif;
+  font-size:clamp(31px,8vw,43px);
+  font-weight:700;
+  line-height:1.35;
+  letter-spacing:.05em;
+}
+.technique-card{
+  padding:24px 18px;
+  border:1px solid rgba(255,255,255,.28);
+  background:rgba(255,255,255,.10);
+  text-align:center;
+}
+.technique-card.dai{
+  background:linear-gradient(145deg,rgba(91,190,202,.20),rgba(222,180,76,.18));
+}
+.technique-card.gaku{
+  background:linear-gradient(145deg,rgba(245,247,248,.13),rgba(21,46,72,.30),rgba(109,101,91,.20));
+}
+.technique-symbol{
+  display:grid;
+  place-items:center;
+  width:62px;height:62px;
+  margin:0 auto 10px;
+  border:3px solid #d8b65e;
+  border-radius:50%;
+  background:#fff;
+  color:#111;
+  font-size:34px;
+  font-weight:900;
+}
+.technique-subtitle{
+  margin:5px 0 13px;
+  font-size:clamp(18px,4.8vw,23px);
+  font-weight:800;
+  letter-spacing:.06em;
+}
+.technique-copy{margin:0;font-size:clamp(17px,4.5vw,21px);line-height:1.95;text-align:left}
+.media-missing{
+  min-height:150px;
+  border-color:rgba(49,102,117,.34);
+  color:#445d64;
+}
+@media (max-width:380px){
+  .intro-panel{padding:18px 15px}
+  .manual-kanji{font-size:clamp(28px,8vw,38px)}
+}
 </style>
 </head>
 <body>
@@ -624,13 +778,38 @@ h3{font-size:clamp(22px,6vw,29px)}
   <h1>使いかた</h1>
   <div class="rule"></div>
   <p class="cover-description">漢字をそろえ、富山の景色をめぐる落ち物パズルです。</p>
+  <p class="cover-free-note">URLまたはQRコードから、スマートフォンのブラウザで遊べます。ダウンロードや料金は必要ありません。</p>
 
   <div class="cover-images">
     <img src="u1.jpg" alt="使いかたの紹介画像1">
     <img src="u2.jpg" alt="使いかたの紹介画像2">
     <img src="u3.jpg" alt="使いかたの紹介画像3">
   </div>
-  <div class="cover-square-wrap"><img class="cover-square" src="u4.jpg" alt="きぼうかんじの紹介画像"></div>
+
+  <div class="world-intro">
+    <section class="intro-panel" aria-labelledby="intro-world-title">
+      <h2 class="intro-title" id="intro-world-title">漢字錠とGLYPH</h2>
+      <p>富山県に集まった漢字エネルギー。<br>
+      それが<span class="term">GLYPH（グリフ）</span>です。</p>
+      <p style="margin-top:11px">GLYPHを丸い薬の形に結晶させたものを、<br>
+      <span class="term">漢字錠（カンジジョウ）</span>と呼びます。</p>
+      <p style="margin-top:11px">漢字錠をそろえて、<br>
+      中に宿るGLYPHの力を解き放ちましょう。</p>
+    </section>
+
+    <section class="intro-panel" aria-labelledby="intro-control-title">
+      <h2 class="intro-title" id="intro-control-title">漢字錠を動かす</h2>
+      <p>上から<span class="onomato blue">コロコロ</span>と降りてくる漢字錠に指を触れ、左右へ<span class="onomato blue">スッ</span>とスワイプすると移動します。</p>
+      <p style="margin-top:11px">下へスワイプすると、漢字錠が<span class="onomato gold">ストン！</span>と急降下します。</p>
+    </section>
+
+    <section class="intro-panel" aria-labelledby="intro-glyph-title">
+      <h2 class="intro-title" id="intro-glyph-title">GLYPHの力を解き放つ</h2>
+      <p>同じ漢字錠を、縦か横に三つそろえます。</p>
+      <p style="margin-top:9px;text-align:center"><span class="onomato gold">ピタッ！</span>　<span class="onomato">パチン！</span></p>
+      <p style="margin-top:9px">中に宿るGLYPHが<span class="onomato blue">シュワッ</span>と弾け、漢字錠が消えて得点になります。</p>
+    </section>
+  </div>
 </section>
 
 <section id="mokuji" class="page washi">
@@ -638,9 +817,9 @@ h3{font-size:clamp(22px,6vw,29px)}
   <div class="rule"></div>
   <ol class="toc">
     <li><a href="#mokuteki"><span class="toc-number">01</span><span>ゲームの目的</span></a></li>
-    <li><a href="#glyph"><span class="toc-number">02</span><span>漢字と富山</span></a></li>
+    <li><a href="#glyph"><span class="toc-number">02</span><span>漢字錠と富山</span></a></li>
     <li><a href="#sousa"><span class="toc-number">03</span><span>基本操作</span></a></li>
-    <li><a href="#kiriban"><span class="toc-number">04</span><span>キリ番</span></a></li>
+    <li><a href="#kiriban"><span class="toc-number">04</span><span>得点・景色・コンボ</span></a></li>
     <li><a href="#bonus"><span class="toc-number">05</span><span>ボーナス漢字</span></a></li>
     <li><a href="#sns"><span class="toc-number">06</span><span>繋がる輪</span></a></li>
     <li><a href="#release"><span class="toc-number">07</span><span>公開・制作</span></a></li>
@@ -652,8 +831,8 @@ h3{font-size:clamp(22px,6vw,29px)}
   <h2>希望をつなぐ</h2>
   <div class="rule"></div>
 
-  <p class="one-line-rule">縦か横に、同じ漢字を三つそろえると消えます。</p>
-  <p class="copy">漢字を消して得点を重ね、富山城の景色が移り変わる様子をお楽しみください。</p>
+  <p class="one-line-rule">縦か横に、同じ漢字錠を三つそろえると消えます。</p>
+  <p class="copy">漢字錠を消して得点を重ね、富山城の景色が移り変わる様子をお楽しみください。</p>
 
   <div class="festival-grid">
     <img src="photo01-01.jpg" alt="祭りの紹介画像1">
@@ -665,21 +844,27 @@ h3{font-size:clamp(22px,6vw,29px)}
   <div class="message-box">
     <strong>勝利の鍵</strong>
     <div class="next-guide">
-      <div><strong>NEXT1</strong><span>次に落ちる漢字</span></div>
-      <div><strong>NEXT2</strong><span>その次に落ちる漢字</span></div>
+      <div><strong>NEXT1</strong><span>次に落ちる漢字錠</span></div>
+      <div><strong>NEXT2</strong><span>その次に落ちる漢字錠</span></div>
     </div>
-    次に落ちてくる漢字を見ながら、置く場所を考えます。連続して消すと、より高い得点につながります。
+    次に落ちてくる漢字錠を見ながら、置く場所を考えます。続けて消えると、コンボになり、より高い得点につながります。
   </div>
 </section>
 
 <section id="glyph" class="page toyama">
-  <p class="kicker">02　漢字と富山</p>
+  <p class="kicker">02　漢字錠と富山</p>
   <h2 class="glyph-heading">
-    <span class="glyph-main">GLYPH（グリフ）＝漢字</span>
-    <span class="glyph-sub">静かに浮かび上がる。</span>
+    <span class="glyph-main">GLYPH（グリフ）</span>
+    <span class="glyph-sub">漢字エネルギー</span>
   </h2>
   <div class="rule"></div>
-  <p class="copy">高岡銅器の錫、井波彫刻、越中和紙、組子細工、ガラス工芸。まるで、伝統工芸の手仕事と重厚感が、一文字一文字の漢字に刻まれたようだ。</p>
+
+  <div class="definition-pair">
+    <div class="definition-card"><strong>GLYPH（グリフ）</strong>富山県に集まった漢字エネルギーです。</div>
+    <div class="definition-card"><strong>漢字錠（カンジジョウ）</strong>GLYPHを丸い薬の形に結晶させた、プレーヤーが動かす錠剤です。</div>
+  </div>
+
+  <p class="copy">高岡銅器の錫、井波彫刻、越中和紙、組子細工、ガラス工芸。富山の手仕事と「薬の富山」の記憶が、一文字一文字の漢字錠に刻まれています。</p>
 
   <div class="triptych">
     <img src="i4.jpg" alt="富山の文化を伝える画像1">
@@ -692,21 +877,22 @@ h3{font-size:clamp(22px,6vw,29px)}
   <p class="kicker">03　基本操作</p>
   <h2>操作のしかた</h2>
   <div class="rule"></div>
+  <p class="lead">落下中の漢字錠そのものに指を触れ、スワイプして動かします。</p>
 
   <div class="control-grid">
-    <div class="control"><div class="control-icon">↔</div><div><strong>左右へ動かす</strong><span>落下中の漢字を、左または右へ移動します。</span></div></div>
-    <div class="control"><div class="control-icon">↓</div><div><strong>下へ動かす</strong><span>漢字を急降下させます。落とした高さに応じて得点が加わります。</span></div></div>
+    <div class="control"><div class="control-icon">↔</div><div><strong>漢字錠を左右へスワイプ</strong><span>指を触れたまま左または右へ<span class="onomato blue">スッ</span>と動かすと、漢字錠が移動します。</span></div></div>
+    <div class="control"><div class="control-icon">↓</div><div><strong>漢字錠を下へスワイプ</strong><span><span class="onomato gold">ストン！</span>と急降下します。高い場所から落とすほど、10点から90点までの得点が加わります。</span></div></div>
     <div class="control"><div class="control-icon">Ⅱ</div><div><strong>一時停止</strong><span>ゲームを止めます。「再開」を押すと続きから遊べます。</span></div></div>
     <div class="control"><div class="control-icon">◀</div><div><strong>タイトルへ戻る</strong><span>ゲームを終えて、最初の画面へ戻ります。</span></div></div>
   </div>
 </section>
 
 <section id="kiriban" class="page autumn">
-  <p class="kicker">04　得点と景色</p>
+  <p class="kicker">04　得点・景色・コンボ</p>
   <h2>キリ番<br><span class="heading-note">（キリの良いスコア）</span></h2>
   <div class="rule"></div>
   <p class="lead">100点ごとの区切りで、背景の景色が変わります。</p>
-  <p class="copy">得点を重ねるたびに、富山城の写真が次の景色へ切り替わります。富山の穏やかな風景を楽しみながら、さらに高い得点を目指してください。</p>
+  <p class="copy">ゲームごとに前回とは異なる季節から始まり、同じ季節の写真をランダムにすべて表示してから、次の季節へ進みます。春・夏・秋・冬の流れを保ちながら、20枚を重複なしで一巡します。</p>
 
   <svg viewBox="0 0 400 190" class="score-chart" aria-label="100点ごとに背景が変わる図">
     <path d="M45 145 L145 110 L245 75 L350 38 L350 145 L45 145 Z" fill="rgba(138,120,111,.07)"/>
@@ -715,30 +901,50 @@ h3{font-size:clamp(22px,6vw,29px)}
     <text x="130" y="142">100点</text><text x="230" y="108">200点</text><text x="318" y="72">300点</text>
   </svg>
 
-  <div class="message-box"><strong>急降下の得点</strong>高い位置から落とすほど高得点です。落とした距離に応じて、10点から90点まで段階的に加わります。</div>
+  <div class="message-box"><strong>急降下の得点</strong>漢字錠を高い場所から<span class="onomato gold">ストン！</span>と急降下させると、落とした距離に応じて10点から90点まで加わります。</div>
+
+  <section class="combo-explainer" aria-labelledby="combo-title">
+    <p class="kicker">コンボ</p>
+    <span class="manual-reading">ジュウジュウムジンノハモン</span>
+    <h3 class="manual-kanji" id="combo-title">重々無尽の波紋</h3>
+    <p class="copy">漢字錠が消えたあと、上から落ちてきた漢字錠が続けて三つそろうとコンボです。</p>
+    <p class="copy">ひとつの整いが、次の整いを呼びます。</p>
+    <p class="copy" style="text-align:center"><span class="onomato gold">パチン！</span>　<span class="onomato blue">シュワッ！</span>　<span class="onomato">ジュワ〜ッ！</span></p>
+    <p class="copy">コンボが続くほど、重々無尽の波紋となって、加わる得点も大きくなります。</p>
+
+    <div class="combo-levels">
+      <div class="combo-level"><span class="combo-count">2 COMBO</span><span class="manual-reading">レンゾクカイカ</span><strong class="manual-kanji">連続開花</strong></div>
+      <div class="combo-level"><span class="combo-count">3 COMBO</span><span class="manual-reading">レンメンタルチョウワ</span><strong class="manual-kanji">連綿たる調和</strong></div>
+      <div class="combo-level"><span class="combo-count">4 COMBO以上</span><span class="manual-reading">ジュウジュウムジンノハモン</span><strong class="manual-kanji">重々無尽の波紋</strong></div>
+    </div>
+  </section>
 </section>
 
 <section id="bonus" class="page night">
   <p class="kicker">05　特別な力</p>
   <h2>ボーナス漢字</h2>
   <div class="rule"></div>
-  <p class="lead">同じ漢字を三つそろえると、特別な力がこめられた「特の符」が手に入ります。</p>
+  <p class="lead">同じ漢字錠を三つそろえると、特別な力がこめられた「特の符」が手に入ります。</p>
 
   <div class="bonus-list">
-
-    <article class="bonus-card">
-      <div class="bonus-head"><div class="bonus-kanji">代</div><h3>二つを入れ替え</h3></div>
-      <p class="copy">一つ目と二つ目の漢字を選び、選んだ内容を画面に表示します。確認してから位置を入れ替えます。</p>
+    <article class="technique-card dai">
+      <div class="technique-symbol">代</div>
+      <span class="manual-reading">タイシンセングウ</span>
+      <h3 class="manual-kanji">代身遷宮</h3>
+      <p class="technique-subtitle">うつり、めぐる。</p>
+      <p class="technique-copy">二つの漢字錠を選び、確認してから位置を入れ替えます。淡い金色と水色の流れが、古い配置を新しい配置へやさしく受け渡します。</p>
     </article>
 
-
-    <article class="bonus-card">
-      <div class="bonus-head"><div class="bonus-kanji">岳</div><h3>一種類を消去</h3></div>
-      <p class="copy">消したい漢字を一つ選ぶと、盤面にある同じ漢字をまとめて消します。落下後に漢字がそろえば、連鎖が始まります。</p>
+    <article class="technique-card gaku">
+      <div class="technique-symbol">岳</div>
+      <span class="manual-reading">サンガクチンテイ</span>
+      <h3 class="manual-kanji">山岳鎮定</h3>
+      <p class="technique-subtitle">ゆらぎ、しずまる。</p>
+      <p class="technique-copy">消したい漢字錠を一つ選び、確認してから、盤面にある同じ漢字錠をまとめて消します。一瞬の静止と、白・紺・岩色の演出で盤面の乱れを鎮めます。</p>
     </article>
   </div>
 
-  <div class="stock"><strong>特の符</strong><br>「代」または「岳」がそろうと、「発動しますか？」と表示されます。<br>［使う］で今すぐ発動し、［ためておく］で符をのこして、あとから使えます。</div>
+  <div class="stock"><strong>特の符</strong><br>「代」または「岳」がそろうと、今使うか、ためておくかを選べます。<br>［使う］で発動し、［ためておく］で「特の符」をのこして、あとから使えます。技の実行前には必ず確認画面が表示されます。</div>
 </section>
 
 <section id="sns" class="page sns-bright">
@@ -756,7 +962,7 @@ h3{font-size:clamp(22px,6vw,29px)}
       <img src="innstaunnamed.png" alt="公式InstagramのQRコード"><strong>公式Instagram</strong><span>@26kibou4kanji29</span>
     </a>
   </div>
-  <p class="note">URLまたはQRコードから、スマートフォンのブラウザで遊べます。ダウンロードや料金は必要ありません。</p>
+  <p class="note">公式Xと公式InstagramのQRコードです。どちらも無料でご覧いただけます。</p>
 </section>
 
 <section id="release" class="page credit-spring cinema-page">
@@ -789,13 +995,24 @@ h3{font-size:clamp(22px,6vw,29px)}
   "use strict";
 
   document.querySelectorAll("img").forEach(image => {
+    const original = image.getAttribute("src");
+    let retries = 0;
+
     image.addEventListener("error", () => {
-      const name = image.getAttribute("src") || "画像";
+      if (retries < 3 && original) {
+        retries++;
+        const separator = original.includes("?") ? "&" : "?";
+        window.setTimeout(() => {
+          image.src = `${original}${separator}retry=${retries}`;
+        }, 220 * retries);
+        return;
+      }
+
       const box = document.createElement("div");
       box.className = "media-missing";
-      box.textContent = `画像を確認してください：${name}`;
+      box.textContent = "写真を読み込めませんでした。ページを更新してください。";
       image.replaceWith(box);
-    }, { once: true });
+    });
   });
 })();
 </script>

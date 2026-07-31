@@ -1,6 +1,6 @@
 {
-  "version": "1.0.3",
-  "note": "BGM・効果音・物語音・続編予告動画・富山城背景9枚・o3.jpg・lasta.pngは公開パッケージに同梱済みです。",
+  "version": "1.0.8",
+  "note": "BGM・効果音・物語音・続編予告動画・富山城四季背景20枚・OGP紹介画像は公開パッケージに同梱済みです。",
   "assets": [
     {
       "target": "title-kiboukanji.png",
@@ -339,6 +339,153 @@
         "innstaunnamed.png"
       ],
       "category": "使いかた"
+    },
+    {
+      "target": "toyama-castle-spring-01.jpg",
+      "candidates": [
+        "toyama-castle-spring-01.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-spring-02.jpg",
+      "candidates": [
+        "toyama-castle-spring-02.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-spring-03.jpg",
+      "candidates": [
+        "toyama-castle-spring-03.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-spring-04.jpg",
+      "candidates": [
+        "toyama-castle-spring-04.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-summer-01.jpg",
+      "candidates": [
+        "toyama-castle-summer-01.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-summer-02.jpg",
+      "candidates": [
+        "toyama-castle-summer-02.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-summer-03.jpg",
+      "candidates": [
+        "toyama-castle-summer-03.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-summer-04.jpg",
+      "candidates": [
+        "toyama-castle-summer-04.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-summer-05.jpg",
+      "candidates": [
+        "toyama-castle-summer-05.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-summer-06.jpg",
+      "candidates": [
+        "toyama-castle-summer-06.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-summer-07.jpg",
+      "candidates": [
+        "toyama-castle-summer-07.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-summer-08.jpg",
+      "candidates": [
+        "toyama-castle-summer-08.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-autumn-01.jpg",
+      "candidates": [
+        "toyama-castle-autumn-01.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-autumn-02.jpg",
+      "candidates": [
+        "toyama-castle-autumn-02.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-autumn-03.jpg",
+      "candidates": [
+        "toyama-castle-autumn-03.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-autumn-04.jpg",
+      "candidates": [
+        "toyama-castle-autumn-04.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-autumn-05.jpg",
+      "candidates": [
+        "toyama-castle-autumn-05.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-winter-01.jpg",
+      "candidates": [
+        "toyama-castle-winter-01.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-winter-02.jpg",
+      "candidates": [
+        "toyama-castle-winter-02.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "toyama-castle-winter-03.jpg",
+      "candidates": [
+        "toyama-castle-winter-03.jpg"
+      ],
+      "category": "ゲーム背景・富山城四季"
+    },
+    {
+      "target": "og-kiboukanji.jpg",
+      "candidates": [
+        "og-kiboukanji.jpg"
+      ],
+      "category": "URL共有カード"
     }
   ]
 }

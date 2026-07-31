@@ -1,6 +1,5 @@
-// きぼうかんじ 公開版 Ver.1.0
+// KIBOUKANJI Ver.1.0.8
 // ゲーム初期化・ループ・特の符状態管理
-// 更新日: 2026-07-16
 
 (() => {
   "use strict";
@@ -43,6 +42,15 @@
     選択セル: null,
     選択セル2: null,
     確認待ち: null,
+    ボーナス操作中: false,
+    最終ボーナスタップ: 0,
+    特の符消費待ち: null,
+    特の符使用元: null,
+    城背景開始季節: null,
+    城背景表示番号: -1,
+    城背景表示画像: null,
+    城背景前画像: null,
+    城背景切替開始: 0,
     落下間隔: 700,
     最終落下時刻: 0,
     ループ開始済み: false
@@ -80,6 +88,7 @@
     if (!app.盤面初期化 || !app.描画) return;
 
     app.盤面初期化();
+    app.城背景順序準備?.();
     Object.assign(app.状態, {
       得点: 0,
       連鎖数: 0,
@@ -97,6 +106,10 @@
       選択セル: null,
       選択セル2: null,
       確認待ち: null,
+      ボーナス操作中: false,
+      最終ボーナスタップ: 0,
+      特の符消費待ち: null,
+      特の符使用元: null,
       落下間隔: app.設定.初期落下間隔,
       最終落下時刻: performance.now()
     });
@@ -107,6 +120,7 @@
     app.次ピース準備();
 
     app.要素("restartBtn")?.classList.add("hidden");
+    app.要素("ranking-actions")?.setAttribute("hidden", "");
     const 一時停止ボタン = app.要素("pause-button");
     if (一時停止ボタン) 一時停止ボタン.textContent = "一時停止";
 
@@ -127,6 +141,7 @@
     app.全BGM停止?.();
     app.得点保存();
     app.要素("restartBtn")?.classList.remove("hidden");
+    app.要素("ranking-actions")?.removeAttribute("hidden");
   };
 
   app.一時停止切替 = function () {
@@ -185,6 +200,7 @@
     canvas.height = 640;
 
     app.音声初期化?.();
+    app.城背景事前読込?.();
     app.盤面初期化?.();
     app.操作登録?.();
     app.画面イベント登録?.();

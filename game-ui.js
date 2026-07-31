@@ -1,6 +1,6 @@
-// きぼうかんじ 公開版 Ver.1.0
-// 画面切替・特の符・観光目次・続編予告・スマートフォン画面調整
-// 更新日: 2026-07-16
+// KIBOUKANJI Ver.1.0.8
+// 画面切替・特の符・ランキング画像・スマートフォン画面調整
+// 更新日: 2026-07-31
 
 (() => {
   "use strict";
@@ -187,13 +187,15 @@
     if (!modal) return;
 
     symbol.textContent = 文字;
-    title.textContent = `${文字}を発動しますか？`;
+    title.textContent = 文字 === "代"
+      ? "代の特の符"
+      : "岳の特の符";
 
     if (モード === "保存分") {
-      message.textContent = `ためてある「${文字}」の特の符を使います。`;
+      message.textContent = `ためてある「${文字}」の「特の符」を使います。`;
       store.textContent = "もどる";
     } else {
-      message.textContent = "今使うか、符をのこしてあとから使うか選んでください。";
+      message.textContent = "今使うか、「特の符」をためてあとから使うか選んでください。";
       store.textContent = "ためておく";
     }
 
@@ -224,14 +226,14 @@
     };
 
     if (情報.種類 === "岳") {
-      title.textContent = "岳の確認";
-      message.textContent = `「${情報.文字1}」を盤面からすべて消してよいですか？`;
-      yes.textContent = "消す";
-      no.textContent = "選び直す";
+      title.textContent = "サンガクチンテイ（山岳鎮定）";
+      message.textContent = `「${情報.文字1}」の漢字錠を盤面からすべて消しますか？`;
+      yes.textContent = "消去する";
+      no.textContent = "もどる";
       チップ作成("", 情報.文字1);
     } else {
-      title.textContent = "代の確認";
-      message.textContent = `「${情報.文字1}」と「${情報.文字2}」を入れ替えてよいですか？`;
+      title.textContent = "タイシンセングウ（代身遷宮）";
+      message.textContent = "この二つの漢字錠を入れ替えますか？";
       yes.textContent = "入れ替える";
       no.textContent = "選び直す";
       チップ作成("①", 情報.文字1);
@@ -385,6 +387,8 @@
 
     app.要素("pause-button")?.addEventListener("click", app.一時停止切替);
     app.要素("restartBtn")?.addEventListener("click", app.ゲーム開始);
+    app.要素("ranking-copy")?.addEventListener("click", app.順位画像コピー);
+    app.要素("ranking-save")?.addEventListener("click", app.順位画像保存);
 
     app.要素("bonus-confirm-yes")?.addEventListener("click", app.ボーナス確定);
     app.要素("bonus-confirm-no")?.addEventListener("click", app.ボーナス選び直し);
