@@ -1,4 +1,4 @@
-// KIBOUKANJI Ver.1.0.8
+// KIBOUKANJI Ver.1.0.9
 // 富山城四季背景・ランキング画像保存・漢字演出
 
 (() => {
@@ -172,9 +172,9 @@
     ctx.fillRect(0, 0, 360, 110);
 
     const { 盤面左, 盤面上, 列数, 行数, マス寸法 } = app.設定;
-    ctx.fillStyle = "rgba(250,252,255,.78)";
+    ctx.fillStyle = "rgba(250,252,255,.56)";
     ctx.fillRect(盤面左 - 5, 盤面上 - 5, 列数 * マス寸法 + 10, 行数 * マス寸法 + 10);
-    ctx.fillStyle = "rgba(255,255,255,.42)";
+    ctx.fillStyle = "rgba(255,255,255,.22)";
     ctx.fillRect(盤面左, 盤面上, 列数 * マス寸法, 行数 * マス寸法);
   };
 
@@ -383,38 +383,16 @@
     app.順位トップパネル描画(ctx, 24, 50, 312, 205);
 
     ctx.fillStyle = "rgba(255,255,255,.055)";
-    ctx.fillRect(24, 270, 312, 338);
+    ctx.fillRect(24, 270, 312, 108);
     ctx.strokeStyle = "rgba(226,193,107,.45)";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(24.5, 270.5, 311, 337);
-
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-    ctx.fillStyle = "#E2C16B";
-    ctx.font = '700 16px system-ui,"Yu Gothic UI",Meiryo,sans-serif';
-    ctx.fillText("ランキングについて", 36, 284);
-
+    ctx.strokeRect(24.5, 270.5, 311, 107);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
     ctx.fillStyle = "#fff";
-    ctx.font = '600 15px system-ui,"Yu Gothic UI",Meiryo,"Hiragino Sans",sans-serif';
-    const blocks = [
-      ["このランキングは、", "このページを開いているブラウザに", "保存されます。"],
-      ["Safari、Chrome、Google、", "Samsung Internet、", "Microsoft Edge、Brave、", "Firefox、Operaなどです。"],
-      ["別のブラウザや、", "別のスマホ・タブレット・", "パソコンでは、", "同じ記録は表示されません。"],
-      ["アプリの記録を消すと、", "ランキングも消えます。"],
-      ["記録を残さないモード", "（プライベート／シークレット）では、", "ランキングは保存されません。"]
-    ];
-
-    let y = 313;
-    const lineHeight = 17.2;
-    blocks.forEach((block, blockIndex) => {
-      block.forEach(line => {
-        折返し(ctx, line, 286).forEach(wrapped => {
-          ctx.fillText(wrapped, 36, y);
-          y += lineHeight;
-        });
-      });
-      if (blockIndex < blocks.length - 1) y += 5;
-    });
+    ctx.font = '700 18px system-ui,"Yu Gothic UI",Meiryo,sans-serif';
+    ctx.fillText("ランキングについて", 180, 304);
+    ctx.font = '600 16px system-ui,"Yu Gothic UI",Meiryo,sans-serif';
+    ctx.fillText("下へスクロールしてお読みください", 180, 343);
     ctx.restore();
   };
 
@@ -480,8 +458,6 @@
       ctx.textBaseline = "middle";
       ctx.font = "20px sans-serif";
       ctx.fillText("一時停止中", 180, 304);
-      ctx.font = "14px sans-serif";
-      ctx.fillText("▶で再開できます", 180, 336);
     }
 
     if (状態.ボーナス中) {
@@ -552,7 +528,7 @@
 
   app.コンボ表示 = function (連鎖数, 加点) {
     if (連鎖数 <= 1) {
-      app.加点表示?.(`シュワッ！ +${加点}`);
+      app.加点表示?.(`+${加点}点`);
       return;
     }
 

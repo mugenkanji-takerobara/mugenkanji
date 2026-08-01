@@ -1,4 +1,4 @@
-// KIBOUKANJI Ver.1.0.8
+// KIBOUKANJI Ver.1.0.9
 // 急降下距離加点・特の符・代身遷宮・山岳鎮定
 
 (() => {

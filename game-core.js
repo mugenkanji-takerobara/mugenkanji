@@ -1,4 +1,4 @@
-// KIBOUKANJI Ver.1.0.8
+// KIBOUKANJI Ver.1.0.9
 // ゲーム初期化・ループ・特の符状態管理
 
 (() => {
@@ -121,6 +121,7 @@
 
     app.要素("restartBtn")?.classList.add("hidden");
     app.要素("ranking-actions")?.setAttribute("hidden", "");
+    app.要素("ranking-info")?.setAttribute("hidden", "");
     const 一時停止ボタン = app.要素("pause-button");
     if (一時停止ボタン) 一時停止ボタン.textContent = "一時停止";
 
@@ -142,6 +143,7 @@
     app.得点保存();
     app.要素("restartBtn")?.classList.remove("hidden");
     app.要素("ranking-actions")?.removeAttribute("hidden");
+    app.要素("ranking-info")?.removeAttribute("hidden");
   };
 
   app.一時停止切替 = function () {

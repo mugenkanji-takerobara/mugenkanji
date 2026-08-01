@@ -538,7 +538,25 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 #story-screen .story-brand-title{display:inline-block;font-weight:800;letter-spacing:.05em}
 #story-screen .story-brand-subtitle{display:inline-block;font-size:.88em;font-weight:600;white-space:nowrap}
 
-/* Ver.1.0.8 ランキング画像・コンボ・技名演出 */
+/* Ver.1.0.9 ランキング画像・コンボ・技名演出 */
+.ranking-info{
+  width:min(calc(100% - 24px),336px);
+  margin:12px auto 116px;
+  padding:20px 18px;
+  border:1px solid rgba(226,193,107,.65);
+  border-radius:14px;
+  background:#071526;
+  color:#fff;
+  font-family:system-ui,"Yu Gothic UI",Meiryo,"Hiragino Sans",sans-serif;
+  font-size:18px;
+  line-height:1.85;
+  overflow-wrap:anywhere;
+}
+.ranking-info[hidden]{display:none}
+.ranking-info h2{margin:0 0 14px;color:#E2C16B;font-size:21px;line-height:1.4}
+.ranking-info p{margin:0 0 16px}
+#game-screen:has(.ranking-info:not([hidden])){overflow-y:auto;align-items:flex-start}
+#game-screen:has(.ranking-info:not([hidden])) .game-shell{height:auto;min-height:100%;padding-bottom:24px}
 .ranking-actions{
   position:fixed;
   z-index:65;
@@ -731,6 +749,13 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <button class="tokunofu-button" data-tokunofu="岳" disabled="" id="tokunofu-gaku" type="button">岳 × 0</button>
 </div><canvas aria-label="きぼうかんじゲーム" height="640" id="game-canvas" width="360"></canvas>
 <p class="game-help">漢字錠を左右へスワイプ　下へスワイプで急降下＋10～90</p>
+<section class="ranking-info" hidden id="ranking-info" aria-label="ランキングについて">
+<h2>ランキングについて</h2>
+<p>このランキングは、このページを開いているブラウザ（Safari、Chrome、Googleアプリ、Samsung Internet、Microsoft Edge、Brave、Firefox、Operaなど）に保存されます。</p>
+<p>別のブラウザや、別のスマホ・タブレット・パソコンでは、同じ記録は表示されません。</p>
+<p>アプリの記録を消すと、ランキングも消えます。</p>
+<p>記録を残さないモード（プライベート／シークレット）では、ランキングは保存されません。</p>
+</section>
 <div class="ranking-actions" hidden id="ranking-actions">
 <button class="ranking-action" id="ranking-copy" type="button">COPY IMAGE</button>
 <button class="ranking-action" id="ranking-save" type="button">SAVE IMAGE</button>
@@ -744,7 +769,7 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <button aria-label="タイトルへ戻る" class="icon-btn back-button" type="button">◀</button>
 <h1>使いかた</h1><span></span>
 </header>
-<iframe class="manual-frame" id="manual-frame" src="manual.html?v=1.0.8" title="きぼうかんじ 使いかた"></iframe>
+<iframe class="manual-frame" id="manual-frame" src="manual.html?v=1.0.9" title="きぼうかんじ 使いかた"></iframe>
 </div>
 </section>
 <section class="screen" id="toyama-screen">
@@ -764,12 +789,10 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <article class="spot"><h2>黒部峡谷鉄道（トロッコ電車）</h2><p class="addr">富山県黒部市黒部峡谷口11</p></article>
 <article class="spot"><h2>相倉合掌造り集落</h2><p class="addr">富山県南砺市相倉</p></article>
 <article class="spot"><h2>称名滝</h2><p class="addr">富山県中新川郡立山町芦峅寺</p></article>
-<article class="spot"><h2>立山博物館（まんだら遊苑）</h2><p class="addr">富山県中新川郡立山町芦峅寺93-1</p></article>
 <div class="section-heading" id="toyama-history">🏺 歴史と職人</div>
 <article class="spot"><h2>井波の町並み（八日町通り）</h2><p class="addr">富山県南砺市井波</p></article>
 <article class="spot has-photo"><h2>歴史民俗博物館</h2><img alt="歴史民俗博物館" class="spot-img" data-src-candidates="uuu.JPG" decoding="async" loading="lazy"/><p class="addr">富山県魚津市小川寺字天神山1070</p></article>
 <article class="spot has-photo"><h2>郷土博物館（富山城）</h2><img alt="郷土博物館（富山城）" class="spot-img zoomable" data-src-candidates="t1.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市本丸1-62（富山城址公園内）</p></article>
-<article class="spot"><h2>氷見市潮風ギャラリー 藤子不二雄Ⓐアートコレクション</h2><p class="addr">富山県氷見市中央町3-4</p></article>
 <article class="spot has-photo"><h2>八尾おわら資料館</h2><img alt="八尾おわら資料館" class="spot-img zoomable" data-src-candidates="o16.jpg" decoding="async" loading="lazy"/><p class="addr">富山市八尾町東町2105番地1</p></article>
 <div class="section-heading" id="toyama-sea">🌊 日本海と街道</div>
 <article class="spot has-photo" id="amaharashi-spot">
@@ -778,14 +801,16 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <p class="addr">富山県高岡市太田雨晴</p>
 <button class="story-btn" id="story-button" type="button">物語を見る</button>
 </article>
+<article class="spot has-photo"><h2>岩瀬の町並み</h2><img alt="岩瀬の町並み" class="spot-img zoomable" data-src-candidates="i1.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市岩瀬大町</p></article>
 <article class="spot"><h2>ほたるいかミュージアム</h2><p class="addr">富山県滑川市中川原410</p></article>
 <article class="spot"><h2>海王丸パーク</h2><p class="addr">富山県射水市海王町8</p></article>
-<article class="spot has-photo"><h2>岩瀬の町並み</h2><img alt="岩瀬の町並み" class="spot-img zoomable" data-src-candidates="i1.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市岩瀬大町</p></article>
 <div class="section-heading" id="toyama-nature">🌿 丘の自然と知の空間</div>
+<article class="spot"><h2>氷見市潮風ギャラリー 藤子不二雄Ⓐアートコレクション</h2><p class="addr">富山県氷見市中央町3-4</p></article>
+<article class="spot has-photo"><h2>ミラージュランド</h2><img alt="ミラージュランド" class="spot-img zoomable" data-src-candidates="m2.jpg" decoding="async" loading="lazy"/><p class="addr">富山県魚津市三ケ1390</p></article>
+<article class="spot has-photo"><h2>富山市科学博物館</h2><img alt="富山市科学博物館" class="spot-img" data-src-candidates="sci.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市西中野町1-8-31</p></article>
+<article class="spot"><h2>立山博物館（まんだら遊苑）</h2><p class="addr">富山県中新川郡立山町芦峅寺93-1</p></article>
 <article class="spot"><h2>ファミリーパーク</h2><p class="addr">富山県富山市古沢277</p></article>
 <article class="spot"><h2>富山市民俗民芸村</h2><p class="addr">富山県富山市安養坊1118-1</p></article>
-<article class="spot has-photo"><h2>富山市科学博物館</h2><img alt="富山市科学博物館" class="spot-img" data-src-candidates="sci.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市西中野町1-8-31</p></article>
-<article class="spot has-photo"><h2>ミラージュランド</h2><img alt="ミラージュランド" class="spot-img zoomable" data-src-candidates="m2.jpg" decoding="async" loading="lazy"/><p class="addr">富山県魚津市三ケ1390</p></article>
 <div class="section-heading" id="toyama-city">🏞 富山駅近から水辺</div>
 <article class="spot has-photo"><h2>富山県美術館</h2><img alt="富山県美術館" class="spot-img" data-src-candidates="art.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市木場町3-20</p></article>
 <article class="spot has-photo"><h2>富岩運河環水公園</h2><img alt="富岩運河環水公園" class="spot-img" data-src-candidates="c.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市湊入船町5</p></article>
@@ -836,7 +861,7 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <div aria-labelledby="tokunofu-title" aria-modal="true" class="tokunofu-modal" id="tokunofu-modal" role="dialog">
 <div class="tokunofu-box">
 <div class="tokunofu-symbol" id="tokunofu-symbol">代</div>
-<h2 id="tokunofu-title">代の特の符</h2>
+<h2 id="tokunofu-title">特の符</h2>
 <p id="tokunofu-message">今使うか、「特の符」をためてあとから使うか選んでください。</p>
 <div class="tokunofu-actions">
 <button class="bonus-action secondary" id="tokunofu-store" type="button">ためておく</button>
@@ -862,7 +887,7 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <div class="teaser-video-shell">
 <h2 id="teaser-title">続編「未来の雨晴海岸」予告</h2>
 <video aria-label="続編 未来の雨晴海岸 予告動画" class="teaser-video" controls="" id="teaser-video" playsinline="" poster="future_teaser_poster.jpg" preload="metadata">
-<source src="future_teaser.mp4?v=1.0.8" type="video/mp4"/>
+<source src="future_teaser.mp4?v=1.0.9" type="video/mp4"/>
           お使いのブラウザでは動画を再生できません。
         </video>
 <p aria-live="polite" class="teaser-status" id="teaser-status"></p>
@@ -875,10 +900,10 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <button aria-label="閉じる" class="icon-btn photo-close" id="photo-close" type="button">×</button>
 <img alt="" id="photo-modal-image" src=""/>
 </div>
-<script src="game-core.js?v=1.0.8"></script>
-<script src="game-board.js?v=1.0.8"></script>
-<script src="game-draw.js?v=1.0.8"></script>
-<script src="game-audio.js?v=1.0.8"></script>
-<script src="game-ui.js?v=1.0.8"></script>
+<script src="game-core.js?v=1.0.9"></script>
+<script src="game-board.js?v=1.0.9"></script>
+<script src="game-draw.js?v=1.0.9"></script>
+<script src="game-audio.js?v=1.0.9"></script>
+<script src="game-ui.js?v=1.0.9"></script>
 </body>
 </html>

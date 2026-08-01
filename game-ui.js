@@ -1,4 +1,4 @@
-// KIBOUKANJI Ver.1.0.8
+// KIBOUKANJI Ver.1.0.9
 // 画面切替・特の符・ランキング画像・スマートフォン画面調整
 // 更新日: 2026-07-31
 
@@ -187,9 +187,7 @@
     if (!modal) return;
 
     symbol.textContent = 文字;
-    title.textContent = 文字 === "代"
-      ? "代の特の符"
-      : "岳の特の符";
+    title.textContent = "特の符";
 
     if (モード === "保存分") {
       message.textContent = `ためてある「${文字}」の「特の符」を使います。`;
