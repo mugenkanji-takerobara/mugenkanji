@@ -21,6 +21,7 @@
 <meta content="ダウンロード不要・完全無料。GLYPH（漢字）と富山城の景色が重なる落ち物パズルで観光案内や雨晴海岸伝説を搭載。公式X・Instagramも無料。" name="twitter:description"/>
 <meta content="https://mugenkanji-takerobara.github.io/toyama-kiboukanji-/og-kiboukanji.jpg" name="twitter:image"/>
 <title>きぼうかんじ｜スマホで遊べる無料パズルゲーム</title>
+<link rel="preload" as="image" href="title-kiboukanji.png" fetchpriority="high"/>
 <style>
 :root{
   --paper:#f8f4ed;
@@ -36,7 +37,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic UI","Yu Gothic","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;color:var(--ink);background:#dfeff3}
 button,a{font:inherit}
-button{touch-action:manipulation}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 img{max-width:100%;height:auto}
 .hidden{display:none!important}
 .screen{display:none;min-height:100dvh}
@@ -394,10 +395,15 @@ body.teaser-open{overflow:hidden}
 .teaser-status{
   min-height:1.4em;
   margin:0;
-  color:#f5dda0;
-  font-size:14px;
-  line-height:1.5;
-  text-align:center;
+  padding:10px 12px;
+  border-radius:10px;
+  background:#fff8dc;
+  color:#26374c;
+  font-family:"Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic",Meiryo,system-ui,sans-serif;
+  font-size:15px;
+  font-weight:700;
+  line-height:1.65;
+  text-align:left;
 }
 .teaser-actions{
   display:grid;
@@ -456,7 +462,7 @@ body.teaser-open{overflow:hidden}
 
 /* 公開版 Ver1.0 RC3：スマートフォンのゲーム画面を一画面に収める */
 :root{--game-viewport-height:100dvh}
-body.game-open{overflow:hidden;overscroll-behavior:none}
+body.game-open{position:fixed;inset:0;width:100%;height:var(--game-viewport-height,100dvh);overflow:hidden;overscroll-behavior:none;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #game-screen.active{
   position:fixed;
   inset:0;
@@ -465,8 +471,14 @@ body.game-open{overflow:hidden;overscroll-behavior:none}
   min-height:0;
   overflow:hidden;
   overscroll-behavior:none;
+  touch-action:none;
+  -webkit-user-select:none;
+  user-select:none;
+  contain:layout paint;
 }
 #game-screen .game-shell{
+  touch-action:none;
+  overscroll-behavior:none;
   width:min(100%,420px);
   height:var(--game-viewport-height,100dvh);
   min-height:0;
@@ -509,6 +521,8 @@ body.game-open{overflow:hidden;overscroll-behavior:none}
   font-size:13px;
 }
 #game-screen #game-canvas{
+  touch-action:none;
+  overscroll-behavior:none;
   flex:0 0 auto;
   width:360px;
   height:640px;
@@ -725,12 +739,202 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
   100%{opacity:0}
 }
 .bonus-confirm-box h2{font-size:clamp(16px,4.6vw,19px);line-height:1.55}
+
+
+/* Ver.1.0.12：安定再開・ページ式ランキング・技名二段表示 */
+.ranking-actions,.ranking-nav{position:fixed;z-index:1500;left:50%;bottom:max(58px,calc(env(safe-area-inset-bottom) + 58px));transform:translateX(-50%);gap:7px;width:min(calc(100% - 22px),350px)}
+.ranking-actions{display:grid;grid-template-columns:repeat(3,1fr)}
+.ranking-nav{display:grid;grid-template-columns:1fr 1fr}
+.ranking-actions[hidden],.ranking-nav[hidden]{display:none}
+.ranking-action{min-height:44px;padding:6px 5px;border:1px solid rgba(226,193,107,.88);border-radius:10px;background:#071526;color:#fff;font-family:system-ui,"Yu Gothic UI",Meiryo,sans-serif;font-size:13px;font-weight:800;line-height:1.25;box-shadow:0 5px 18px rgba(0,0,0,.28)}
+.ranking-action:disabled{opacity:.38}
+#restartBtn{bottom:max(8px,env(safe-area-inset-bottom))}
+.technique-result{display:grid;gap:3px;border-radius:15px;white-space:normal}.technique-result strong{font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:1.18em}.technique-result span{display:block;font-size:.82em}
+.combo-effect{top:20%;transition:opacity .85s ease,transform .28s cubic-bezier(.18,.86,.24,1)}
+.bonus-flash{pointer-events:none}
+.bonus-flash.show{display:grid;animation:techniqueFade 5.2s ease both}
+@keyframes techniqueFade{0%{opacity:0}7%{opacity:1}80%{opacity:1}100%{opacity:0}}
+@media(max-width:350px){.ranking-action{font-size:12px}}
+
+
+
+/* Ver.1.0.12 技名は最初に大きく、その後は操作を隠さない上部案内へ縮小 */
+.bonus-flash{transition:background .45s ease,padding .45s ease}
+.bonus-flash.show{animation:techniqueFadeV112 8.2s ease both}
+.bonus-flash.compact{align-content:start;padding:76px 12px 0;background:transparent}
+.bonus-flash.compact::before{opacity:0}
+.bonus-flash.compact .bonus-flash-reading{font-size:10px;letter-spacing:.12em}
+.bonus-flash.compact .bonus-flash-kanji{font-size:clamp(25px,7vw,35px);padding:1px 8px 2px;text-shadow:0 2px 8px rgba(0,0,0,.78)}
+.bonus-flash.compact .bonus-flash-subtitle{font-size:clamp(12px,3.6vw,16px)}
+@keyframes techniqueFadeV112{0%{opacity:0}4%{opacity:1}88%{opacity:1}100%{opacity:0}}
+
+/* Ver.1.0.12 予告動画：スマートフォン横向き・全画面表示 */
+@media (orientation:landscape) and (max-height:600px){
+  .teaser-modal{padding:0;background:#000}
+  .teaser-video-shell{width:100vw;height:100dvh;max-width:none;border-radius:0;padding:6px;gap:4px}
+  .teaser-video-shell h2{font-size:15px}
+  .teaser-video{width:auto;height:min(78dvh,calc(100vw * 9 / 16));max-width:100vw;max-height:78dvh}
+  .teaser-actions{margin-top:0}
+}
+
+/* Ver.1.0.12：観光案内・軽量表示・ランキング補助 */
+.tourism-guide{
+  margin:4px 0 16px;
+  padding:15px 16px;
+  border:1px solid rgba(120,104,94,.16);
+  border-radius:14px;
+  background:#fff;
+  color:#3f4549;
+  font-family:"Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic",Meiryo,system-ui,sans-serif;
+  font-size:16px;
+  font-weight:600;
+  line-height:1.85;
+  letter-spacing:.01em;
+}
+.spot h2{user-select:text;-webkit-user-select:text}
+.spot-copy-btn{
+  grid-area:action;justify-self:start;margin-top:9px;padding:7px 10px;border:1px solid rgba(124,102,88,.25);
+  border-radius:9px;background:#fff;color:#5b4e47;font:800 14px/1.25 system-ui,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif
+}
+.spot.has-photo .story-btn + .spot-copy-btn{margin-top:7px}
+#amaharashi-spot{grid-template-areas:
+  "title photo"
+  "address photo"
+  "story story"
+  "copy copy"}
+#amaharashi-spot .story-btn{grid-area:story}
+#amaharashi-spot .spot-copy-btn{grid-area:copy}
+
+.castle-gallery-spot{padding-bottom:18px}
+.castle-gallery-spot h2{margin-bottom:10px;text-align:center;font-size:18px}
+.castle-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.castle-gallery img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;background:#e9e5df;cursor:zoom-in}
+@media (max-width:380px){.castle-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ranking-copy-fallback{position:fixed;z-index:1900;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(3,8,14,.94)}
+.ranking-copy-fallback.open{display:flex}
+.ranking-copy-card{width:min(100%,420px);max-height:92dvh;overflow:auto;padding:14px;border-radius:15px;background:#fff;color:#26313a;text-align:center;font-family:system-ui,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif}
+.ranking-copy-card img{display:block;width:100%;height:auto;margin:8px 0 12px;border-radius:8px;background:#071526}
+.ranking-copy-card p{margin:6px 0 12px;font-size:13px;line-height:1.7}
+.ranking-copy-card button{min-height:44px;width:100%;border:0;border-radius:10px;background:#071526;color:#fff;font-weight:800}
+.teaser-landscape{min-height:46px;width:100%;border:1px solid #d4a857;border-radius:10px;background:#d4a857;color:#26374c;font-weight:900}
+
+
+
+/* 2026-08-09 公開版1.0.12：ランキング操作を6個の丸の上下へ整理 */
+.ranking-actions,.ranking-nav{
+  position:fixed!important;
+  z-index:1500;
+  left:50%;
+  top:auto;
+  bottom:auto!important;
+  transform:translateX(-50%);
+  width:min(calc(100% - 44px),330px);
+  gap:8px;
+}
+.ranking-actions{display:grid;grid-template-columns:1fr 1fr}
+.ranking-nav{display:grid;grid-template-columns:1fr 1fr}
+.ranking-about{
+  position:fixed;
+  z-index:1501;
+  left:50%;
+  top:auto;
+  transform:translateX(-50%);
+  min-height:34px;
+  padding:5px 13px;
+  border:1px solid #D4A857;
+  border-radius:999px;
+  background:#FFFDF8;
+  color:#71551B;
+  font-family:system-ui,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  font-size:13px;
+  font-weight:800;
+  box-shadow:0 3px 10px rgba(0,0,0,.13);
+}
+.ranking-about[hidden]{display:none}
+#restartBtn{
+  position:fixed!important;
+  z-index:1502;
+  left:50%;
+  top:auto;
+  bottom:auto!important;
+  transform:translateX(-50%);
+  min-width:168px;
+  min-height:42px;
+}
+
+/* 2026-08-09 公開版1.0.12：ページ移動を保存・コピーと明確に分離 */
+.ranking-nav{grid-template-columns:94px 1fr 94px!important;align-items:center;pointer-events:none}
+.ranking-page-btn{pointer-events:auto;min-height:40px;padding:5px 7px;border:1px solid #B8A36E;border-radius:999px;background:#FFF9E8;color:#5A4619;font-family:system-ui,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;font-size:12px;font-weight:850;line-height:1.15;box-shadow:0 3px 9px rgba(0,0,0,.12)}
+.ranking-page-btn:disabled{opacity:.32}
+.ranking-nav-space{display:block}
+
+
+
+/* 2026-08-09 公開版1.0.12：iPhone Safariで中央からはみ出さない横画面予告 */
+.teaser-modal.force-landscape{
+  padding:0!important;
+  background:#000!important;
+  overflow:hidden!important;
+}
+.teaser-modal.force-landscape .teaser-video-shell{
+  position:fixed;
+  z-index:1;
+  inset:auto;
+  max-width:none;
+  max-height:none;
+  margin:0;
+  padding:0;
+  gap:0;
+  border:0;
+  border-radius:0;
+  background:#000;
+  box-shadow:none;
+  overflow:hidden;
+  transform-origin:0 0;
+  box-sizing:border-box;
+}
+.teaser-modal.force-landscape .teaser-video-shell h2,
+.teaser-modal.force-landscape .teaser-status,
+.teaser-modal.force-landscape .teaser-landscape{display:none!important}
+.teaser-modal.force-landscape .teaser-video{
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:none;
+  max-height:none;
+  margin:0;
+  aspect-ratio:auto;
+  border-radius:0;
+  object-fit:contain;
+  background:#000;
+}
+.teaser-modal.force-landscape .teaser-actions{
+  position:absolute;
+  z-index:6;
+  top:max(8px,env(safe-area-inset-top));
+  right:max(8px,env(safe-area-inset-right));
+  display:flex;
+  grid-template-columns:none;
+  gap:7px;
+  width:auto;
+  margin:0;
+}
+.teaser-modal.force-landscape .teaser-action{
+  width:auto;
+  min-height:38px;
+  padding:7px 11px;
+  border-color:rgba(255,255,255,.72);
+  background:rgba(0,0,0,.72);
+  color:#fff;
+  font-size:13px;
+}
+
 </style>
 </head>
 <body>
 <section aria-label="タイトル画面" class="screen active" id="title-screen">
 <div class="title-fallback"><strong>KIBOUKANJI</strong><span>希望を届ける、漢字パズル。</span></div>
-<img alt="きぼうかんじ タイトル背景" class="title-bg-image" data-src-candidates="title-kiboukanji.png|きぼうかんじTOP.png|(仮) TOP1.png" decoding="async" id="title-bg-image"/>
+<img alt="きぼうかんじ タイトル背景" class="title-bg-image" data-src-candidates="title-kiboukanji.png" decoding="async" fetchpriority="high" loading="eager" id="title-bg-image"/>
 <div class="title-btn-wrap">
 <button class="title-btn" id="start-button" type="button">パズル</button>
 <button class="title-btn" id="manual-button" type="button">使いかた</button>
@@ -749,16 +953,15 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <button class="tokunofu-button" data-tokunofu="岳" disabled="" id="tokunofu-gaku" type="button">岳 × 0</button>
 </div><canvas aria-label="きぼうかんじゲーム" height="640" id="game-canvas" width="360"></canvas>
 <p class="game-help">漢字錠を左右へスワイプ　下へスワイプで急降下＋10～90</p>
-<section class="ranking-info" hidden id="ranking-info" aria-label="ランキングについて">
-<h2>ランキングについて</h2>
-<p>このランキングは、このページを開いているブラウザ（Safari、Chrome、Googleアプリ、Samsung Internet、Microsoft Edge、Brave、Firefox、Operaなど）に保存されます。</p>
-<p>別のブラウザや、別のスマホ・タブレット・パソコンでは、同じ記録は表示されません。</p>
-<p>アプリの記録を消すと、ランキングも消えます。</p>
-<p>記録を残さないモード（プライベート／シークレット）では、ランキングは保存されません。</p>
-</section>
+<button class="ranking-about" hidden id="ranking-about" type="button">ランキングについて</button>
 <div class="ranking-actions" hidden id="ranking-actions">
-<button class="ranking-action" id="ranking-copy" type="button">COPY IMAGE</button>
-<button class="ranking-action" id="ranking-save" type="button">SAVE IMAGE</button>
+<button class="ranking-action" id="ranking-save" type="button">ランキング画像を保存</button>
+<button class="ranking-action" id="ranking-copy" type="button">ランキング画像をコピー</button>
+</div>
+<div class="ranking-nav" hidden id="ranking-nav">
+<button class="ranking-page-btn" id="ranking-prev" type="button">← 前のページ</button>
+<span class="ranking-nav-space" aria-hidden="true"></span>
+<button class="ranking-page-btn" id="ranking-next" type="button">次のページ →</button>
 </div>
 <button class="hidden" id="restartBtn" type="button">もう一度あそぶ</button>
 </div>
@@ -769,53 +972,79 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <button aria-label="タイトルへ戻る" class="icon-btn back-button" type="button">◀</button>
 <h1>使いかた</h1><span></span>
 </header>
-<iframe class="manual-frame" id="manual-frame" src="manual.html?v=1.0.9" title="きぼうかんじ 使いかた"></iframe>
+<iframe class="manual-frame" id="manual-frame" src="manual.html?v=1.0.12" title="きぼうかんじ 使いかた"></iframe>
 </div>
 </section>
 <section class="screen" id="toyama-screen">
 <div class="page-shell">
 <header class="page-head">
 <button aria-label="タイトルへ戻る" class="icon-btn back-button" type="button">◀</button>
-<h1>富山県の魅力をご紹介します</h1><span></span>
+<h1>富山県おすすめ観光地</h1><span></span>
 </header>
-<main class="content"><nav aria-label="観光地の目次" class="toyama-jump">
+<main class="content">
+<div class="tourism-guide">
+営業時間・料金・休館日などの最新情報は、公式サイトや自治体・観光協会などでご確認ください。写真は掲載できるもののみ使用しています。
+</div>
+<nav aria-label="観光地の目次" class="toyama-jump">
 <a href="#toyama-mountain">山と霊峰</a>
-<a href="#toyama-history">歴史と職人</a>
 <a href="#toyama-sea">日本海と街道</a>
 <a href="#toyama-nature">自然と学び</a>
 <a href="#toyama-city">駅近と水辺</a>
+<a href="#toyama-history">歴史と職人</a>
 </nav>
 <div class="section-heading" id="toyama-mountain">⛰ 山と霊峰</div>
 <article class="spot"><h2>黒部峡谷鉄道（トロッコ電車）</h2><p class="addr">富山県黒部市黒部峡谷口11</p></article>
 <article class="spot"><h2>相倉合掌造り集落</h2><p class="addr">富山県南砺市相倉</p></article>
 <article class="spot"><h2>称名滝</h2><p class="addr">富山県中新川郡立山町芦峅寺</p></article>
-<div class="section-heading" id="toyama-history">🏺 歴史と職人</div>
-<article class="spot"><h2>井波の町並み（八日町通り）</h2><p class="addr">富山県南砺市井波</p></article>
-<article class="spot has-photo"><h2>歴史民俗博物館</h2><img alt="歴史民俗博物館" class="spot-img" data-src-candidates="uuu.JPG" decoding="async" loading="lazy"/><p class="addr">富山県魚津市小川寺字天神山1070</p></article>
-<article class="spot has-photo"><h2>郷土博物館（富山城）</h2><img alt="郷土博物館（富山城）" class="spot-img zoomable" data-src-candidates="t1.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市本丸1-62（富山城址公園内）</p></article>
-<article class="spot has-photo"><h2>八尾おわら資料館</h2><img alt="八尾おわら資料館" class="spot-img zoomable" data-src-candidates="o16.jpg" decoding="async" loading="lazy"/><p class="addr">富山市八尾町東町2105番地1</p></article>
 <div class="section-heading" id="toyama-sea">🌊 日本海と街道</div>
 <article class="spot has-photo" id="amaharashi-spot">
 <h2>雨晴海岸</h2>
-<img alt="雨晴海岸" class="spot-img cinematic" data-src-candidates="lastlast.png" decoding="async" loading="lazy"/>
+<img alt="雨晴海岸" class="spot-img cinematic zoomable" data-src-candidates="lastlast.png" decoding="async" loading="lazy"/>
 <p class="addr">富山県高岡市太田雨晴</p>
 <button class="story-btn" id="story-button" type="button">物語を見る</button>
 </article>
 <article class="spot has-photo"><h2>岩瀬の町並み</h2><img alt="岩瀬の町並み" class="spot-img zoomable" data-src-candidates="i1.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市岩瀬大町</p></article>
 <article class="spot"><h2>ほたるいかミュージアム</h2><p class="addr">富山県滑川市中川原410</p></article>
 <article class="spot"><h2>海王丸パーク</h2><p class="addr">富山県射水市海王町8</p></article>
-<div class="section-heading" id="toyama-nature">🌿 丘の自然と知の空間</div>
-<article class="spot"><h2>氷見市潮風ギャラリー 藤子不二雄Ⓐアートコレクション</h2><p class="addr">富山県氷見市中央町3-4</p></article>
+<div class="section-heading" id="toyama-nature">🌿 自然と学び</div>
 <article class="spot has-photo"><h2>ミラージュランド</h2><img alt="ミラージュランド" class="spot-img zoomable" data-src-candidates="m2.jpg" decoding="async" loading="lazy"/><p class="addr">富山県魚津市三ケ1390</p></article>
-<article class="spot has-photo"><h2>富山市科学博物館</h2><img alt="富山市科学博物館" class="spot-img" data-src-candidates="sci.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市西中野町1-8-31</p></article>
+<article class="spot has-photo"><h2>富山市科学博物館</h2><img alt="富山市科学博物館" class="spot-img zoomable" data-src-candidates="sci.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市西中野町1-8-31</p></article>
+<article class="spot"><h2>氷見市潮風ギャラリー 藤子不二雄Ⓐアートコレクション</h2><p class="addr">富山県氷見市中央町3-4</p></article>
 <article class="spot"><h2>立山博物館（まんだら遊苑）</h2><p class="addr">富山県中新川郡立山町芦峅寺93-1</p></article>
 <article class="spot"><h2>ファミリーパーク</h2><p class="addr">富山県富山市古沢277</p></article>
 <article class="spot"><h2>富山市民俗民芸村</h2><p class="addr">富山県富山市安養坊1118-1</p></article>
-<div class="section-heading" id="toyama-city">🏞 富山駅近から水辺</div>
-<article class="spot has-photo"><h2>富山県美術館</h2><img alt="富山県美術館" class="spot-img" data-src-candidates="art.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市木場町3-20</p></article>
-<article class="spot has-photo"><h2>富岩運河環水公園</h2><img alt="富岩運河環水公園" class="spot-img" data-src-candidates="c.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市湊入船町5</p></article>
-<article class="spot has-photo"><h2>池田屋安兵衛商店</h2><img alt="池田屋安兵衛商店" class="spot-img" data-src-candidates="k.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市堤町通り1-3-5</p></article>
-<article class="spot has-photo"><h2>富山市役所展望塔</h2><img alt="富山市役所展望塔" class="spot-img" data-src-candidates="city.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市新桜町7-38</p></article>
+<div class="section-heading" id="toyama-city">🏞 駅近と水辺</div>
+<article class="spot has-photo"><h2>富山県美術館</h2><img alt="富山県美術館" class="spot-img zoomable" data-src-candidates="art.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市木場町3-20</p></article>
+<article class="spot has-photo"><h2>富岩運河環水公園</h2><img alt="富岩運河環水公園" class="spot-img zoomable" data-src-candidates="c.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市湊入船町5</p></article>
+<article class="spot has-photo"><h2>池田屋安兵衛商店</h2><img alt="池田屋安兵衛商店" class="spot-img zoomable" data-src-candidates="k.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市堤町通り1-3-5</p></article>
+<article class="spot has-photo"><h2>富山市役所展望塔</h2><img alt="富山市役所展望塔" class="spot-img zoomable" data-src-candidates="city.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市新桜町7-38</p></article>
+<div class="section-heading" id="toyama-history">🏺 歴史と職人</div>
+<article class="spot has-photo"><h2>歴史民俗博物館</h2><img alt="歴史民俗博物館" class="spot-img zoomable" data-src-candidates="uuu.JPG" decoding="async" loading="lazy"/><p class="addr">富山県魚津市小川寺字天神山1070</p></article>
+<article class="spot has-photo"><h2>八尾おわら資料館</h2><img alt="八尾おわら資料館" class="spot-img zoomable" data-src-candidates="o16.jpg" decoding="async" loading="lazy"/><p class="addr">富山市八尾町東町2105番地1</p></article>
+<article class="spot has-photo"><h2>郷土博物館（富山城）</h2><img alt="郷土博物館（富山城）" class="spot-img zoomable" data-src-candidates="t1.jpg" decoding="async" loading="lazy"/><p class="addr">富山県富山市本丸1-62（富山城址公園内）</p></article>
+<article class="spot castle-gallery-spot">
+<h2>四季をめぐる富山城</h2>
+<div class="castle-gallery">
+<img alt="富山城 背景写真 1" class="zoomable" data-src-candidates="toyama-castle-spring-01.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 2" class="zoomable" data-src-candidates="toyama-castle-spring-02.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 3" class="zoomable" data-src-candidates="toyama-castle-spring-03.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 4" class="zoomable" data-src-candidates="toyama-castle-spring-04.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 5" class="zoomable" data-src-candidates="toyama-castle-summer-01.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 6" class="zoomable" data-src-candidates="toyama-castle-summer-02.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 7" class="zoomable" data-src-candidates="toyama-castle-summer-03.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 8" class="zoomable" data-src-candidates="toyama-castle-summer-04.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 9" class="zoomable" data-src-candidates="toyama-castle-summer-05.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 10" class="zoomable" data-src-candidates="toyama-castle-summer-06.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 11" class="zoomable" data-src-candidates="toyama-castle-summer-07.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 12" class="zoomable" data-src-candidates="toyama-castle-summer-08.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 13" class="zoomable" data-src-candidates="toyama-castle-autumn-02.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 14" class="zoomable" data-src-candidates="toyama-castle-autumn-04.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 15" class="zoomable" data-src-candidates="toyama-castle-autumn-05.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 16" class="zoomable" data-src-candidates="toyama-castle-winter-01.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 17" class="zoomable" data-src-candidates="toyama-castle-winter-02.jpg" decoding="async" loading="lazy"/>
+<img alt="富山城 背景写真 18" class="zoomable" data-src-candidates="toyama-castle-winter-03.jpg" decoding="async" loading="lazy"/>
+</div>
+</article>
 </main>
 </div>
 </section>
@@ -862,7 +1091,7 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <div class="tokunofu-box">
 <div class="tokunofu-symbol" id="tokunofu-symbol">代</div>
 <h2 id="tokunofu-title">特の符</h2>
-<p id="tokunofu-message">今使うか、「特の符」をためてあとから使うか選んでください。</p>
+<p id="tokunofu-message">今すぐ使うか、ためてあとから使うか選んでください。</p>
 <div class="tokunofu-actions">
 <button class="bonus-action secondary" id="tokunofu-store" type="button">ためておく</button>
 <button class="bonus-action primary" id="tokunofu-use" type="button">使う</button>
@@ -887,23 +1116,31 @@ body.title-open{overflow:hidden;overscroll-behavior:none}
 <div class="teaser-video-shell">
 <h2 id="teaser-title">続編「未来の雨晴海岸」予告</h2>
 <video aria-label="続編 未来の雨晴海岸 予告動画" class="teaser-video" controls="" id="teaser-video" playsinline="" poster="future_teaser_poster.jpg" preload="metadata">
-<source src="future_teaser.mp4?v=1.0.9" type="video/mp4"/>
+<source src="future_teaser.mp4?v=1.0.12" type="video/mp4"/>
           お使いのブラウザでは動画を再生できません。
         </video>
-<p aria-live="polite" class="teaser-status" id="teaser-status"></p>
+<p aria-live="polite" class="teaser-status" hidden="" id="teaser-status"></p>
+<button class="teaser-landscape" id="teaser-landscape" type="button">予告を見る</button>
 <div class="teaser-actions">
-<button class="teaser-action" hidden="" id="teaser-replay" type="button">もう一度見る</button>
+<button class="teaser-action" hidden="" id="teaser-replay" type="button">予告を見る</button>
 <button class="teaser-action primary" id="teaser-close" type="button">物語へ戻る</button>
 </div>
+</div>
+</div><div aria-label="ランキング画像コピーの案内" aria-modal="true" class="ranking-copy-fallback" id="ranking-copy-fallback" role="dialog">
+<div class="ranking-copy-card">
+<strong>ランキング画像</strong>
+<img alt="ランキング画像" id="ranking-copy-preview"/>
+<p>この接続では画像コピーを利用できません。画像を長押ししてコピーするか、「ランキング画像を保存」をお使いください。</p>
+<button id="ranking-copy-fallback-close" type="button">閉じる</button>
 </div>
 </div><div aria-label="写真を拡大表示" aria-modal="true" class="photo-modal" id="photo-modal" role="dialog">
 <button aria-label="閉じる" class="icon-btn photo-close" id="photo-close" type="button">×</button>
 <img alt="" id="photo-modal-image" src=""/>
 </div>
-<script src="game-core.js?v=1.0.9"></script>
-<script src="game-board.js?v=1.0.9"></script>
-<script src="game-draw.js?v=1.0.9"></script>
-<script src="game-audio.js?v=1.0.9"></script>
-<script src="game-ui.js?v=1.0.9"></script>
+<script src="game-core.js?v=1.0.12"></script>
+<script src="game-board.js?v=1.0.12"></script>
+<script src="game-draw.js?v=1.0.12"></script>
+<script src="game-audio.js?v=1.0.12"></script>
+<script src="game-ui.js?v=1.0.12"></script>
 </body>
 </html>
