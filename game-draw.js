@@ -1,4 +1,4 @@
-// KIBOUKANJI Ver.1.0.9
+// KIBOUKANJI Ver.1.0.12 LOCAL TEST
 // 富山城四季背景・ランキング画像保存・漢字演出
 
 (() => {
@@ -26,9 +26,7 @@
       "toyama-castle-summer-08.jpg"
     ],
     autumn: [
-      "toyama-castle-autumn-01.jpg",
       "toyama-castle-autumn-02.jpg",
-      "toyama-castle-autumn-03.jpg",
       "toyama-castle-autumn-04.jpg",
       "toyama-castle-autumn-05.jpg"
     ],
@@ -42,6 +40,8 @@
   app.季節順 = ["spring", "summer", "autumn", "winter"];
   app.城背景一覧 = app.季節順.flatMap(季節 => app.城背景季節別[季節]);
   app.城背景画像キャッシュ = new Map();
+  app.城背景最後成功画像 = null;
+  const 背景キャッシュ上限 = 7;
 
   const シャッフル = 配列 => {
     const 結果 = [...配列];
@@ -52,21 +52,71 @@
     return 結果;
   };
 
-  app.城背景事前読込 = function (一覧 = app.城背景一覧) {
-    一覧.forEach(src => {
-      if (app.城背景画像キャッシュ.has(src)) return;
+  app.城背景事前読込 = function (一覧 = []) {
+    const 必要 = Array.from(new Set((一覧 || []).filter(Boolean)));
+
+    必要.forEach(src => {
+      const 既存 = app.城背景画像キャッシュ.get(src);
+      if (既存 && 既存.dataset.loaded !== "-1") return;
+      if (既存?.dataset.retryTimer === "1") return;
+
       const 画像 = new Image();
       画像.decoding = "async";
       画像.dataset.loaded = "0";
+      画像.dataset.srcKey = src;
       画像.addEventListener("load", () => {
         画像.dataset.loaded = "1";
+        画像.dataset.retryTimer = "0";
         app.描画?.();
       }, { once: true });
       画像.addEventListener("error", () => {
         画像.dataset.loaded = "-1";
+        // Safariで一時的に画像デコードへ失敗しても、その失敗を永久に固定しない。
+        if (app.城背景画像キャッシュ.get(src) === 画像) {
+          画像.dataset.retryTimer = "1";
+          setTimeout(() => {
+            if (app.城背景画像キャッシュ.get(src) === 画像) {
+              app.城背景画像キャッシュ.delete(src);
+            }
+          }, 900);
+        }
       }, { once: true });
       画像.src = src;
       app.城背景画像キャッシュ.set(src, 画像);
+    });
+
+    // 発熱とメモリを抑えつつ、現在表示中・直前・最後に正常描画できた画像は必ず保持する。
+    if (app.城背景画像キャッシュ.size > 背景キャッシュ上限) {
+      const 保持 = new Set(必要);
+      const protectedImages = new Set([
+        app.状態.城背景表示画像,
+        app.状態.城背景前画像,
+        app.城背景最後成功画像
+      ].filter(Boolean));
+
+      for (const [src, image] of [...app.城背景画像キャッシュ]) {
+        if (app.城背景画像キャッシュ.size <= 背景キャッシュ上限) break;
+        if (保持.has(src) || protectedImages.has(image)) continue;
+        app.城背景画像キャッシュ.delete(src);
+        // src="" への書換えはSafariで再読込や状態不整合を起こし得るため行わない。
+        // Mapから外し、ブラウザのGCに任せる。
+      }
+    }
+  };
+
+  app.城背景順序復元 = function (保存一覧, 開始季節) {
+    const 有効一覧 = Array.isArray(保存一覧)
+      ? 保存一覧.filter(src => app.城背景一覧.includes(src) || Object.values(app.城背景季節別).flat().includes(src))
+      : [];
+    app.城背景一覧 = 有効一覧.length ? 有効一覧 : app.季節順.flatMap(季節 => app.城背景季節別[季節]);
+    app.城背景事前読込(app.城背景一覧.slice(0, 3));
+    const 待機背景 = app.状態.城背景表示画像 || app.城背景最後成功画像 || null;
+    Object.assign(app.状態, {
+      城背景開始季節: 開始季節 || null,
+      城背景表示番号: -1,
+      城背景表示画像: 待機背景,
+      城背景前画像: null,
+      城背景切替開始: 0
     });
   };
 
@@ -82,17 +132,18 @@
     const 今回の季節順 = Array.from({ length: 4 }, (_, i) => app.季節順[(開始番号 + i) % 4]);
 
     app.城背景一覧 = 今回の季節順.flatMap(季節 => シャッフル(app.城背景季節別[季節]));
-    app.城背景事前読込(app.城背景一覧);
+    app.城背景事前読込(app.城背景一覧.slice(0, 3));
 
     app.前回城背景開始季節 = 開始季節;
     try {
       localStorage.setItem(背景開始季節保存キー, 開始季節);
     } catch {}
 
+    const 待機背景 = app.状態.城背景表示画像 || app.城背景最後成功画像 || null;
     Object.assign(app.状態, {
       城背景開始季節: 開始季節,
       城背景表示番号: -1,
-      城背景表示画像: null,
+      城背景表示画像: 待機背景,
       城背景前画像: null,
       城背景切替開始: 0
     });
@@ -105,7 +156,7 @@
   app.城背景画像取得 = function (番号) {
     const src = app.城背景一覧[番号];
     if (!src) return null;
-    app.城背景事前読込([src]);
+    app.城背景事前読込(app.城背景一覧.slice(Math.max(0, 番号), 番号 + 3));
     return app.城背景画像キャッシュ.get(src) || null;
   };
 
@@ -126,11 +177,17 @@
     const dx = (canvasW - drawW) / 2;
     const dy = (canvasH - drawH) / 2;
 
-    ctx.save();
-    ctx.globalAlpha = Math.max(0, Math.min(1, 透明度));
-    ctx.drawImage(画像, dx, dy, drawW, drawH);
-    ctx.restore();
-    return true;
+    try {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, Math.min(1, 透明度));
+      ctx.drawImage(画像, dx, dy, drawW, drawH);
+      ctx.restore();
+      if (透明度 > 0.95) app.城背景最後成功画像 = 画像;
+      return true;
+    } catch {
+      try { ctx.restore(); } catch {}
+      return false;
+    }
   };
 
   app.背景描画 = function () {
@@ -158,12 +215,18 @@
     const 経過 = 時刻 - (app.状態.城背景切替開始 || 0);
     const 進行 = Math.max(0, Math.min(1, 経過 / 背景切替時間));
 
+    let 背景描画成功 = false;
     if (前画像 && 進行 < 1) {
-      画面いっぱいに描く(ctx, 前画像, 1);
-      画面いっぱいに描く(ctx, 現在画像, 進行);
+      背景描画成功 = 画面いっぱいに描く(ctx, 前画像, 1) || 背景描画成功;
+      背景描画成功 = 画面いっぱいに描く(ctx, 現在画像, 進行) || 背景描画成功;
     } else {
-      画面いっぱいに描く(ctx, 現在画像, 1);
+      背景描画成功 = 画面いっぱいに描く(ctx, 現在画像, 1);
       app.状態.城背景前画像 = null;
+    }
+
+    // 次画像の準備失敗・Safariの一時デコード失敗時も、最後に正常表示できた背景を残す。
+    if (!背景描画成功 && app.城背景最後成功画像 && app.城背景最後成功画像 !== 現在画像) {
+      背景描画成功 = 画面いっぱいに描く(ctx, app.城背景最後成功画像, 1);
     }
 
     ctx.fillStyle = "rgba(255,255,255,.18)";
@@ -301,7 +364,7 @@
 
     ctx.font = "12px sans-serif";
     ctx.fillStyle = "#fff";
-    const 文 = ["とやまの無限漢字", "立山連峰から富山湾まで、", "希望の数え唄"];
+    const 文 = ["とやまの無限漢字", "立山連峰から富山湾まで", "希望の数え唄"];
     let y = baseY + app.設定.タイトル文字.length * lineHeight + 10;
     文.forEach(行 => {
       ctx.fillText(行, 190, y);
@@ -355,26 +418,61 @@
     ctx.restore();
   };
 
-  const 折返し = (ctx, text, maxWidth) => {
-    const 行 = [];
-    let 現在 = "";
-    for (const 文字 of text) {
-      const 候補 = 現在 + 文字;
-      if (現在 && ctx.measureText(候補).width > maxWidth) {
-        行.push(現在);
-        現在 = 文字;
-      } else {
-        現在 = 候補;
-      }
+  const ランキング全ページ数 = 6;
+
+  const 複数行中央描画 = (ctx, lines, x, startY, lineHeight, font, color = "#fff") => {
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = font;
+    ctx.fillStyle = color;
+    lines.forEach((line, i) => ctx.fillText(line, x, startY + i * lineHeight));
+    ctx.restore();
+  };
+
+  const ランキング丸印描画 = (ctx, page) => {
+    const centerX = 180;
+    const gap = 28;
+    const startX = centerX - gap * (ランキング全ページ数 - 1) / 2;
+
+    ctx.save();
+    ctx.fillStyle = "#F4EFE7";
+    ctx.strokeStyle = "#D4A857";
+    ctx.lineWidth = 1.2;
+    if (typeof ctx.roundRect === "function") {
+      ctx.beginPath();
+      ctx.roundRect(82, 532, 196, 38, 19);
+      ctx.fill();
+      ctx.stroke();
+    } else {
+      ctx.fillRect(82, 532, 196, 38);
+      ctx.strokeRect(82.5, 532.5, 195, 37);
     }
-    if (現在) 行.push(現在);
-    return 行;
+
+    for (let i = 0; i < ランキング全ページ数; i++) {
+      const active = i === page;
+      ctx.beginPath();
+      ctx.arc(startX + i * gap, 551, active ? 8.8 : 5.8, 0, Math.PI * 2);
+      ctx.fillStyle = active ? "#071526" : "#C9C2B7";
+      ctx.fill();
+      ctx.strokeStyle = active ? "#D4A857" : "#FFFDF8";
+      ctx.lineWidth = active ? 3 : 1.4;
+      ctx.stroke();
+    }
+    ctx.restore();
+  };
+
+  app.ランキングページ設定 = function (page) {
+    app.状態.ランキングページ = Math.max(0, Math.min(ランキング全ページ数 - 1, Number(page) || 0));
+    app.ランキングUIページ更新?.(app.状態.ランキングページ, ランキング全ページ数);
+    app.描画?.();
   };
 
   app.順位描画 = function () {
     const ctx = app.状態.ctx;
+    const page = Math.max(0, Math.min(ランキング全ページ数 - 1, app.状態.ランキングページ || 0));
     ctx.save();
-    ctx.fillStyle = "rgba(3,11,21,.96)";
+    ctx.fillStyle = "rgba(3,11,21,.97)";
     ctx.fillRect(8, 34, 344, 594);
     ctx.strokeStyle = "#E2C16B";
     ctx.lineWidth = 2;
@@ -382,17 +480,38 @@
 
     app.順位トップパネル描画(ctx, 24, 50, 312, 205);
 
-    ctx.fillStyle = "rgba(255,255,255,.055)";
-    ctx.fillRect(24, 270, 312, 108);
-    ctx.strokeStyle = "rgba(226,193,107,.45)";
-    ctx.strokeRect(24.5, 270.5, 311, 107);
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillStyle = "#fff";
-    ctx.font = '700 18px system-ui,"Yu Gothic UI",Meiryo,sans-serif';
-    ctx.fillText("ランキングについて", 180, 304);
-    ctx.font = '600 16px system-ui,"Yu Gothic UI",Meiryo,sans-serif';
-    ctx.fillText("下へスクロールしてお読みください", 180, 343);
+    // ランキング案内は透過させず、スマートフォンで読みやすい単色背景にする。
+    // 下部は「保存・コピー → 6個の丸 → もう一度あそぶ」の順に空ける。
+    // 公開版1.0.12: コンパクトな案内カードと明朝系フォントを維持し、端末変更の説明文だけ校正。
+    ctx.fillStyle = "#F8F4EC";
+    ctx.fillRect(24, 284, 312, 136);
+    ctx.strokeStyle = "#D4A857";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(24.75, 284.75, 310.5, 134.5);
+
+    if (page === 0) {
+      複数行中央描画(
+        ctx,
+        ["高得点の記録", "ランキング画像を", "保存・コピーできます"],
+        180, 310, 34,
+        '600 17.5px "Hiragino Mincho ProN","Yu Mincho","HGS明朝E","MS PMincho",serif',
+        "#26313A"
+      );
+    } else if (page === 1) {
+      複数行中央描画(ctx, ["ランキングについて"], 180, 300, 24, '700 18.5px "Hiragino Mincho ProN","Yu Mincho","HGS明朝E","MS PMincho",serif', "#8A6519");
+      複数行中央描画(ctx, ["このランキングは", "このページを開いている", "ブラウザに保存されます"], 180, 332, 30, '500 16px "Hiragino Mincho ProN","Yu Mincho","HGS明朝E","MS PMincho",serif', "#26313A");
+    } else if (page === 2) {
+      複数行中央描画(ctx, ["ブラウザの例"], 180, 296, 20, '700 17px "Hiragino Mincho ProN","Yu Mincho","HGS明朝E","MS PMincho",serif', "#8A6519");
+      複数行中央描画(ctx, ["Safari", "Chrome", "Google", "Samsung Internet", "Microsoft Edge", "Brave", "Firefox", "Opera"], 180, 317, 13.5, '500 13.5px "Hiragino Mincho ProN","Yu Mincho","HGS明朝E","MS PMincho",serif', "#26313A");
+    } else if (page === 3) {
+      複数行中央描画(ctx, ["ブラウザや端末を変えると", "他のブラウザや", "スマホ・タブレット・パソコンでは", "同じ記録は表示されません"], 180, 309, 27, '500 15.5px "Hiragino Mincho ProN","Yu Mincho","HGS明朝E","MS PMincho",serif', "#26313A");
+    } else if (page === 4) {
+      複数行中央描画(ctx, ["アプリの記録を消すと", "ランキングも消えます"], 180, 335, 34, '500 17px "Hiragino Mincho ProN","Yu Mincho","HGS明朝E","MS PMincho",serif', "#26313A");
+    } else {
+      複数行中央描画(ctx, ["記録を残さないモード", "（プライベート／シークレット）では", "ランキングは保存されません"], 180, 318, 28, '500 15px "Hiragino Mincho ProN","Yu Mincho","HGS明朝E","MS PMincho",serif', "#26313A");
+    }
+
+    ランキング丸印描画(ctx, page);
     ctx.restore();
   };
 
@@ -421,28 +540,58 @@
       link.click();
       link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
-      app.加点表示?.("ランキング画像を保存しました");
+      app.加点表示?.("ランキング画像を端末に保存しました", 2200);
       return true;
     } catch {
-      app.加点表示?.("画像を保存できませんでした");
+      app.加点表示?.("画像を保存できませんでした", 2200);
+      return false;
+    }
+  };
+
+  const ランキング画像案内表示 = async canvas => {
+    try {
+      const blob = await PNG作成(canvas);
+      const url = URL.createObjectURL(blob);
+      const modal = app.要素("ranking-copy-fallback");
+      const preview = app.要素("ranking-copy-preview");
+      const close = app.要素("ranking-copy-fallback-close");
+      if (!modal || !preview) {
+        URL.revokeObjectURL(url);
+        return false;
+      }
+      const 閉じる = () => {
+        modal.classList.remove("open");
+        preview.removeAttribute("src");
+        setTimeout(() => URL.revokeObjectURL(url), 50);
+      };
+      preview.src = url;
+      modal.classList.add("open");
+      close?.addEventListener("click", 閉じる, { once: true });
+      modal.addEventListener("click", event => { if (event.target === modal) 閉じる(); }, { once: true });
+      return true;
+    } catch {
       return false;
     }
   };
 
   app.順位画像コピー = async function () {
+    const canvas = app.順位画像Canvas作成();
+    if (!window.isSecureContext || !navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
+      await ランキング画像案内表示(canvas);
+      app.加点表示?.("この接続では直接コピーできません。画像を長押しするか保存してください", 3600);
+      return false;
+    }
     try {
-      const canvas = app.順位画像Canvas作成();
-      const blob = await PNG作成(canvas);
-      if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
-        await app.順位画像保存();
-        app.加点表示?.("コピー非対応のため画像を保存しました");
-        return;
-      }
-      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-      app.加点表示?.("ランキング画像をコピーしました");
+      // Safariのユーザー操作判定を失わないよう、PNG生成PromiseをClipboardItemへ直接渡す。
+      const pngPromise = PNG作成(canvas);
+      const item = new ClipboardItem({ "image/png": pngPromise });
+      await navigator.clipboard.write([item]);
+      app.加点表示?.("ランキング画像をコピーしました", 2400);
+      return true;
     } catch {
-      await app.順位画像保存();
-      app.加点表示?.("コピーできなかったため画像を保存しました");
+      await ランキング画像案内表示(canvas);
+      app.加点表示?.("画像をコピーできませんでした。画像を長押しするか保存してください", 3600);
+      return false;
     }
   };
 
@@ -462,21 +611,25 @@
 
     if (状態.ボーナス中) {
       ctx.save();
-      ctx.fillStyle = "rgba(5,18,31,.84)";
-      ctx.fillRect(18, 103, 324, 34);
-      ctx.strokeStyle = "rgba(226,193,107,.72)";
-      ctx.strokeRect(18.5, 103.5, 323, 33);
+      ctx.fillStyle = "rgba(5,18,31,.90)";
+      ctx.fillRect(14, 96, 332, 48);
+      ctx.strokeStyle = "rgba(226,193,107,.82)";
+      ctx.strokeRect(14.5, 96.5, 331, 47);
       ctx.fillStyle = "#fff";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.font = "700 13px system-ui,sans-serif";
+      ctx.font = "700 14px system-ui,sans-serif";
       if (状態.ボーナス中 === "岳") {
         const 選択文字 = 状態.選択セル?.文字;
-        ctx.fillText(選択文字 ? `山岳鎮定：「${選択文字}」を確認` : "山岳鎮定：消したい漢字錠を一つ選ぶ", 180, 120);
+        ctx.fillText("山岳鎮定　同じ漢字錠をまとめて消します", 180, 112);
+        ctx.font = "700 13px system-ui,sans-serif";
+        ctx.fillText(選択文字 ? `「${選択文字}」を確認してください` : "消したい漢字錠を一つ選んでください", 180, 131);
       } else {
         const 一つ目 = 状態.選択セル?.文字 || "未選択";
         const 二つ目 = 状態.選択セル2?.文字 || "未選択";
-        ctx.fillText(`代身遷宮：①${一つ目}　②${二つ目}　あと${状態.ボーナス残数}回`, 180, 120);
+        ctx.fillText("代身遷宮　二つの漢字錠を入れ替えます", 180, 112);
+        ctx.font = "700 13px system-ui,sans-serif";
+        ctx.fillText(`①${一つ目}　②${二つ目}　あと${状態.ボーナス残数}回`, 180, 131);
       }
       ctx.restore();
     }
@@ -516,19 +669,30 @@
     app.重ね表示描画();
   };
 
-  app.加点表示 = function (文字) {
+  app.加点表示 = function (文字, 表示ミリ秒 = 1600) {
     const effect = document.createElement("div");
     effect.className = "score-toast";
     effect.textContent = 文字;
     document.body.appendChild(effect);
     requestAnimationFrame(() => effect.classList.add("show"));
-    setTimeout(() => effect.classList.remove("show"), 700);
-    setTimeout(() => effect.remove(), 980);
+    const fadeAt = Math.max(500, 表示ミリ秒 - 350);
+    setTimeout(() => effect.classList.remove("show"), fadeAt);
+    setTimeout(() => effect.remove(), 表示ミリ秒);
+  };
+
+  app.技結果表示 = function (技名, 結果) {
+    const effect = document.createElement("div");
+    effect.className = "score-toast technique-result";
+    effect.innerHTML = `<strong>${技名}</strong><span>${結果}</span>`;
+    document.body.appendChild(effect);
+    requestAnimationFrame(() => effect.classList.add("show"));
+    setTimeout(() => effect.classList.remove("show"), 3100);
+    setTimeout(() => effect.remove(), 3500);
   };
 
   app.コンボ表示 = function (連鎖数, 加点) {
     if (連鎖数 <= 1) {
-      app.加点表示?.(`+${加点}点`);
+      app.加点表示?.(`＋${加点}点`, 1700);
       return;
     }
 
@@ -544,12 +708,12 @@
       <span class="combo-count">${連鎖数} COMBO</span>
       <span class="combo-reading">${名称.読み}</span>
       <strong class="combo-kanji">${名称.漢字}</strong>
-      <span class="combo-score">+${加点}</span>
+      <span class="combo-score">＋${加点}点</span>
     `;
     document.body.appendChild(effect);
     requestAnimationFrame(() => effect.classList.add("show"));
-    setTimeout(() => effect.classList.remove("show"), 1050);
-    setTimeout(() => effect.remove(), 1420);
+    setTimeout(() => effect.classList.remove("show"), 4500);
+    setTimeout(() => effect.remove(), 5200);
   };
 
   app.技名演出 = function (文字) {
@@ -567,10 +731,13 @@
     reading.textContent = 情報.reading;
     kanji.textContent = 情報.kanji;
     subtitle.textContent = 情報.subtitle;
-    overlay.classList.remove("show");
+    overlay.classList.remove("show", "compact");
     void overlay.offsetWidth;
     overlay.classList.add("show");
-    setTimeout(() => overlay.classList.remove("show"), 1380);
+    clearTimeout(overlay._kibouTechniqueCompactTimer);
+    clearTimeout(overlay._kibouTechniqueTimer);
+    overlay._kibouTechniqueCompactTimer = setTimeout(() => overlay.classList.add("compact"), 2300);
+    overlay._kibouTechniqueTimer = setTimeout(() => overlay.classList.remove("show", "compact"), 8200);
   };
 
   app.ボーナス成立演出 = app.技名演出;

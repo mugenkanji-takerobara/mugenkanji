@@ -130,10 +130,11 @@ h3{font-size:clamp(22px,6vw,29px)}
 .cover-title-copy{
   margin-top:6px;
   font-family:"Yu Mincho","Hiragino Mincho ProN","HGS明朝E","MS PMincho",serif;
-  font-size:clamp(18px,4.7vw,22px);
+  font-size:clamp(11px,3.2vw,16px);
   font-weight:600;
-  line-height:1.7;
-  letter-spacing:.03em;
+  line-height:1.45;
+  letter-spacing:.01em;
+  white-space:nowrap;
 }
 .decorated-kana{
   position:relative;
@@ -763,7 +764,15 @@ h3{font-size:clamp(22px,6vw,29px)}
   .manual-kanji{font-size:clamp(28px,8vw,38px)}
 }
 .decorated-kana{position:relative;display:inline-block}
-.kana-mark{position:absolute!important;left:50%!important;right:auto!important;top:-1.15em!important;transform:translateX(18%)!important;white-space:nowrap}
+.kana-mark{
+  position:absolute!important;
+  right:auto!important;
+  transform:none!important;
+  white-space:nowrap;
+}
+/* 「ほ」「し」の真上マスの右下寄り。記号が文字から離れすぎない位置へ個別調整。 */
+.music-mark{left:68%!important;top:-.08em!important}
+.heart-mark{left:72%!important;top:.12em!important}
 
 /* Ver.1.0.9 四季の明瞭な色面。ページ背景には大きなグラデーションを使わない */
 .page.spring{background:#fff3f5}
@@ -777,6 +786,16 @@ h3{font-size:clamp(22px,6vw,29px)}
 .page.credit-summer{background:#e5faf6}
 .page.credit-autumn{background:#fff0d5}
 .page.credit-winter{background:#edf7ff}
+
+
+/* Ver.1.0.12 文字折返し微調整 */
+.cover-title-copy{max-width:100%;white-space:nowrap}
+.music-mark{font-size:.45em!important}
+.heart-mark{font-size:.34em!important}
+.one-line-rule{font-size:clamp(11px,3.05vw,14px);letter-spacing:-.035em;white-space:nowrap}
+.credit-audio-line{white-space:nowrap;font-size:clamp(17px,4.5vw,23px)}
+.credit-audio-note{font-size:.66em;font-weight:600}
+@media(max-width:340px){.cover-title-copy{font-size:10px}.one-line-rule{font-size:10px}}
 
 </style>
 </head>
@@ -792,7 +811,7 @@ h3{font-size:clamp(22px,6vw,29px)}
       <span aria-hidden="true">き</span><span class="decorated-kana" aria-hidden="true">ほ<span class="kana-mark music-mark">♪♪</span></span><span aria-hidden="true">うかん</span><span class="decorated-kana" aria-hidden="true">し<span class="kana-mark heart-mark">♥♥</span></span>
     </span>
     <span class="cover-title-sub">とやまの無限漢字</span>
-    <span class="cover-title-copy">～立山連峰から富山湾まで、希望の数え唄～</span>
+    <span class="cover-title-copy">～立山連峰から富山湾まで希望の数え唄～</span>
   </div>
 
   <h1>使いかた</h1>
@@ -883,7 +902,7 @@ h3{font-size:clamp(22px,6vw,29px)}
     <div class="definition-card"><strong>漢字錠（カンジジョウ）</strong>GLYPHが丸い薬の形に結晶した、プレイヤーが動かす錠剤です。</div>
   </div>
 
-  <p class="copy">高岡銅器の錫、井波彫刻、越中和紙、組子細工、ガラス工芸。富山の手仕事と「薬の富山」の記憶が、一文字一文字の漢字錠に刻まれています。</p>
+  <p class="copy">高岡銅器の錫、井波彫刻、越中和紙、組子細工、ガラス工芸。富山の手仕事と「薬の富山」の記憶が、一文字一文字の漢字錠に刻まれた。</p>
 
   <div class="triptych">
     <img src="i4.jpg" alt="富山の文化を伝える画像1">
@@ -911,7 +930,7 @@ h3{font-size:clamp(22px,6vw,29px)}
   <h2>キリ番<br><span class="heading-note">（キリの良いスコア）</span></h2>
   <div class="rule"></div>
   <p class="lead">100点ごとの区切りで、背景の景色が変わります。</p>
-  <p class="copy">春・夏・秋・冬の流れを保ちながら、富山城の背景画像を一巡します。</p>
+  <p class="copy">春夏秋冬の流れを保ちながら、富山城の背景画像を一巡します。</p>
 
   <svg viewBox="0 0 400 190" class="score-chart" aria-label="100点ごとに背景が変わる図">
     <path d="M45 145 L145 110 L245 75 L350 38 L350 145 L45 145 Z" fill="rgba(138,120,111,.07)"/>
@@ -923,7 +942,6 @@ h3{font-size:clamp(22px,6vw,29px)}
   <div class="message-box"><strong>急降下の得点</strong>漢字錠を高い場所から<span class="onomato gold">ストン！</span>と急降下させると、落とした距離に応じて10点から90点まで加わります。</div>
 
   <section class="combo-explainer" aria-labelledby="combo-title">
-    <p class="kicker">コンボ</p>
     <span class="manual-reading">COMBO</span>
     <h3 class="manual-kanji" id="combo-title">コンボ</h3>
     <p class="copy">漢字錠が消えたあと、上から落ちてきた漢字錠が続けて三つそろうとコンボです。</p>
@@ -961,7 +979,7 @@ h3{font-size:clamp(22px,6vw,29px)}
     </article>
   </div>
 
-  <div class="stock"><strong>特の符</strong><br>「代」または「岳」がそろうと、今使うか、ためておくかを選べます。<br>［使う］で発動し、［ためておく］で「特の符」をのこして、あとから使えます。</div>
+  <div class="stock"><strong>特の符</strong><br>「代」または「岳」がそろうと、今使うか、ためておくかを選べます。<br>［使う］で発動し、［ためておく］で残して、あとから使えます。</div>
 </section>
 
 <section id="sns" class="page sns-bright">
@@ -997,7 +1015,7 @@ h3{font-size:clamp(22px,6vw,29px)}
 <section class="page credit-autumn cinema-page">
   <p class="credit-label">AUDIO CREDIT</p>
   <p class="credit-subtitle">BGM・効果音</p>
-  <div class="credit-name">Team shiob（オールオリジナル音源）</div>
+  <div class="credit-name credit-audio-line">Team shiob<span class="credit-audio-note">（オールオリジナル音源）</span></div>
 </section>
 
 <section class="page credit-winter cinema-page">
