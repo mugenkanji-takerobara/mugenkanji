@@ -1,6 +1,6 @@
-// KIBOUKANJI Ver.1.0.12 LOCAL TEST
+// KIBOUKANJI Ver.1.0.12
 // ゲーム初期化・途中保存・安全停止・特の符状態管理
-// GitHub公開前ローカル検証用
+// GitHub公開版
 
 (() => {
   "use strict";

@@ -1,4 +1,4 @@
-// KIBOUKANJI Ver.1.0.12 LOCAL TEST
+// KIBOUKANJI Ver.1.0.12
 // 急降下距離加点・特の符・代身遷宮・山岳鎮定
 
 (() => {
